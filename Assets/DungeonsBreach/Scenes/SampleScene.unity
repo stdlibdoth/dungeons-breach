@@ -298,6 +298,14 @@ MonoBehaviour:
       x: 0
       y: 0
   m_tilePrefab: {fileID: 2250882842713644614, guid: 614094de6324170409942cc693303657, type: 3}
+  m_blockPrefab: {fileID: 2250882842713644614, guid: 478b3275622b13040b7addb28a93db16, type: 3}
+  m_pathPrefab: {fileID: 2250882842713644614, guid: 28340706454443a4594939c069c1e3cf, type: 3}
+  m_start:
+    x: 3
+    y: 3
+  m_end:
+    x: 6
+    y: 7
 --- !u!4 &521478703
 Transform:
   m_ObjectHideFlags: 0

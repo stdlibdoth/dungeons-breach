@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 4223554059777713065}
   - component: {fileID: 2250882842713644614}
   m_Layer: 0
-  m_Name: TestTile
+  m_Name: Land
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
