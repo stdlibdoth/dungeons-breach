@@ -12,13 +12,34 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private IsoGridCoord m_start;
     [SerializeField] private IsoGridCoord m_end;
+
+
+    [SerializeField] private PathFindingAgent m_agent;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        m_grid = new IsoGrid(m_grid.Dimension, m_grid.CellSize, Unity.Mathematics.float2.zero);
+        GridManager.ActiveGrid = m_grid;
+    }
+
+
     private void Start()
     {
-        m_grid = new IsoGrid(m_grid.Dimension, m_grid.CellSize, Unity.Mathematics.float2.zero);
-
         PopulateGridMask();
         GenenrateGrid();
         FindPath();
+        StartCoroutine(m_agent.MoveAgent(m_end));
+    }
+
+    private void Update()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Debug.Log(pos.ToIsoCoordinate(m_grid));
+        }
+
     }
 
 
@@ -43,8 +64,6 @@ public class GameManager : Singleton<GameManager>
     {
         var block = new PathFindingMask { value = PathFindingMask.landBlocking };
         var land = new PathFindingMask { value = (byte)PathFindingTile.Land };
-        Debug.Log(block.value);
-        Debug.Log(land.value);
 
         for (int y = 0; y < m_grid.Dimension.y; y++)
         {

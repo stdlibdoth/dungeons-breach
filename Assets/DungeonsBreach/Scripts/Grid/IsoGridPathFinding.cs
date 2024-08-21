@@ -3,14 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
 
-[System.Serializable]
-public enum IsoGridDirection
-{
-    NE,
-    SE,
-    SW,
-    NW,
-}
+
 
 [System.Serializable]
 public struct PathFindingMask
@@ -62,15 +55,6 @@ public class AstarNode
 
 public static class IsoGridPathFinding
 {
-    public static IsoGridCoord[] GridDirectionToCoord =
-    {
-        new IsoGridCoord(0,1),
-        new IsoGridCoord(-1,0),
-        new IsoGridCoord(0,-1),
-        new IsoGridCoord(1,0),
-    };
-
-
 
     public static bool FindPathAstar(IsoGridCoord start, IsoGridCoord target, IsoGrid grid, PathFindingMask agent_mask, out List<IsoGridCoord> path)
     {
@@ -96,7 +80,7 @@ public static class IsoGridPathFinding
             //check neightbours
             for (int i = 0; i < IsoGridMetrics.directionCount; i++)
             {
-                var neighbourCoord = currentNode.coord + GridDirectionToCoord[i];
+                var neighbourCoord = currentNode.coord + IsoGridMetrics.GridDirectionToCoord[i];
                 if (neighbourCoord.x < grid.Dimension.x && neighbourCoord.y < grid.Dimension.y
                     && neighbourCoord.x >= 0 && neighbourCoord.y >= 0)
                 {

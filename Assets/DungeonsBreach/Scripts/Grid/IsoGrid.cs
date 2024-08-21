@@ -1,7 +1,7 @@
 using UnityEngine;
 using Unity.Mathematics;
 using System;
-using System.Runtime.CompilerServices;
+
 
 
 
@@ -17,6 +17,14 @@ public class IsoGrid
     public int2 Dimension {  get { return m_dimension; } }
     public float CellSize {  get { return m_cellSize; } }
     public float2 Offset {  get { return m_originOffset; } }
+
+    public int2 Center
+    {
+        get
+        {
+            return m_dimension / 2;
+        }
+    }
 
 
     public PathFindingMask[] PathFindingMask
@@ -115,28 +123,12 @@ public struct IsoGridCoord
 
 }
 
-
-public static class IsoGridMetrics
+[System.Serializable]
+public enum IsoGridDirection
 {
-    public const float sinAngle = 0.60876143f;
-    public const float cosAngle = 0.79335334f;
-    public const int directionCount = 4;
-
-    public static float3 ToWorldPosition(this IsoGridCoord coord, IsoGrid grid)
-    {
-        float suby = grid.CellSize * (coord.y - (grid.Dimension.y / 2));
-        float subx = grid.CellSize * (coord.x - (grid.Dimension.x / 2));
-
-        float x = (-subx * cosAngle) + suby * cosAngle;
-        float y = (subx * sinAngle) + suby * sinAngle;
-        return new float3(x + grid.Offset.x, y + grid.Offset.y, 0);
-    }
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int To2DArrayIndex(this IsoGridCoord coord, int2 dimension)
-    {
-        return coord.y * dimension.x + coord.x;
-    }
-
+    SE,
+    SW,
+    NW,
+    NE,
 }
+
