@@ -38,33 +38,34 @@ public class PathFindingAgent : MonoBehaviour
     public IEnumerator MoveAgent(IsoGridCoord target)
     {
         m_coord = transform.position.ToIsoCoordinate(GridManager.ActiveGrid);
+
         var grid = GridManager.ActiveGrid;
+        var tileMask = grid.PathFindingTileMask(m_coord);
+        grid.UpdatePathFindingMask(m_coord, tileMask ^ m_intrinsicMask);
+
         if (IsoGridPathFinding.FindPathAstar(m_coord, target, grid, m_blockingMask, out var path))
         {
             List<IsoGridCoord> waypoints = new List<IsoGridCoord>();
-            waypoints.Add(m_coord);
-            var lastWaypoint = m_coord;
-            for (int i = path.Count - 1; i >= 0; i--)
+            for (int i = path.Count - 2; i > 0; i--)
             {
-                if (path[i].x != lastWaypoint.x && path[i].y != lastWaypoint.y)
+                if (path[i-1].x != path[i + 1].x && path[i-1].y != path[i + 1].y)
                 {
-                    lastWaypoint = path[i + 1];
-                    waypoints.Add(lastWaypoint);
-                }
-                else if (path[i] == target)
-                {
+                    Debug.Log(path[i]);
                     waypoints.Add(path[i]);
                 }
             }
+            waypoints.Add(target);
 
 
             m_wp = waypoints;
-            for (int i = 1; i < waypoints.Count; i++)
+            for (int i = 0; i < waypoints.Count; i++)
             {
                 var moveTarget = waypoints[i];
                 yield return StartCoroutine(m_moveLocamotion.StartLocamotion(m_coord, moveTarget));
                 m_coord = moveTarget;
             }
+            tileMask = grid.PathFindingTileMask(m_coord);
+            grid.UpdatePathFindingMask(m_coord, tileMask | m_intrinsicMask);
         }
     }
 }

@@ -13,6 +13,20 @@ public struct PathFindingMask
     public const byte landBlocking = 0b00001111;
     public const byte airBlocking = 0b00000111;
     
+    public PathFindingMask(byte value)
+    {
+        this.value = value;
+    }
+
+    public static PathFindingMask operator | (PathFindingMask lhs, PathFindingMask rhs)
+    {
+        return new PathFindingMask((byte)(lhs.value | rhs.value));
+    }
+
+    public static PathFindingMask operator ^(PathFindingMask lhs, PathFindingMask rhs)
+    {
+        return new PathFindingMask((byte)(lhs.value ^ rhs.value));
+    }
 }
 
 

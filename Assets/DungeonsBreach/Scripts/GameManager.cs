@@ -27,7 +27,7 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         PopulateGridMask();
-        //GenenrateGrid();
+        GenenrateGrid();
         FindPath();
         StartCoroutine(m_agent.MoveAgent(m_end));
     }
@@ -52,9 +52,11 @@ public class GameManager : Singleton<GameManager>
             {
                 IsoGridCoord coord = new IsoGridCoord(x, y);
                 var tileMask = m_grid.PathFindingTileMask(coord);
-                IsoTileBase prefab = tileMask.value != (byte)PathFindingTile.Land?m_blockPrefab:m_tilePrefab;
-                var tile = Instantiate(prefab, coord.ToWorldPosition(m_grid), Quaternion.identity);
-                tile.SetCoord(coord);
+                if(tileMask.value != (byte)PathFindingTile.Land)
+                {
+                    var tile = Instantiate(m_blockPrefab, coord.ToWorldPosition(m_grid), Quaternion.identity);
+                    tile.SetCoord(coord);
+                }
             }
         }
     }
@@ -70,7 +72,7 @@ public class GameManager : Singleton<GameManager>
             for (int x = 0; x < m_grid.Dimension.x; x++)
             {
                 var coord = new IsoGridCoord(x, y);
-                if(y == 5 && x<=7 && x>=2)
+                if(y == 5 && x<=6 && x>=2)
                 {
                     m_grid.UpdatePathFindingMask(coord, block);
                 }
