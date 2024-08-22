@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+[RequireComponent(typeof(ILocamotion))]
 public class PathFindingAgent : MonoBehaviour
 {
     [SerializeField] private PathFindingMask m_intrinsicMask;
@@ -10,7 +11,7 @@ public class PathFindingAgent : MonoBehaviour
 
     [SerializeField] private List<IsoGridCoord> m_wp;
 
-    private IsoMoveLocamotion m_moveLocamotion;
+    private ILocamotion m_moveLocamotion;
     private IsoGridCoord m_coord;
 
     public PathFindingMask IntrinsicMask
@@ -31,7 +32,7 @@ public class PathFindingAgent : MonoBehaviour
 
     private void Awake()
     {
-        m_moveLocamotion = GetComponent<IsoMoveLocamotion>();
+        m_moveLocamotion = GetComponent<ILocamotion>();
     }
 
     public IEnumerator MoveAgent(IsoGridCoord target)
@@ -61,7 +62,6 @@ public class PathFindingAgent : MonoBehaviour
             for (int i = 1; i < waypoints.Count; i++)
             {
                 var moveTarget = waypoints[i];
-                Debug.Log(moveTarget.ToString());
                 yield return StartCoroutine(m_moveLocamotion.StartLocamotion(m_coord, moveTarget));
                 m_coord = moveTarget;
             }

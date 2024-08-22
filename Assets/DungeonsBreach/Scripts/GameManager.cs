@@ -27,7 +27,7 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         PopulateGridMask();
-        GenenrateGrid();
+        //GenenrateGrid();
         FindPath();
         StartCoroutine(m_agent.MoveAgent(m_end));
     }

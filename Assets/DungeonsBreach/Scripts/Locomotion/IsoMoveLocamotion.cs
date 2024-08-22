@@ -16,7 +16,7 @@ public class IsoMoveLocamotion : MonoBehaviour,ILocamotion
     private IEnumerator LocaMotionMoveCoroutine(float3 end)
     {
         var dist = math.distance(transform.position, end);
-        var dir = (Vector3)end - transform.position;
+        var dir = ((Vector3)end - transform.position).normalized;
         while (dist > m_stopDistance)
         {
             transform.position += dir * m_speed * Time.deltaTime;

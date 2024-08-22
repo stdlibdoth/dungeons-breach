@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
-
+using System.Runtime.CompilerServices;
 
 
 [System.Serializable]
@@ -24,6 +24,7 @@ public enum PathFindingTile : byte
     Enemy = 0b100,
     Hole = 0b1000,
     Water = 0b10000,
+    Trap = 0b100000,
 }
 
 public class AstarNode
@@ -145,6 +146,7 @@ public static class IsoGridPathFinding
     }
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float ManhattanDistance(AstarNode node1, AstarNode node2)
     {
         return math.abs(node1.coord.x - node2.coord.x) + math.abs(node1.coord.y - node2.coord.y);
