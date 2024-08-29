@@ -37,7 +37,7 @@ public abstract class Singleton<T>:MonoBehaviour where T: MonoBehaviour
         }
     }
 
-    public T GetSingleton()
+    protected static T GetSingleton()
     {
         return m_instance as T;
     }

@@ -27,6 +27,12 @@ public struct PathFindingMask
     {
         return new PathFindingMask((byte)(lhs.value ^ rhs.value));
     }
+
+
+    public bool CheckMaskOverlap(PathFindingMask other_mask)
+    {
+        return (value & other_mask.value) != 0;
+    }
 }
 
 
@@ -71,7 +77,7 @@ public class AstarNode
 public static class IsoGridPathFinding
 {
 
-    public static bool FindPathAstar(IsoGridCoord start, IsoGridCoord target, IsoGrid grid, PathFindingMask agent_mask, out List<IsoGridCoord> path)
+    public static bool FindPathAstar(IsoGridCoord start, IsoGridCoord target, PathGrid grid, PathFindingMask agent_mask, out List<IsoGridCoord> path)
     {
         AstarNode startNode = new AstarNode(start);
         AstarNode targetNode = new AstarNode(target);
@@ -84,6 +90,11 @@ public static class IsoGridPathFinding
 
         bool pathFound = false;
         AstarNode currentNode = startNode;
+
+        path = new List<IsoGridCoord>();
+        var targetMask = IsoGridMetrics.To2DArrayIndex(target, grid.Dimension);
+        if (mask[targetMask].CheckMaskOverlap(agent_mask))
+            return false;
 
         while (openNodes.Count > 0 && !pathFound)
         {
@@ -142,7 +153,6 @@ public static class IsoGridPathFinding
             }
         }
 
-        path = new List<IsoGridCoord>();
 
         if(pathFound)
         {

@@ -8,11 +8,10 @@ using System;
 [System.Serializable]
 public class IsoGrid
 {
-    [SerializeField] private int2 m_dimension;
-    [SerializeField] private float m_cellSize;
-    [SerializeField] private float2 m_originOffset;
+    [SerializeField] protected int2 m_dimension;
+    [SerializeField] protected float m_cellSize;
+    [SerializeField] protected float2 m_originOffset;
 
-    private PathFindingMask[] m_pathFindingMask;
 
     public int2 Dimension {  get { return m_dimension; } }
     public float CellSize {  get { return m_cellSize; } }
@@ -26,42 +25,28 @@ public class IsoGrid
         }
     }
 
-
-    public PathFindingMask[] PathFindingMask
-    {
-        get
-        {
-            int l = m_pathFindingMask.Length;
-            PathFindingMask[] m = new PathFindingMask[l];
-            Array.Copy(m_pathFindingMask, m, l);
-            return m;
-        }
-    }
-
-    public PathFindingMask PathFindingTileMask(IsoGridCoord coord)
-    {
-        return m_pathFindingMask[coord.To2DArrayIndex(m_dimension)];
-    }
-
-
     public IsoGrid(int2 dimension, float cell_size, float2 offset)
     {
         m_dimension = dimension;
         m_cellSize = cell_size;
         m_originOffset = offset;
-        m_pathFindingMask = new PathFindingMask[m_dimension.x * m_dimension.y];
     }
 
-    public void PopulatePathFindingMask(PathFindingMask[] mask)
+    public bool CheckRange(IsoGridCoord coord)
     {
-        if (mask.Length != m_pathFindingMask.Length)
-            throw new ArgumentException("mask length unmatch!");
-        m_pathFindingMask = mask;
+        return coord.x >= 0 && coord.y >= 0 && coord.x < Dimension.x && coord.y < Dimension.y;
     }
 
-    public void UpdatePathFindingMask(IsoGridCoord coord, PathFindingMask new_value)
+
+    public IsoGridCoord[] SurroundingCoords(IsoGridCoord center)
     {
-        m_pathFindingMask[coord.To2DArrayIndex(m_dimension)] = new_value;
+        var adjacent = new IsoGridCoord[IsoGridMetrics.directionCount];
+        for (int i = 0; i < adjacent.Length; i++)
+        {
+            var coord = center + IsoGridMetrics.GridDirectionToCoord[i];
+            adjacent[i] = CheckRange(coord) ? coord : new IsoGridCoord(-1, -1);
+        }
+        return adjacent;
     }
 
 }
@@ -71,6 +56,16 @@ public struct IsoGridCoord
 {
     public int x;
     public int y;
+
+    public static IsoGridCoord Zero
+    {
+        get { return new IsoGridCoord(0, 0); }
+    }
+
+    public static int Distance(IsoGridCoord coord1, IsoGridCoord coord2)
+    {
+        return math.abs(coord1.x - coord2.x) + math.abs(coord1.y - coord2.y);
+    }
 
 
     public IsoGridCoord(int x, int y)
@@ -83,7 +78,6 @@ public struct IsoGridCoord
     {
         return x + "," + y;
     }
-
 
     public static bool operator ==(IsoGridCoord lhs, IsoGridCoord rhs)
     {
@@ -98,6 +92,11 @@ public struct IsoGridCoord
     public static IsoGridCoord operator+(IsoGridCoord lhs, IsoGridCoord rhs)
     {
         return new IsoGridCoord(lhs.x + rhs.x, lhs.y + rhs.y);
+    }
+
+    public static IsoGridCoord operator *(int lhs, IsoGridCoord rhs)
+    {
+        return new IsoGridCoord(lhs*rhs.x, lhs*rhs.y);
     }
 
     public static IsoGridCoord operator -(IsoGridCoord lhs, IsoGridCoord rhs)
@@ -121,6 +120,7 @@ public struct IsoGridCoord
         return (x,y).GetHashCode();
     }
 
+
 }
 
 [System.Serializable]
@@ -131,4 +131,3 @@ public enum IsoGridDirection
     NW,
     NE,
 }
-

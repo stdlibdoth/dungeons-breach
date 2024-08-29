@@ -67,4 +67,42 @@ public static class IsoGridMetrics
     {
         return coord.y * dimension.x + coord.x;
     }
+
+    public static IsoGridDirection ApproximateDirection(IsoGridCoord from, IsoGridCoord to)
+    {
+        int deltaX = from.x - to.x;
+        int deltaY = from.y - to.y;
+
+        if(math.abs(deltaX)>math.abs(deltaY))
+        {
+            return deltaX >= 0 ? IsoGridDirection.NW : IsoGridDirection.SE;
+        }
+        else
+        {
+            return deltaY >= 0 ? IsoGridDirection.NE : IsoGridDirection.SW;
+        }
+    }
+    public static IsoGridCoord OnRelativeTo(this IsoGridCoord relative, IsoGridCoord base_coord,IsoGridDirection base_dir)
+    {
+        int turn = (int)base_dir;
+        IsoGridCoord coord = relative;
+        for(int i = 0; i < turn; i++)
+        {
+            coord = relative.RotateCW();
+        }
+        return coord + base_coord;
+    }
+
+
+    private static IsoGridCoord RotateCW(this IsoGridCoord coord)
+    {
+        return new IsoGridCoord(-coord.y, coord.x);
+    }
+
+    public static IsoGridDirection RotateRelativeTo(this IsoGridDirection relative, IsoGridDirection base_dir)
+    {
+        int index = ((int)base_dir + (int)relative) % directionCount;
+        return (IsoGridDirection)index;
+    }
+
 }
