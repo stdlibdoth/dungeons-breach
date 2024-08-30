@@ -18,6 +18,7 @@ public class EventManager : Singleton<EventManager>
     }
     private void Init()
     {
+        m_singleton = GetSingleton();
         m_themes = new Dictionary<string, ThemeBase>();
         for (int i = 0; i < m_editorThemeRefs.Count; i++)
         {

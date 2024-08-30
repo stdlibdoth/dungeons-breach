@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - PlayerUnit
+  - MonsterUnit
   layers:
   - Default
   - TransparentFX
@@ -46,6 +48,9 @@ TagManager:
     locked: 0
   - name: Unit
     uniqueID: 2671423597
+    locked: 0
+  - name: Monster
+    uniqueID: 3201374281
     locked: 0
   - name: Text
     uniqueID: 700480117

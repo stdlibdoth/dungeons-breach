@@ -53,10 +53,14 @@ public class UnitBase : MonoBehaviour
         }
     }
 
+
+
     protected void Start()
     {
         Init();
+        
     }
+
 
     public virtual void Init()
     {

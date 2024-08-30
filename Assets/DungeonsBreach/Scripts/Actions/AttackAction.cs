@@ -13,6 +13,7 @@ public class AttackAction : IAction
 
     public IEnumerator ExcuteAction()
     {
+        Debug.Log(m_unit + "  attack");
         m_animator?.SetTrigger("Attack");
         m_animator?.SetFloat("DirBlend", (int)m_unit.Agent.Direction);
         yield return new WaitForEndOfFrame();
@@ -25,7 +26,10 @@ public class AttackAction : IAction
         foreach (var attack in m_attackProfile.data)
         {
             IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(m_unit.Agent.Coordinate, m_unit.Agent.Direction);
-            if(LevelManager.TryGetUnit(coord,out var hit))
+            Debug.Log(m_unit.Agent.Direction);
+            Debug.Log(m_unit.Agent.Coordinate);
+            Debug.Log(coord);
+            if (LevelManager.TryGetUnit(coord,out var hit))
             {
                 var attackInfo = attack;
                 attackInfo.pushDir = attack.pushDir.RotateRelativeTo(m_unit.Agent.Direction);

@@ -15,11 +15,22 @@ public class LevelManager : Singleton<LevelManager>
 
 
 
-    private void Start()
-    {
-        //SpawnUnits();
-    }
+    //private void Start()
+    //{
+    //    foreach (var item in m_units)
+    //    {
+            
+    //    }
+    //}
 
+
+    public static UnitBase[] Units
+    {
+        get
+        {
+            return GetSingleton().m_units.ToArray();
+        }
+    }
 
     public static bool TryGetUnit(IsoGridCoord coord, out UnitBase unit)
     {

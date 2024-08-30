@@ -117,10 +117,10 @@ GameObject:
   - component: {fileID: 5540387112628755227}
   - component: {fileID: 8870717603637001606}
   - component: {fileID: 353376359009392937}
-  - component: {fileID: 4434675703162667636}
+  - component: {fileID: 7606566254709485765}
   m_Layer: 0
   m_Name: SwordMan
-  m_TagString: Untagged
+  m_TagString: PlayerUnit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -215,7 +215,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4434675703162667636
+--- !u!114 &7606566254709485765
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -224,7 +224,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5658316009139462533}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 481f06908b2bf8048ae57127acd2982d, type: 3}
+  m_Script: {fileID: 11500000, guid: 793680b674fb75a459b3a7f20bb51688, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_intrinsicStatus:
@@ -383,7 +383,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_animator: {fileID: 353376359009392937}
-  m_type: 0
+  m_type: 1
 --- !u!1 &8617580861400612130
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,4 +430,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_speed: 3
   m_stopDistance: 0.05
-  m_type: 0
+  m_type: 2

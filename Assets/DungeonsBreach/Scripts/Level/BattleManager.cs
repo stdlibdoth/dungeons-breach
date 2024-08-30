@@ -9,20 +9,24 @@ using System;
 public class BattleManager : Singleton<BattleManager>
 {
     [SerializeField] private bool m_testMode;
+    [SerializeField] private string m_monsterTag;
+    [SerializeField] private string m_playerTag;
 
 
-    private static ActionBlackboard m_startTurnBoard;
-    private static ActionBlackboard m_endTurnBoard;
+
+    [SerializeField] private ActionBlackboard m_startTurnBoard;
+    [SerializeField] private ActionBlackboard m_endTurnBoard;
     private static List<IAction> m_tempActions;
 
     private static int m_roundCount;
+
+    private UnityEvent m_onStartPlayerTurn;
 
 
     private DefaultInputActions m_inputActions;
     private IsoGridCoord m_pointerGridCoord;
 
     private UnitBase m_selectedUnit;
-    private UnityEvent<UnitBase> m_onSelectionChange;
     private UnityEvent<IsoGridCoord> m_onPointerCoordChange;
 
     bool m_unitPathFound;
@@ -35,9 +39,15 @@ public class BattleManager : Singleton<BattleManager>
             if(GetSingleton().m_selectedUnit != value)
             {
                 GetSingleton().m_selectedUnit = value;
-                GetSingleton().m_onSelectionChange.Invoke(value);
+                Debug.Log(value + " Selected");
+                EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("SelectedUnitChange").Invoke(value);
             }
         }
+    }
+
+    public static UnityEvent OnStartPlayerTurn
+    {
+        get { return GetSingleton().m_onStartPlayerTurn; }
     }
 
 
@@ -45,10 +55,8 @@ public class BattleManager : Singleton<BattleManager>
     {
         base.Awake();
         m_inputActions = new DefaultInputActions();
-        m_onSelectionChange = new UnityEvent<UnitBase>();
         m_onPointerCoordChange = new UnityEvent<IsoGridCoord>();
 
-        m_onSelectionChange.AddListener(OnSelectedUnitChange);
         m_onPointerCoordChange.AddListener(OnPointerCoordChange);
     }
 
@@ -77,7 +85,7 @@ public class BattleManager : Singleton<BattleManager>
                 m_tempActions.Add(action);
                 break;
             case PlayBackMode.EndOfTurn:
-                m_endTurnBoard?.AddAction(action);
+                GetSingleton().m_endTurnBoard.AddAction(action);
                 break;
             default:
                 break;
@@ -93,12 +101,43 @@ public class BattleManager : Singleton<BattleManager>
         }
     }
 
-    public static void BattleStart()
+
+    private void StartTurn()
     {
-        m_roundCount = 0;
-        m_startTurnBoard = new ActionBlackboard();
-        m_endTurnBoard = new ActionBlackboard();
+
+
+
+        m_onStartPlayerTurn.Invoke();
     }
+
+
+    public static IEnumerator EndPlayerTurn()
+    {
+        var singleton = GetSingleton();
+
+        yield return singleton.StartCoroutine(GetSingleton().m_endTurnBoard.ExcuteActions());
+
+        //foreach (var u in LevelManager.Units)
+        //{
+        //    if(u.CompareTag(singleton.m_playerTag))
+        //    {
+        //        u.tag = singleton.m_monsterTag;
+        //    }
+        //    else if(u.CompareTag(singleton.m_monsterTag))
+        //    {
+        //        u.tag = singleton.m_playerTag;
+        //    }
+        //}
+    }
+
+
+
+    //public static void BattleStart()
+    //{
+    //    m_roundCount = 0;
+    //    m_startTurnBoard = new ActionBlackboard();
+    //    m_endTurnBoard = new ActionBlackboard();
+    //}
 
 
 
@@ -117,10 +156,10 @@ public class BattleManager : Singleton<BattleManager>
 
     #region Events
 
-    private void OnSelectedUnitChange(UnitBase unit)
-    {
-        Debug.Log(unit + " Selected");
-    }
+    //private void OnSelectedUnitChange(UnitBase unit)
+    //{
+    //    Debug.Log(unit + " Selected");
+    //}
 
     private void OnPointerCoordChange(IsoGridCoord coord)
     {
@@ -166,18 +205,21 @@ public class BattleManager : Singleton<BattleManager>
         if (!grid.CheckRange(m_pointerGridCoord))
             return;
 
-        if (SelectedUnit == null && LevelManager.TryGetUnit(m_pointerGridCoord, out var unit))
+
+        bool selectCondition = LevelManager.TryGetUnit(m_pointerGridCoord, out var unit) && ((SelectedUnit == null) ||
+            !SelectedUnit.IsAttackingMode);
+
+        if (selectCondition)
         {
-            if (unit is PlayerUnit)
+            //if (unit.CompareTag("PlayerUnit"))
                 SelectedUnit = unit;
-
             //show unit info only
-            else
-            {
+            //else
+            //{
 
-            }
+            //}
         }
-        else if (SelectedUnit != null)
+        else
         {
             if (!SelectedUnit.IsAttackingMode && m_unitPathFound)
             {
@@ -185,8 +227,15 @@ public class BattleManager : Singleton<BattleManager>
             }
             else if (SelectedUnit.IsAttackingMode)
             {
-                SelectedUnit.Attack(PlayBackMode.Instant);
-                SelectedUnit.ResetActions();
+                if (SelectedUnit.CompareTag("PlayerUnit"))
+                {
+                    SelectedUnit.Attack(PlayBackMode.Instant);
+                    SelectedUnit.ResetActions();
+                }
+                else if(SelectedUnit.CompareTag("MonsterUnit"))
+                {
+                    SelectedUnit.Attack(PlayBackMode.EndOfTurn);
+                }
             }
         }
     }

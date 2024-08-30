@@ -3,20 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class ActionComparer : Comparer<IAction>
-{
-    public override int Compare(IAction x, IAction y)
-    {
-        return (x.Priority - y.Priority).value;
-    }
-}
-
-
 public class ActionBlackboard :MonoBehaviour
 {
-    private List<IAction> m_actions;
-
-
+    private List<IAction> m_actions = new List<IAction>();
 
     public void AddAction(IAction action)
     {
@@ -29,8 +18,10 @@ public class ActionBlackboard :MonoBehaviour
         SortActions();
         for (int i = 0; i < m_actions.Count; i++)
         {
+            Debug.Log(i);
             yield return StartCoroutine(m_actions[i].ExcuteAction());
         }
+        m_actions.Clear();
     }
 
     private void SortActions()

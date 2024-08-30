@@ -88,7 +88,7 @@ public static class IsoGridMetrics
         IsoGridCoord coord = relative;
         for(int i = 0; i < turn; i++)
         {
-            coord = relative.RotateCW();
+            coord = coord.RotateCW();
         }
         return coord + base_coord;
     }

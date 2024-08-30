@@ -1,6 +1,14 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
+public class ActionComparer : Comparer<IAction>
+{
+    public override int Compare(IAction x, IAction y)
+    {
+        return (x.Priority - y.Priority).value;
+    }
+}
 public class GameManager : Singleton<GameManager>
 {
 
