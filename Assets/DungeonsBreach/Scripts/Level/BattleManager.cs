@@ -110,6 +110,10 @@ public class BattleManager : Singleton<BattleManager>
 
     #endregion
 
+    #region Helpers
+
+    #endregion
+
 
     #region Events
 
@@ -120,46 +124,22 @@ public class BattleManager : Singleton<BattleManager>
 
     private void OnPointerCoordChange(IsoGridCoord coord)
     {
-        if (SelectedUnit != null)
-        {
-            m_unitPathFound = false;
-            if (SelectedUnit.MoveRange > 0 && !SelectedUnit.IsAttackingMode && !SelectedUnit.Agent.IsMoving)
-            {
-                var dist = IsoGridCoord.Distance(SelectedUnit.Agent.Coordinate, coord);
-                if (GridManager.ActivePathGrid.CheckRange(coord) && dist <= SelectedUnit.MoveRange && dist>0)
-                {
-                    var agent = SelectedUnit.Agent;
-                    m_unitPathFound = IsoGridPathFinding.FindPathAstar(agent.Coordinate, coord, GridManager.ActivePathGrid, agent.BlockingMask, out var path);
-                    //if(m_unitPathFound)
-                    //{
-                    //    Debug.Log(coord);
-                    //}
-                }
-            }
-            else if(SelectedUnit.IsAttackingMode)
-            {
-                var surrounding = GridManager.ActivePathGrid.SurroundingCoords(SelectedUnit.Agent.Coordinate);
+        if (SelectedUnit == null)
+            return;
 
-                //find the turn
-                if(m_pointerGridCoord!= SelectedUnit.Agent.Coordinate)
-                {
-                    int index = 0;
-                    var min = int.MaxValue;
-                    for (int i = 0; i < surrounding.Length; i++)
-                    {
-                        if (surrounding[i].x < 0)
-                            continue;
-                        int dist = IsoGridCoord.Distance(surrounding[i], m_pointerGridCoord);
-                        if (dist<min)
-                        {
-                            min = dist;
-                            index = i;
-                        }
-                    }
-                    SelectedUnit.SetDirection((IsoGridDirection)index);
-                }
-               
+        m_unitPathFound = false;
+        if (SelectedUnit.MoveRange > 0 && !SelectedUnit.IsAttackingMode && !SelectedUnit.Agent.IsMoving)
+        {
+            var dist = IsoGridCoord.Distance(SelectedUnit.Agent.Coordinate, coord);
+            if (GridManager.ActivePathGrid.CheckRange(coord) && dist <= SelectedUnit.MoveRange && dist > 0)
+            {
+                var agent = SelectedUnit.Agent;
+                m_unitPathFound = IsoGridPathFinding.FindPathAstar(agent.Coordinate, coord, GridManager.ActivePathGrid, agent.BlockingMask, out var path);
             }
+        }
+        else if (SelectedUnit.IsAttackingMode)
+        {
+            SelectedUnit.SetDirection(SelectedUnit.Agent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
         }
     }
 
@@ -183,31 +163,30 @@ public class BattleManager : Singleton<BattleManager>
     private void OnClick(InputAction.CallbackContext obj)
     {
         var grid = GridManager.ActiveTileGrid;
-        if (grid.CheckRange(m_pointerGridCoord))
-        {
-            if(SelectedUnit == null && LevelManager.TryGetUnit(m_pointerGridCoord, out var unit))
-            {
-                if(unit is PlayerUnit)
-                    SelectedUnit = unit;
-                
-                //show unit info only
-                else
-                {
+        if (!grid.CheckRange(m_pointerGridCoord))
+            return;
 
-                }
-            }
-            else if(SelectedUnit != null)
+        if (SelectedUnit == null && LevelManager.TryGetUnit(m_pointerGridCoord, out var unit))
+        {
+            if (unit is PlayerUnit)
+                SelectedUnit = unit;
+
+            //show unit info only
+            else
             {
-                if (!SelectedUnit.IsAttackingMode) //&& SelectedUnit.MoveRange > 0 && !SelectedUnit.IsAttacking && !SelectedUnit.Agent.IsMoving)
-                {
-                    if(m_unitPathFound)
-                        SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord, PlayBackMode.Instant,!m_testMode);
-                }
-                else if(SelectedUnit.IsAttackingMode)
-                {
-                    SelectedUnit.Attack(PlayBackMode.Instant);
-                    SelectedUnit.ResetActions();
-                }
+
+            }
+        }
+        else if (SelectedUnit != null)
+        {
+            if (!SelectedUnit.IsAttackingMode && m_unitPathFound)
+            {
+                SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord, PlayBackMode.Instant, !m_testMode);
+            }
+            else if (SelectedUnit.IsAttackingMode)
+            {
+                SelectedUnit.Attack(PlayBackMode.Instant);
+                SelectedUnit.ResetActions();
             }
         }
     }

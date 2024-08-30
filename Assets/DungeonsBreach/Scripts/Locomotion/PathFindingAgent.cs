@@ -108,6 +108,8 @@ public class PathFindingAgent : MonoBehaviour
         return false;
     }
 
+
+
     public IEnumerator MoveAgent(LocamotionType locamotion_type, IsoGridCoord target)
     {
         if(target == m_coord)

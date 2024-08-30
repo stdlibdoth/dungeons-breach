@@ -24,7 +24,9 @@ public class DamageAction : IAction
             if (LevelManager.TryGetUnit(targetTile, out var hit))
             {
                 var temp = AttackTileInfo.Default;
+                m_unit.UpdateStatus(deltaStatus);
                 //temp.pushDist = 0;
+                
                 hit.Damage(temp, PlayBackMode.Instant);
             }
             else
