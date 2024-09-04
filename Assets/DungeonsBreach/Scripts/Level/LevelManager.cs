@@ -13,17 +13,6 @@ public class LevelManager : Singleton<LevelManager>
 
     private List<UnitBase> m_units = new List<UnitBase>();
 
-
-
-    //private void Start()
-    //{
-    //    foreach (var item in m_units)
-    //    {
-            
-    //    }
-    //}
-
-
     public static UnitBase[] Units
     {
         get
@@ -32,18 +21,17 @@ public class LevelManager : Singleton<LevelManager>
         }
     }
 
-    public static bool TryGetUnit(IsoGridCoord coord, out UnitBase unit)
+    public static bool TryGetUnits(IsoGridCoord coord, out List<UnitBase> units)
     {
-        unit = null;
+        units = new List<UnitBase>();
         foreach (var u in GetSingleton().m_units)
         {
             if (u.Agent.Coordinate == coord)
             {
-                unit = u;
-                return true;
+                units.Add(u);
             }
         }
-        return false;
+        return units.Count > 0;
     }
 
 

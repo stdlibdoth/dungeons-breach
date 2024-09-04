@@ -10,9 +10,10 @@ public class PathFindingAgent : MonoBehaviour
 {
     [SerializeField] private PathFindingMask m_intrinsicMask;
     [SerializeField] private PathFindingMask m_blockingMask;
+    [SerializeField] private PathFindingMask m_fallingMask;
     [SerializeField] private Transform m_locamotionsHolder;
     [SerializeField] private Transform m_targetTransform;
-    [SerializeField] protected IsoGridDirection m_initDirection;
+    [SerializeField] private IsoGridDirection m_direction;
 
     [SerializeField] private List<IsoGridCoord> m_wp;
 
@@ -22,10 +23,9 @@ public class PathFindingAgent : MonoBehaviour
     private UnityEvent m_onReachingTarget;
 
     private List<ILocamotion> m_locamotions;
-    [SerializeField] private IsoGridCoord m_coord;
+    private IsoGridCoord m_coord;
     private IsoGridCoord m_prevCoord;
 
-    private IsoGridDirection m_direction;
     private bool m_isMoving;
 
     public IsoGridDirection Direction
@@ -61,6 +61,11 @@ public class PathFindingAgent : MonoBehaviour
         get { return m_blockingMask; }
     }
 
+    public PathFindingMask FallMask
+    {
+        get { return m_fallingMask; }
+    }
+
     public IsoGridCoord Coordinate
     {
         get { return m_coord; }
@@ -89,7 +94,7 @@ public class PathFindingAgent : MonoBehaviour
     {
         var grid = GridManager.ActivePathGrid;
         m_coord = m_targetTransform.position.ToIsoCoordinate(grid);
-        Direction = m_initDirection;
+        Direction = m_direction;
         var tileMask = grid.PathFindingTileMask(m_coord);
         grid.UpdatePathFindingMask(m_coord, tileMask | m_intrinsicMask);
     }
@@ -107,7 +112,6 @@ public class PathFindingAgent : MonoBehaviour
         }
         return false;
     }
-
 
 
     public IEnumerator MoveAgent(LocamotionType locamotion_type, IsoGridCoord target)
@@ -145,5 +149,34 @@ public class PathFindingAgent : MonoBehaviour
             m_onReachingTarget.RemoveAllListeners();
         }
         m_isMoving = false;
+    }
+
+
+    public IEnumerator AnimateAgent(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance)
+    {
+        if (target == m_coord)
+            yield break;
+
+        TryGetLocamotion(locamotion_type, out var locamotion);
+        yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target, stop_distance));
+    }
+
+
+    public IEnumerator AnimateAgent(LocamotionType locamotion_type, Vector3 target, float stop_distance = 0)
+    {
+        TryGetLocamotion(locamotion_type, out var locamotion);
+        yield return StartCoroutine(locamotion.StartLocamotion(target, stop_distance));
+    }
+
+    public IEnumerator MoveStraight(LocamotionType locamotion_type, IsoGridDirection dir, int dist)
+    {
+        if (dist <= 0)
+            yield break;
+
+        IsoGridCoord target = m_coord + dist * IsoGridMetrics.GridDirectionToCoord[(int)dir];
+
+        TryGetLocamotion(locamotion_type, out var locamotion);
+        yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target));
+        m_coord = target;
     }
 }

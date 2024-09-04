@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.Events;
 
 
 [System.Serializable]
@@ -13,19 +14,34 @@ public enum UnitDirection
     Left,
 }
 
-
 public class UnitBase : MonoBehaviour
 {
     [Header("refs")]
-    [SerializeField] protected UnitStatusBase m_intrinsicStatus;
+    [SerializeField] protected UnitStatus m_intrinsicStatus;
     [SerializeField] protected Animator m_animator;
     [SerializeField] protected PathFindingAgent m_pathAgent;
 
+    [SerializeField] protected Transform m_modulesHolder;
 
     [Space]
     [Header("unit status")]
-    [SerializeField] protected UnitStatusBase m_unitStatus;
+    [SerializeField] protected UnitStatus m_unitStatus;
 
+    protected List<ActionModule> m_actionModules = new List<ActionModule>();
+    protected UnityEvent<UnitStatus> m_onStatusChange = new UnityEvent<UnitStatus>();
+    protected UnityEvent<bool> m_onUnitActionAvailable = new UnityEvent<bool>();
+
+    protected bool m_actionAvailable;
+    public bool ActionAvailable
+    {
+        get { return m_actionAvailable; }
+        set
+        {
+            m_actionAvailable = value;
+            m_onUnitActionAvailable.Invoke(value);
+        }
+    }
+    
     public PathFindingAgent Agent
     {
         get { return m_pathAgent; }
@@ -36,55 +52,116 @@ public class UnitBase : MonoBehaviour
         get { return m_unitStatus.moves; }
     }
 
-    public bool IsAttackingMode { get;set; }
-
-    public AttackProfile AttackProfile
+    public Module[] Modules
     {
-        get
-        {
-            var attackProfile = new AttackProfile();
-            var length = m_unitStatus.attack.data.Length;
-            attackProfile.data = new AttackTileInfo[length];
-            for (int i = 0; i < length; i++)
-            {
-                attackProfile.data[i] = m_intrinsicStatus.attack.data[i];
-            }
-            return attackProfile;
-        }
+        get { return m_modulesHolder.GetComponentsInChildren<Module>(); }
     }
 
+    public UnityEvent<UnitStatus> OnStatusChange
+    {
+        get { return m_onStatusChange;}
+    }
 
+    public UnityEvent<bool> OnUnitActionAvailable
+    {
+        get { return m_onUnitActionAvailable; }
+    }
 
     protected void Start()
     {
         Init();
-        
     }
 
 
-    public virtual void Init()
+    protected virtual void Init()
     {
         m_pathAgent.Init();
-        m_unitStatus = UnitStatusBase.Empty;
-        UpdateStatus(m_intrinsicStatus);
+        m_unitStatus = UnitStatus.Empty;
+        RefreshModuleStatus();
         m_unitStatus.hp = m_unitStatus.maxHP;
         m_unitStatus.moves = m_unitStatus.moveRange;
-        m_unitStatus.attackPoints = 1;
         m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
+        foreach (var item in m_modulesHolder.GetComponentsInChildren<ActionModule>(true))
+        {
+            m_actionModules.Add(item);
+        }
         LevelManager.AddUnit(this);
     }
 
+    #region Modules
+
+    protected virtual void RefreshModuleStatus()
+    {
+        var initial = m_intrinsicStatus;
+        foreach (var module in Modules)
+        {
+            initial = module.Modified(initial);
+        }
+        m_unitStatus = initial;
+        m_onStatusChange.Invoke(m_unitStatus);
+    }
+
+    public ActionModule[] ActionModules()
+    {
+        return m_actionModules.ToArray();
+    }
+
+    public void EquipModule(Module module)
+    {
+        module.transform.SetParent(m_modulesHolder.transform, false);
+        if(module is ActionModule)
+        {
+            m_actionModules.Add((ActionModule)module);
+        }
+        RefreshModuleStatus();
+    }
+
+    public void RemoveModule(string module_id)
+    {
+        Module m = null;
+        foreach (var module in Modules)
+        {
+            if (module.Id == module_id)
+            {
+                m = module;
+                break;
+            }
+        }
+        if (m != null)
+        {
+            m_actionModules.Remove(m as ActionModule);
+            Destroy(m);
+        }
+        RefreshModuleStatus();
+    }
+
+    public bool ActivedModule(out ActionModule module)
+    {
+        module = null;
+        foreach (var m in m_actionModules)
+        {
+            if (m.Actived)
+            {
+                module = m;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    #endregion
 
     public void ResetActions()
     {
         m_unitStatus.moves = m_unitStatus.moveRange;
-        m_unitStatus.attackPoints = 1;
-        
+        if (m_actionModules.Count > 0)
+            ActionAvailable = true;
     }
 
-    public virtual void UpdateStatus(UnitStatusBase delta_status)
+    public virtual void UpdateStatus(UnitStatus delta_status)
     {
-        m_unitStatus.Update(delta_status);
+        m_unitStatus += delta_status;
+        m_onStatusChange.Invoke(m_unitStatus);
         if (m_unitStatus.hp <= 0)
             Die();
     }
@@ -101,22 +178,27 @@ public class UnitBase : MonoBehaviour
         m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
     }
 
-    public virtual void Attack(PlayBackMode mode)
+    public virtual void ModuleAction(string module_id, IsoGridCoord[] confirmed_coord,PlayBackMode mode)
     {
-        var action = new AttackAction();
-        var param = new AttackActionParam
+        foreach (var module in m_actionModules)
         {
-            animator = m_animator,
-            profile = m_unitStatus.attack,
-            unit = this,
-        };
-        action.Build(param);
-        m_unitStatus.attackPoints = 0;
-        BattleManager.RegistorAction(action, mode);
+            if(module.Id == module_id)
+            {
+                var param = new ActionModuleParam
+                {
+                    unit = this,
+                    confirmedCoord = confirmed_coord,
+                };
+                ActionAvailable = false;
+                module.Actived = false;
+                BattleManager.RegistorAction(module.Build(param), mode);
+                m_unitStatus.moves = 0;
+                break;
+            }
+        }
     }
 
-
-    public virtual void Damage(AttackTileInfo attack_info, PlayBackMode mode)
+    public virtual void Damage(ActionTileInfo attack_info, PlayBackMode mode)
     {
         var action = new DamageAction();
         DamageActionParam param = new DamageActionParam
@@ -149,10 +231,10 @@ public class UnitBase : MonoBehaviour
     {
         var tileMask = GridManager.ActivePathGrid.PathFindingTileMask(Agent.Coordinate);
         GridManager.ActivePathGrid.UpdatePathFindingMask(Agent.Coordinate, tileMask ^ m_pathAgent.IntrinsicMask);
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
         //m_animator.SetTrigger("Die");
         LevelManager.RemoveUnit(this);
+        Destroy(gameObject);
     }
-
 
 }

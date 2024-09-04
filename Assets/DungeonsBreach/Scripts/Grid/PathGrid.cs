@@ -37,4 +37,29 @@ public class PathGrid : IsoGrid
     {
         m_pathFindingMask[coord.To2DArrayIndex(m_dimension)] = new_value;
     }
+
+
+    public int MaskLineCast(PathFindingMask mask,IsoGridCoord start ,IsoGridDirection dir, int max_dist, out IsoGridCoord coord)
+    {
+        var target = start;
+        coord = target;
+        for (int i = 0; i < max_dist; i++)
+        {
+            var temp = target + IsoGridMetrics.GridDirectionToCoord[(int)dir];
+            if (!CheckRange(temp))
+            {
+                coord = target;
+                return i;
+            }
+
+            var tileMask = PathFindingTileMask(temp);
+            target = temp;
+            coord = target;
+            if (tileMask.CheckMaskOverlap(mask))
+            {
+                return i + 1;
+            }
+        }
+        return int.MaxValue;
+    }
 }

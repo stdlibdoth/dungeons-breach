@@ -10,6 +10,7 @@ public class IsoMoveLocamotion : MonoBehaviour,ILocamotion
     [SerializeField] private float m_speed;
     [SerializeField] private float m_stopDistance;
     [SerializeField] private LocamotionType m_type;
+    [SerializeField] private string m_animateTrigger;
 
     public IsoGridDirection Direction { get; set; }
 
@@ -19,13 +20,14 @@ public class IsoMoveLocamotion : MonoBehaviour,ILocamotion
         get { return m_type; }
         set { m_type = value; }
     }
-    private IEnumerator LocaMotionMoveCoroutine(float3 end)
+    private IEnumerator LocaMotionMoveCoroutine(float3 end, float stopping_dist)
     {
         if(Transform == null)
             yield break;
         var dist = math.distance(Transform.position, end);
         var dir = ((Vector3)end - Transform.position).normalized;
-        while (dist > m_stopDistance)
+        var stopDist = stopping_dist == 0 ? m_stopDistance : stopping_dist;
+        while (dist > stopDist)
         {
             Transform.position += dir * m_speed * Time.deltaTime;
             dist = math.distance(Transform.position, end);
@@ -35,14 +37,30 @@ public class IsoMoveLocamotion : MonoBehaviour,ILocamotion
         m_animator.SetTrigger("Idle");
     }
 
-    public IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end)
+    public IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist)
     {
         Direction = (end - start).CoordToDirection();
         m_animator.SetFloat("DirBlend", (int)Direction);
-        m_animator.SetTrigger("Walk");
+        m_animator.SetTrigger(m_animateTrigger);
 
         var grid = GridManager.ActivePathGrid;
         var endPos = end.ToWorldPosition(grid);
-        yield return StartCoroutine(LocaMotionMoveCoroutine(endPos));
+        yield return StartCoroutine(LocaMotionMoveCoroutine(endPos, stopping_dist));
+    }
+
+    public IEnumerator StartLocamotion(float3 end, float speed_override)
+    {
+        if (Transform == null)
+            yield break;
+        var dist = math.distance(Transform.position, end);
+        var dir = ((Vector3)end - Transform.position).normalized;
+        var speed = speed_override == 0? m_speed : speed_override;
+        while (dist > m_stopDistance)
+        {
+            Transform.position += dir * speed * Time.deltaTime;
+            dist = math.distance(Transform.position, end);
+            yield return null;
+        }
+        m_animator.SetTrigger("Idle");
     }
 }

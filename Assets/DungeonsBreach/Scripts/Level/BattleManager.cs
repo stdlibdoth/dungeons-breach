@@ -16,11 +16,11 @@ public class BattleManager : Singleton<BattleManager>
 
     [SerializeField] private ActionBlackboard m_startTurnBoard;
     [SerializeField] private ActionBlackboard m_endTurnBoard;
-    private static List<IAction> m_tempActions;
+    private static Queue<IAction> m_tempActions = new Queue<IAction>();
 
     private static int m_roundCount;
 
-    private UnityEvent m_onStartPlayerTurn;
+    private UnityEvent m_onStartPlayerTurn = new UnityEvent();
 
 
     private DefaultInputActions m_inputActions;
@@ -60,12 +60,14 @@ public class BattleManager : Singleton<BattleManager>
         m_onPointerCoordChange.AddListener(OnPointerCoordChange);
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         m_inputActions.UI.Enable();
         m_inputActions.UI.Point.performed += OnPointerPoint;
         m_inputActions.UI.Click.performed += OnClick;
         m_inputActions.UI.RightClick.performed += OnRightClick;
+        yield return new WaitForEndOfFrame();
+        StartTurn();
     }
 
 
@@ -82,7 +84,7 @@ public class BattleManager : Singleton<BattleManager>
                 GetSingleton().StartCoroutine(action.ExcuteAction());
                 break;
             case PlayBackMode.Temp:
-                m_tempActions.Add(action);
+                m_tempActions.Enqueue(action);
                 break;
             case PlayBackMode.EndOfTurn:
                 GetSingleton().m_endTurnBoard.AddAction(action);
@@ -95,19 +97,23 @@ public class BattleManager : Singleton<BattleManager>
     public static IEnumerator ExcuteTempActions()
     {
         var singlton = GetSingleton();
-        foreach (var action in m_tempActions)
+        while (m_tempActions.TryDequeue(out var action))
         {
             yield return singlton.StartCoroutine(action.ExcuteAction());
         }
     }
 
 
-    private void StartTurn()
+    public static void StartTurn()
     {
+        foreach (var unit in LevelManager.Units)
+        {
+            var status = UnitStatus.Empty;
+            unit.UpdateStatus(status);
+            unit.ResetActions();
+        }
 
-
-
-        m_onStartPlayerTurn.Invoke();
+        GetSingleton().m_onStartPlayerTurn.Invoke();
     }
 
 
@@ -116,38 +122,7 @@ public class BattleManager : Singleton<BattleManager>
         var singleton = GetSingleton();
 
         yield return singleton.StartCoroutine(GetSingleton().m_endTurnBoard.ExcuteActions());
-
-        //foreach (var u in LevelManager.Units)
-        //{
-        //    if(u.CompareTag(singleton.m_playerTag))
-        //    {
-        //        u.tag = singleton.m_monsterTag;
-        //    }
-        //    else if(u.CompareTag(singleton.m_monsterTag))
-        //    {
-        //        u.tag = singleton.m_playerTag;
-        //    }
-        //}
     }
-
-
-
-    //public static void BattleStart()
-    //{
-    //    m_roundCount = 0;
-    //    m_startTurnBoard = new ActionBlackboard();
-    //    m_endTurnBoard = new ActionBlackboard();
-    //}
-
-
-
-    #region UI
-    private void DisplayTileInfo()
-    {
-
-    }
-
-    #endregion
 
     #region Helpers
 
@@ -156,18 +131,14 @@ public class BattleManager : Singleton<BattleManager>
 
     #region Events
 
-    //private void OnSelectedUnitChange(UnitBase unit)
-    //{
-    //    Debug.Log(unit + " Selected");
-    //}
-
     private void OnPointerCoordChange(IsoGridCoord coord)
     {
         if (SelectedUnit == null)
             return;
 
         m_unitPathFound = false;
-        if (SelectedUnit.MoveRange > 0 && !SelectedUnit.IsAttackingMode && !SelectedUnit.Agent.IsMoving)
+        bool moduleActived = SelectedUnit.ActivedModule(out var module);
+        if (SelectedUnit.MoveRange > 0 && !moduleActived && !SelectedUnit.Agent.IsMoving)
         {
             var dist = IsoGridCoord.Distance(SelectedUnit.Agent.Coordinate, coord);
             if (GridManager.ActivePathGrid.CheckRange(coord) && dist <= SelectedUnit.MoveRange && dist > 0)
@@ -176,7 +147,7 @@ public class BattleManager : Singleton<BattleManager>
                 m_unitPathFound = IsoGridPathFinding.FindPathAstar(agent.Coordinate, coord, GridManager.ActivePathGrid, agent.BlockingMask, out var path);
             }
         }
-        else if (SelectedUnit.IsAttackingMode)
+        else if (moduleActived && SelectedUnit.ActionAvailable)
         {
             SelectedUnit.SetDirection(SelectedUnit.Agent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
         }
@@ -205,40 +176,52 @@ public class BattleManager : Singleton<BattleManager>
         if (!grid.CheckRange(m_pointerGridCoord))
             return;
 
-
-        bool selectCondition = LevelManager.TryGetUnit(m_pointerGridCoord, out var unit) && ((SelectedUnit == null) ||
-            !SelectedUnit.IsAttackingMode);
+        ActionModule activedModule = null;
+        bool moduleActived = SelectedUnit == null ? false : SelectedUnit.ActivedModule(out activedModule);
+        bool selectCondition = LevelManager.TryGetUnits(m_pointerGridCoord, out var units) && (!moduleActived);
 
         if (selectCondition)
         {
-            //if (unit.CompareTag("PlayerUnit"))
-                SelectedUnit = unit;
-            //show unit info only
-            //else
-            //{
-
-            //}
+            SelectedUnit = units[0];
         }
         else
         {
-            if (!SelectedUnit.IsAttackingMode && m_unitPathFound)
+            if (!moduleActived && m_unitPathFound)
             {
-                SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord, PlayBackMode.Instant, !m_testMode);
+                SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord, PlayBackMode.Instant);
             }
-            else if (SelectedUnit.IsAttackingMode)
+            else if (moduleActived && SelectedUnit.ActionAvailable)
             {
+                Debug.Log(activedModule.Id);
                 if (SelectedUnit.CompareTag("PlayerUnit"))
                 {
-                    SelectedUnit.Attack(PlayBackMode.Instant);
-                    SelectedUnit.ResetActions();
+                    List<IsoGridCoord> confirmed = FindOverlapTilesWithModule(activedModule);
+                    if (confirmed.Count > 0)
+                        SelectedUnit.ModuleAction(activedModule.Id, confirmed.ToArray(), PlayBackMode.Instant);
                 }
-                else if(SelectedUnit.CompareTag("MonsterUnit"))
+                else if (SelectedUnit.CompareTag("MonsterUnit"))
                 {
-                    SelectedUnit.Attack(PlayBackMode.EndOfTurn);
+                    List<IsoGridCoord> confirmed = FindOverlapTilesWithModule(activedModule);
+                    if (confirmed.Count > 0)
+                        SelectedUnit.ModuleAction(activedModule.Id, confirmed.ToArray(), PlayBackMode.EndOfTurn);
                 }
             }
         }
     }
+
+    private List<IsoGridCoord> FindOverlapTilesWithModule(ActionModule module)
+    {
+        List<IsoGridCoord> confirmed = new List<IsoGridCoord>();
+        foreach (var tileInfo in module.ActionTileProfile.data)
+        {
+            IsoGridCoord coord = tileInfo.relativeCoord.OnRelativeTo(SelectedUnit.Agent.Coordinate, SelectedUnit.Agent.Direction);
+            if (coord == m_pointerGridCoord)
+                confirmed.Add(coord);
+        }
+        return confirmed;
+    }
+
+
     private void OnRightClick(InputAction.CallbackContext obj)
     {
         if (SelectedUnit != null)

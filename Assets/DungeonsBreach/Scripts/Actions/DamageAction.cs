@@ -6,7 +6,7 @@ public class DamageAction : IAction
 {
     public ActionPriority Priority { get; set; }
 
-    private AttackTileInfo m_attackInfo;
+    private ActionTileInfo m_attackInfo;
     private Animator m_animator;
     private UnitBase m_unit;
 
@@ -14,20 +14,25 @@ public class DamageAction : IAction
     {
         m_animator.SetTrigger("Damage");
 
-        var deltaStatus = UnitStatusBase.Empty;
+        var deltaStatus = UnitStatus.Empty;
         deltaStatus.hp = -1;
         m_unit.UpdateStatus(deltaStatus);
 
         if(m_attackInfo.pushDist > 0)
         {
             var targetTile = m_unit.Agent.Coordinate + m_attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)m_attackInfo.pushDir];
-            if (LevelManager.TryGetUnit(targetTile, out var hit))
+            if (LevelManager.TryGetUnits(targetTile, out var hits))
             {
-                var temp = AttackTileInfo.Default;
+                var temp = ActionTileInfo.Default;
+                float stopDist = GridManager.ActivePathGrid.CellSize / 2;
+                Vector3 pos = m_unit.Agent.Coordinate.ToWorldPosition(GridManager.ActivePathGrid);
+                yield return m_unit.StartCoroutine(m_unit.Agent.AnimateAgent(LocamotionType.Shift, targetTile, stopDist));
+                yield return m_unit.StartCoroutine(m_unit.Agent.AnimateAgent(LocamotionType.Shift, pos, 3));
                 m_unit.UpdateStatus(deltaStatus);
-                //temp.pushDist = 0;
-                
-                hit.Damage(temp, PlayBackMode.Instant);
+                foreach (var hit in hits)
+                {
+                    hit.Damage(temp, PlayBackMode.Instant);
+                }
             }
             else
             {

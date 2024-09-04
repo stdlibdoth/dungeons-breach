@@ -18,7 +18,6 @@ public class ActionBlackboard :MonoBehaviour
         SortActions();
         for (int i = 0; i < m_actions.Count; i++)
         {
-            Debug.Log(i);
             yield return StartCoroutine(m_actions[i].ExcuteAction());
         }
         m_actions.Clear();

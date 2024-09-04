@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class UnitStatusBaseSO : ScriptableObject
 {
-    public UnitStatusBase unitStatus;
+    public UnitStatus unitStatus;
 }

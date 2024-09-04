@@ -14,7 +14,7 @@ public enum LocamotionType
 
 
 [System.Serializable]
-public struct AttackTileInfo
+public struct ActionTileInfo
 {
     public IsoGridDirection pushDir;
     public int pushDist;
@@ -23,11 +23,11 @@ public struct AttackTileInfo
     public IsoGridCoord relativeCoord;
 
 
-    public static AttackTileInfo Default
+    public static ActionTileInfo Default
     {
         get
         {
-            return new AttackTileInfo
+            return new ActionTileInfo
             {
                 pushDist = 0,
                 pushDir = IsoGridDirection.SE,
@@ -48,31 +48,45 @@ public struct AttackTileInfo
 }
 
 [System.Serializable]
-public class AttackProfile
+public class ActionTileProfile
 {
-    public AttackTileInfo[] data;
-    public static AttackProfile Empty
+    public ActionTileInfo[] data;
+
+    public IsoGridCoord[] Coordinates
     {
         get
         {
-            return new AttackProfile
+            IsoGridCoord[] coord = new IsoGridCoord[data.Length];
+            for (int i = 0; i < coord.Length; i++)
             {
-                data = new AttackTileInfo[]
+                coord[i] = data[i].relativeCoord;
+            }
+            return coord;
+        }
+    }
+
+    public static ActionTileProfile Empty
+    {
+        get
+        {
+            return new ActionTileProfile
+            {
+                data = new ActionTileInfo[]
                 {
                 }
             };
         }
     }
 
-    public static AttackProfile Default
+    public static ActionTileProfile Default
     {
         get
         {
-            return new AttackProfile
+            return new ActionTileProfile
             {
-                data = new AttackTileInfo[]
+                data = new ActionTileInfo[]
                 {
-                    AttackTileInfo.Default,
+                    ActionTileInfo.Default,
                 }
             };
         }

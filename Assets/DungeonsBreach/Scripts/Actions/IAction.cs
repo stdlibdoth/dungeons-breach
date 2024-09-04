@@ -64,16 +64,16 @@ public interface IActionParam
 
 }
 
-public class AttackActionParam :IActionParam
+
+public class ActionModuleParam :IActionParam
 {
-    public AttackProfile profile;
-    public Animator animator;
     public UnitBase unit;
+    public IsoGridCoord[] confirmedCoord;
 }
 
 public class DamageActionParam:IActionParam
 {
-    public AttackTileInfo attackInfo;
+    public ActionTileInfo attackInfo;
     public Animator animator;
     public UnitBase unit;
 }
