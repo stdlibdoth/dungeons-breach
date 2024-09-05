@@ -4,22 +4,12 @@ using UnityEngine;
 using Unity.Mathematics;
 
 
-public class IsoMoveLocamotion : MonoBehaviour,ILocamotion
+public class IsoMoveLocamotion : LocamotionBase
 {
     [SerializeField] private Animator m_animator;
     [SerializeField] private float m_speed;
-    [SerializeField] private float m_stopDistance;
-    [SerializeField] private LocamotionType m_type;
     [SerializeField] private string m_animateTrigger;
 
-    public IsoGridDirection Direction { get; set; }
-
-    public Transform Transform { get; set; }
-    public LocamotionType Type
-    {
-        get { return m_type; }
-        set { m_type = value; }
-    }
     private IEnumerator LocaMotionMoveCoroutine(float3 end, float stopping_dist)
     {
         if(Transform == null)
@@ -37,7 +27,7 @@ public class IsoMoveLocamotion : MonoBehaviour,ILocamotion
         m_animator.SetTrigger("Idle");
     }
 
-    public IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist)
+    public override IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
     {
         Direction = (end - start).CoordToDirection();
         m_animator.SetFloat("DirBlend", (int)Direction);
@@ -48,7 +38,7 @@ public class IsoMoveLocamotion : MonoBehaviour,ILocamotion
         yield return StartCoroutine(LocaMotionMoveCoroutine(endPos, stopping_dist));
     }
 
-    public IEnumerator StartLocamotion(float3 end, float speed_override)
+    public override IEnumerator StartLocamotion(float3 end, float speed_override)
     {
         if (Transform == null)
             yield break;

@@ -18,5 +18,4 @@ public static class Utils
         int index = ((int)grid_dir + (int)unit_dir) % IsoGridMetrics.directionCount;
         return coord + IsoGridMetrics.GridDirectionToCoord[index];
     }
-
 }

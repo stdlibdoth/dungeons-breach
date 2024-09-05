@@ -192,7 +192,7 @@ public class BattleManager : Singleton<BattleManager>
             }
             else if (moduleActived && SelectedUnit.ActionAvailable)
             {
-                Debug.Log(activedModule.Id);
+                Debug.Log("Module Action: " + activedModule.Id);
                 if (SelectedUnit.CompareTag("PlayerUnit"))
                 {
                     List<IsoGridCoord> confirmed = FindOverlapTilesWithModule(activedModule);

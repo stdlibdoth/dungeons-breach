@@ -10,6 +10,7 @@ public enum LocamotionType
     Default,
     Instant,
     Shift,
+    Trajectory
 }
 
 

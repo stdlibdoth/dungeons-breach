@@ -2,17 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProjectileUnit : UnitBase
+public class TrajectileUnit : UnitBase
 {
     [SerializeField] protected LocamotionType m_locamotionType;
 
-    protected IsoGridCoord m_target;
+    protected IsoGridCoord[] m_targets;
 
     protected override void Init()
     {
         base.Init();
-        StartCoroutine(StartProjectile());
+        StartCoroutine(StartTrajectile());
     }
+
+    public virtual void SetTargets(IsoGridCoord[] targets)
+    {
+        m_targets = new IsoGridCoord[targets.Length];
+        targets.CopyTo(m_targets, 0);
+    }
+
 
     public override void Damage(ActionTileInfo attack_info, PlayBackMode mode)
     {
@@ -23,13 +30,18 @@ public class ProjectileUnit : UnitBase
         UpdateStatus(deltaStatus);
     }
 
-    private IEnumerator StartProjectile()
+    private IEnumerator StartTrajectile()
     {
-        int dist = m_unitStatus.moveRange;
-        int blockDist = GridManager.ActivePathGrid.MaskLineCast(m_pathAgent.BlockingMask, m_pathAgent.Coordinate, m_pathAgent.Direction, dist, out var coord);
-        Debug.Log(coord);
-        yield return m_pathAgent.MoveStraight(m_locamotionType, coord);
+        foreach (var t in m_targets)
+        {
+            yield return MoveAndAction(t);
+        }
+    }
 
+
+    private IEnumerator MoveAndAction(IsoGridCoord coord)
+    {
+        yield return m_pathAgent.MoveStraight(m_locamotionType, coord);
         foreach (var module in m_actionModules)
         {
             var param = new ActionModuleParam

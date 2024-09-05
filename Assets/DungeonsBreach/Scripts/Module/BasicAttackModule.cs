@@ -25,17 +25,15 @@ public class BasicAttackModule : ActionModule
         Debug.Log(unit + "  attack");
         m_animator?.SetTrigger(m_animateTrigger);
         m_animator?.SetFloat("DirBlend", (int)unit.Agent.Direction);
+        Debug.Log(m_animator.GetCurrentAnimatorStateInfo(0).shortNameHash);
         yield return new WaitForEndOfFrame();
-        var stateInfo = m_animator.GetCurrentAnimatorStateInfo(0);
-        while (stateInfo.IsName(m_animateTrigger))
-        {
-            stateInfo = m_animator.GetCurrentAnimatorStateInfo(0);
-            yield return null;
-        }
+        Debug.Log(m_animator.GetCurrentAnimatorStateInfo(0).shortNameHash);
+        yield return new WaitUntil(() => !m_animator.GetCurrentAnimatorStateInfo(0).IsName(m_animateTrigger));
         var confirmed = new List<IsoGridCoord>(m_actionParam.confirmedCoord);
         foreach (var attack in m_profile.data)
         {
             IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
+            Debug.Log(coord);
             if (!confirmed.Contains(coord))
                 continue;
 

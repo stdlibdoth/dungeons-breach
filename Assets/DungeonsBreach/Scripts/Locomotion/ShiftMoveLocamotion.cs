@@ -3,20 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
 
-public class ShiftMoveLocamotion : MonoBehaviour,ILocamotion
+public class ShiftMoveLocamotion : LocamotionBase
 {
     [SerializeField] private float m_speed;
-    [SerializeField] private float m_stopDistance;
-    [SerializeField] private LocamotionType m_type;
-
-    public IsoGridDirection Direction { get; set; }
-    public Transform Transform {  get; set; }
-
-    public LocamotionType Type
-    {
-        get { return m_type; }
-        set { m_type = value; }
-    }
 
     private IEnumerator LocaMotionMoveCoroutine(float3 end, float stopping_dist = 0)
     {
@@ -33,14 +22,14 @@ public class ShiftMoveLocamotion : MonoBehaviour,ILocamotion
         }
     }
 
-    public IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
+    public override IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
     {
         var grid = GridManager.ActivePathGrid;
         var endPos = end.ToWorldPosition(grid);
         yield return StartCoroutine(LocaMotionMoveCoroutine(endPos,stopping_dist));
     }
 
-    public IEnumerator StartLocamotion(float3 end, float speed_override)
+    public override IEnumerator StartLocamotion(float3 end, float speed_override)
     {
         if (Transform == null)
             yield break;

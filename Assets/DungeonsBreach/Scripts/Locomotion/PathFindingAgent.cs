@@ -168,15 +168,16 @@ public class PathFindingAgent : MonoBehaviour
         yield return StartCoroutine(locamotion.StartLocamotion(target, stop_distance));
     }
 
-    public IEnumerator MoveStraight(LocamotionType locamotion_type, IsoGridDirection dir, int dist)
+    public IEnumerator MoveStraight(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance = 0)
     {
-        if (dist <= 0)
-            yield break;
-
-        IsoGridCoord target = m_coord + dist * IsoGridMetrics.GridDirectionToCoord[(int)dir];
-
         TryGetLocamotion(locamotion_type, out var locamotion);
-        yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target));
+        yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target, stop_distance));
         m_coord = target;
+    }
+    public IEnumerator MoveStraight(LocamotionType locamotion_type, Vector3 target,float stop_distance = 0)
+    {
+        TryGetLocamotion(locamotion_type, out var locamotion);
+        yield return StartCoroutine(locamotion.StartLocamotion(target, stop_distance));
+        m_coord = target.ToIsoCoordinate(GridManager.ActivePathGrid);
     }
 }

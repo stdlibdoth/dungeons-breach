@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PreviewManager : Singleton<PreviewManager>
+public class BattleUIController : Singleton<BattleUIController>
 {
     [SerializeField] private Toggle m_attackToggle;
     [SerializeField] private Button m_endPlayerTurnBtn;

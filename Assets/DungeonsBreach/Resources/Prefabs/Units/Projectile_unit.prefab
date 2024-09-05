@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea90184f2970ab249b4fdcb39344118a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_animator: {fileID: 6944796569876255376}
   m_type: 1
+  m_animator: {fileID: 6944796569876255376}
 --- !u!1 &4362939754321894735
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,9 +90,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d5a0453242b4444a28da58501eff08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_type: 2
   m_speed: 3
   m_stopDistance: 0.05
-  m_type: 2
 --- !u!1 &5316488649242748105
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,10 +169,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d92e94c8bbcda1349bb0463a76f85975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_type: 0
   m_animator: {fileID: 6944796569876255376}
   m_speed: 7
   m_stopDistance: 0.6
-  m_type: 0
   m_animateTrigger: Move
 --- !u!1 &6870178632294505311
 GameObject:
@@ -222,7 +222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_intrinsicMask:
-    value: 2
+    value: 0
   m_blockingMask:
     value: 47
   m_fallingMask:
@@ -348,7 +348,7 @@ GameObject:
   - component: {fileID: 5638377013397089015}
   - component: {fileID: 4314942385416705814}
   m_Layer: 0
-  m_Name: BasicProjectile_unit
+  m_Name: Projectile_unit
   m_TagString: PlayerUnit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
