@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 747df6c2e37def74199ad5bbeefdfb7a, type: 3}
-  m_Name: TileHighlighter_Selected
+  m_Name: TileHighlighter_TileSelected
   m_EditorClassIdentifier: 
   data:
-    name: Selected
+    name: TileSelected
     sprite:
     - {fileID: 21300000, guid: 0733a4703bb74e04b94ced7e11dd68b3, type: 3}
     sortingOrder: 10

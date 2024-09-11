@@ -126,7 +126,7 @@ public class BattleManager : Singleton<BattleManager>
     public static IEnumerator EndPlayerTurn()
     {
         var singleton = GetSingleton();
-
+        SelectedUnit = null;
         yield return singleton.StartCoroutine(GetSingleton().m_endTurnBoard.ExcuteActions());
     }
 
@@ -191,8 +191,17 @@ public class BattleManager : Singleton<BattleManager>
         var wPos = Camera.main.ScreenToWorldPoint(new Vector3(sPos.x, sPos.y, 0));
         var grid = GridManager.ActiveTileGrid;
         var coord = wPos.ToIsoCoordinate(grid);
+
+        if(!grid.CheckRange(coord))
+        {
+            BattleUIController.HidePointerHighlight();
+            return;
+        }
+
+
         if(m_pointerGridCoord != coord)
         {
+            BattleUIController.ShowPointerHighlight(coord);
             m_pointerGridCoord = coord;
             m_onPointerCoordChange.Invoke(coord);
         }

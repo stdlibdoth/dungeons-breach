@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class BattleUIController : Singleton<BattleUIController>
 {
-
+    [SerializeField] private TileHighlighter m_pointerHighlight;
     [Header("Turn Control")]
     [SerializeField] private Button m_endPlayerTurnBtn;
     [SerializeField] private Button m_undoMovementBtn;
@@ -22,6 +22,7 @@ public class BattleUIController : Singleton<BattleUIController>
 
 
     private TileHighlight m_pathHighlight;
+
 
     public static TileHighlighterFactory TileHighlighterFactory
     {
@@ -44,6 +45,7 @@ public class BattleUIController : Singleton<BattleUIController>
         BattleManager.StartTurn();
     }
 
+    #region public methods
 
     public static void HighlightPathRange(IsoGridCoord[] coords, string highliter_name)
     {
@@ -57,6 +59,26 @@ public class BattleUIController : Singleton<BattleUIController>
         GetSingleton().m_pathHighlight?.Release();
     }
 
+
+    public static void ShowPointerHighlight(IsoGridCoord coord)
+    {
+        GetSingleton().m_pointerHighlight.transform.position = coord.ToWorldPosition(GridManager.ActivePathGrid);
+        GetSingleton().m_pointerHighlight.gameObject.SetActive(true);
+    }
+
+    public static void ShowPointerHighlight(Vector3 pos)
+    {
+        GetSingleton().m_pointerHighlight.transform.position = pos;
+        GetSingleton().m_pointerHighlight.gameObject.SetActive(true);
+    }
+
+    public static void HidePointerHighlight()
+    {
+        GetSingleton().m_pointerHighlight.gameObject.SetActive(false);
+    }
+
+
+    #endregion
 
     #region Turn Control buttons
     private void UndoMovementBtnPressed()
