@@ -108,7 +108,7 @@ public static class IsoGridMetrics
 
     public static IsoGridDirection DirectionTo(this IsoGridCoord from, IsoGridCoord to, IsoGrid grid)
     {
-        var surrounding = grid.SurroundingCoords(from);
+        var surrounding = grid.SurroundingCoordsWithDummy(from);
         int index = 0;
         var min = int.MaxValue;
         for (int i = 0; i < surrounding.Length; i++)

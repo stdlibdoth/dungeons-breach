@@ -17,11 +17,13 @@ public enum UnitDirection
 public class UnitBase : MonoBehaviour
 {
     [Header("refs")]
+    [SerializeField] protected string m_unitName;
     [SerializeField] protected UnitStatus m_intrinsicStatus;
     [SerializeField] protected Animator m_animator;
     [SerializeField] protected PathFindingAgent m_pathAgent;
 
     [SerializeField] protected Transform m_modulesHolder;
+    [SerializeField] protected SerializedAnimatorStates m_animatorStates;
 
     [Space]
     [Header("unit status")]
@@ -29,17 +31,22 @@ public class UnitBase : MonoBehaviour
 
     protected List<ActionModule> m_actionModules = new List<ActionModule>();
     protected UnityEvent<UnitStatus> m_onStatusChange = new UnityEvent<UnitStatus>();
-    protected UnityEvent<bool> m_onUnitActionAvailable = new UnityEvent<bool>();
 
-    protected bool m_actionAvailable;
-    public bool ActionAvailable
+    //protected bool m_actionAvailable;
+    //public bool ActionAvailable
+    //{
+    //    get { return m_actionAvailable; }
+    //    set
+    //    {
+    //        m_actionAvailable = value;
+    //        m_onUnitActionAvailable.Invoke(value);
+    //    }
+    //}
+
+
+    public string UnitName
     {
-        get { return m_actionAvailable; }
-        set
-        {
-            m_actionAvailable = value;
-            m_onUnitActionAvailable.Invoke(value);
-        }
+        get { return m_unitName; }
     }
     
     public PathFindingAgent Agent
@@ -61,17 +68,10 @@ public class UnitBase : MonoBehaviour
     {
         get { return m_onStatusChange;}
     }
-
-    public UnityEvent<bool> OnUnitActionAvailable
-    {
-        get { return m_onUnitActionAvailable; }
-    }
-
     protected void Start()
     {
         Init();
     }
-
 
     protected virtual void Init()
     {
@@ -81,14 +81,38 @@ public class UnitBase : MonoBehaviour
         m_unitStatus.hp = m_unitStatus.maxHP;
         m_unitStatus.moves = m_unitStatus.moveRange;
         m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
+        RefreshModules();
+        LevelManager.AddUnit(this);
+    }
+
+    public virtual bool GenerateActionAnimationData(string animation_state, out ActionAnimationData data)
+    {
+        data = null;
+        if(m_animatorStates.TryGetAnimatorState(animation_state))
+        {
+            data = new ActionAnimationData
+            {
+                animationState = animation_state,
+                animator = m_animator,
+            };
+            return true;
+        } 
+        return false;
+    }
+
+
+
+    #region Modules
+
+    protected virtual void RefreshModules()
+    {
+        m_actionModules.Clear();
         foreach (var item in m_modulesHolder.GetComponentsInChildren<ActionModule>(true))
         {
             m_actionModules.Add(item);
         }
-        LevelManager.AddUnit(this);
     }
 
-    #region Modules
 
     protected virtual void RefreshModuleStatus()
     {
@@ -121,7 +145,7 @@ public class UnitBase : MonoBehaviour
         Module m = null;
         foreach (var module in Modules)
         {
-            if (module.Id == module_id)
+            if (module.ModuleName == module_id)
             {
                 m = module;
                 break;
@@ -154,8 +178,10 @@ public class UnitBase : MonoBehaviour
     public void ResetActions()
     {
         m_unitStatus.moves = m_unitStatus.moveRange;
-        if (m_actionModules.Count > 0)
-            ActionAvailable = true;
+        foreach (var item in m_actionModules)
+        {
+            item.IsAvailable = true;
+        }
     }
 
     public virtual void UpdateStatus(UnitStatus delta_status)
@@ -182,14 +208,14 @@ public class UnitBase : MonoBehaviour
     {
         foreach (var module in m_actionModules)
         {
-            if(module.Id == module_id)
+            Debug.Log(module_id + " : " + module.ModuleName);
+            if(module.ModuleName == module_id)
             {
                 var param = new ActionModuleParam
                 {
                     unit = this,
                     confirmedCoord = confirmed_coord,
                 };
-                ActionAvailable = false;
                 module.Actived = false;
                 BattleManager.RegistorAction(module.Build(param), mode);
                 m_unitStatus.moves = 0;

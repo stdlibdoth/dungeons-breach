@@ -35,9 +35,9 @@ public class ProjectileUnit : UnitBase
             var param = new ActionModuleParam
             {
                 unit = this,
-                confirmedCoord = new IsoGridCoord[] { coord }
+                confirmedCoord = new IsoGridCoord[] { coord },
             };
-            ActionAvailable = false;
+//            ActionAvailable = false;
             module.Actived = false;
             module.Build(param);
             m_unitStatus.moves = 0;

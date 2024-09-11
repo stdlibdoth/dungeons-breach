@@ -114,6 +114,14 @@ public class PathFindingAgent : MonoBehaviour
     }
 
 
+    public IsoGridCoord[] ReachableCoordinates(int range,PathGrid grid)
+    {
+        PathFindingMask mask = m_blockingMask | m_fallingMask;
+        return IsoGridPathFinding.FindRange(m_coord, range, grid, mask);
+    }
+
+
+
     public IEnumerator MoveAgent(LocamotionType locamotion_type, IsoGridCoord target)
     {
         if(target == m_coord)

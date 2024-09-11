@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Mathematics;
 using System;
+using System.Collections.Generic;
 
 
 
@@ -38,7 +39,7 @@ public class IsoGrid
     }
 
 
-    public IsoGridCoord[] SurroundingCoords(IsoGridCoord center)
+    public IsoGridCoord[] SurroundingCoordsWithDummy(IsoGridCoord center)
     {
         var adjacent = new IsoGridCoord[IsoGridMetrics.directionCount];
         for (int i = 0; i < adjacent.Length; i++)
@@ -49,6 +50,17 @@ public class IsoGrid
         return adjacent;
     }
 
+    public IsoGridCoord[] SurroundingCoords(IsoGridCoord center)
+    {
+        List<IsoGridCoord> adjacent = new List<IsoGridCoord>();
+        for (int i = 0; i < IsoGridMetrics.directionCount; i++)
+        {
+            var coord = center + IsoGridMetrics.GridDirectionToCoord[i];
+            if (CheckRange(coord))
+                adjacent.Add(coord);
+        }
+        return adjacent.ToArray();
+    }
 }
 
 [System.Serializable]

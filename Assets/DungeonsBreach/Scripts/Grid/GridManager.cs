@@ -62,7 +62,7 @@ public class GridManager : Singleton<GridManager>
             for (int x = 0; x < pathGrid.Dimension.x; x++)
             {
                 var coord = new IsoGridCoord(x, y);
-                if (y == 5 && x <= 6 && x >= 2)
+                if (x == pathGrid.Dimension.x-1 || y == pathGrid.Dimension.y-1)
                 {
                     pathGrid.UpdatePathFindingMask(coord, block);
                 }

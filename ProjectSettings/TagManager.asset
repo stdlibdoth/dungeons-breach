@@ -46,12 +46,15 @@ TagManager:
   - name: Ground
     uniqueID: 1907214277
     locked: 0
+  - name: Highlighter
+    uniqueID: 3814893523
+    locked: 0
   - name: Unit
     uniqueID: 2671423597
     locked: 0
   - name: Monster
     uniqueID: 3201374281
     locked: 0
-  - name: Text
+  - name: UI
     uniqueID: 700480117
     locked: 0

@@ -39,7 +39,13 @@ public class BattleManager : Singleton<BattleManager>
             if(GetSingleton().m_selectedUnit != value)
             {
                 GetSingleton().m_selectedUnit = value;
+                BattleUIController.DisposeRangeHighlights();
                 Debug.Log(value + " Selected");
+                if(value!= null && value.MoveRange>0)
+                {
+                    var coords = value.Agent.ReachableCoordinates(value.MoveRange,GridManager.ActivePathGrid);
+                    BattleUIController.HighlightPathRange(coords, "MoveRange");
+                }
                 EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("SelectedUnitChange").Invoke(value);
             }
         }
@@ -124,11 +130,6 @@ public class BattleManager : Singleton<BattleManager>
         yield return singleton.StartCoroutine(GetSingleton().m_endTurnBoard.ExcuteActions());
     }
 
-    #region Helpers
-
-    #endregion
-
-
     #region Events
 
     private void OnPointerCoordChange(IsoGridCoord coord)
@@ -147,13 +148,40 @@ public class BattleManager : Singleton<BattleManager>
                 m_unitPathFound = IsoGridPathFinding.FindPathAstar(agent.Coordinate, coord, GridManager.ActivePathGrid, agent.BlockingMask, out var path);
             }
         }
-        else if (moduleActived && SelectedUnit.ActionAvailable)
+        else if (moduleActived && module.IsAvailable)
         {
             SelectedUnit.SetDirection(SelectedUnit.Agent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
         }
     }
 
     #endregion
+
+    #region Helpers
+
+
+
+    private void ModuleActionHandler(ActionModule actionModule)
+    {
+        Debug.Log("Module Action: " + actionModule.ModuleName);
+        if (SelectedUnit.CompareTag("PlayerUnit"))
+        {
+            List<IsoGridCoord> confirmed = FindOverlapTilesWithModule(actionModule);
+            if (confirmed.Count > 0)
+                SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed.ToArray(), PlayBackMode.Instant);
+        }
+        else if (SelectedUnit.CompareTag("MonsterUnit"))
+        {
+            List<IsoGridCoord> confirmed = FindOverlapTilesWithModule(actionModule);
+            if (confirmed.Count > 0)
+                SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed.ToArray(), PlayBackMode.EndOfTurn);
+        }
+    }
+
+
+
+
+    #endregion
+
 
     #region Input
 
@@ -188,23 +216,12 @@ public class BattleManager : Singleton<BattleManager>
         {
             if (!moduleActived && m_unitPathFound)
             {
+                BattleUIController.DisposeRangeHighlights();
                 SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord, PlayBackMode.Instant);
             }
-            else if (moduleActived && SelectedUnit.ActionAvailable)
+            else if (moduleActived && activedModule.IsAvailable)
             {
-                Debug.Log("Module Action: " + activedModule.Id);
-                if (SelectedUnit.CompareTag("PlayerUnit"))
-                {
-                    List<IsoGridCoord> confirmed = FindOverlapTilesWithModule(activedModule);
-                    if (confirmed.Count > 0)
-                        SelectedUnit.ModuleAction(activedModule.Id, confirmed.ToArray(), PlayBackMode.Instant);
-                }
-                else if (SelectedUnit.CompareTag("MonsterUnit"))
-                {
-                    List<IsoGridCoord> confirmed = FindOverlapTilesWithModule(activedModule);
-                    if (confirmed.Count > 0)
-                        SelectedUnit.ModuleAction(activedModule.Id, confirmed.ToArray(), PlayBackMode.EndOfTurn);
-                }
+                ModuleActionHandler(activedModule);
             }
         }
     }

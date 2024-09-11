@@ -52,6 +52,14 @@ public struct ActionPriority
 }
 
 
+public class ActionComparer : Comparer<IAction>
+{
+    public override int Compare(IAction x, IAction y)
+    {
+        return (x.Priority - y.Priority).value;
+    }
+}
+
 public interface IAction
 {
     public ActionPriority Priority {  get; set; }

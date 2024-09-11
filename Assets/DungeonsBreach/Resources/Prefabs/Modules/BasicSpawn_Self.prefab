@@ -45,13 +45,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57205205b97f4a34480c3cd337e8afab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_id: SpawnModule
+  m_id: BasicSpawn
   m_unitParamBase:
     maxHP: 0
     hp: 0
     defense: 0
     moveRange: 0
     moves: 0
+  m_animationDataOverride: 0
+  m_animationData:
+    animator: {fileID: 0}
+    animationState: 
   m_spawnUnit: {fileID: 4314942385416705814, guid: 719cb568ac0389a4c9a61305722192de, type: 3}
   m_spawnAnchor: {fileID: 8391050307829321374}
   m_profile:
@@ -63,9 +67,7 @@ MonoBehaviour:
       relativeCoord:
         x: 0
         y: 0
-  m_animator: {fileID: 0}
   m_spawnFrameDelay: 20
-  m_animateTrigger: Attack
 --- !u!1001 &6070363275812894466
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -51,6 +51,10 @@ MonoBehaviour:
     defense: 0
     moveRange: 0
     moves: 0
+  m_animationDataOverride: 0
+  m_animationData:
+    animator: {fileID: 0}
+    animationState: 
   m_profile:
     data:
     - pushDir: 0
@@ -60,8 +64,6 @@ MonoBehaviour:
       relativeCoord:
         x: 0
         y: 0
-  m_animator: {fileID: 9190507919200616842}
-  m_animateTrigger: Attack
 --- !u!1 &1085752279389924852
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,8 +148,6 @@ MonoBehaviour:
   m_animationLength: 0.2
   m_animationCycle: 3
   m_gravity: 100
-  m_speedH: 0.1
-  m_speedOverride: 0
 --- !u!1 &3083854490641731255
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,6 +350,7 @@ GameObject:
   - component: {fileID: 1169018286805909494}
   - component: {fileID: 1443900181578040287}
   - component: {fileID: 9190507919200616842}
+  - component: {fileID: 1493146824693658976}
   m_Layer: 0
   m_Name: UnitSprite
   m_TagString: Untagged
@@ -446,6 +447,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1493146824693658976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7753744778860475747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce4d6fe593625634385395e1c4bde9af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_animatorStates:
+  - Idle
+  - Attack
+  - Dead
+  - Move
+  - Damage
+  m_animator: {fileID: 9190507919200616842}
 --- !u!1 &7863924569567435620
 GameObject:
   m_ObjectHideFlags: 0
@@ -540,6 +560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476d4160f9af0874a90b1e0489acacdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_unitName: 
   m_intrinsicStatus:
     maxHP: 1
     hp: 1
@@ -549,6 +570,7 @@ MonoBehaviour:
   m_animator: {fileID: 9190507919200616842}
   m_pathAgent: {fileID: 3996779505363619239}
   m_modulesHolder: {fileID: 2973567055798943112}
+  m_animatorStates: {fileID: 1493146824693658976}
   m_unitStatus:
     maxHP: 0
     hp: 0

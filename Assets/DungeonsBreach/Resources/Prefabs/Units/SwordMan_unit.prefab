@@ -44,8 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea90184f2970ab249b4fdcb39344118a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_animator: {fileID: 4630097256080232330}
   m_type: 1
+  m_stopDistance: 0
+  m_animator: {fileID: 4630097256080232330}
 --- !u!1 &1590574111987061503
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,10 +91,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d92e94c8bbcda1349bb0463a76f85975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_type: 0
+  m_stopDistance: 0.05
   m_animator: {fileID: 4630097256080232330}
   m_speed: 4
-  m_stopDistance: 0.05
-  m_type: 0
   m_animateTrigger: Walk
 --- !u!1 &1898895177678615773
 GameObject:
@@ -142,6 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 793680b674fb75a459b3a7f20bb51688, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_unitName: 
   m_intrinsicStatus:
     maxHP: 3
     hp: 3
@@ -151,6 +153,7 @@ MonoBehaviour:
   m_animator: {fileID: 4630097256080232330}
   m_pathAgent: {fileID: 5589264791887840692}
   m_modulesHolder: {fileID: 8143765028065708322}
+  m_animatorStates: {fileID: 7394983911830937859}
   m_unitStatus:
     maxHP: 0
     hp: 0
@@ -168,6 +171,7 @@ GameObject:
   - component: {fileID: 453882294775095980}
   - component: {fileID: 4073546663576469499}
   - component: {fileID: 4630097256080232330}
+  - component: {fileID: 7394983911830937859}
   m_Layer: 0
   m_Name: UnitSprite
   m_TagString: Untagged
@@ -264,6 +268,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7394983911830937859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2812850473055798493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce4d6fe593625634385395e1c4bde9af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_animatorStates:
+  - Idle
+  - Attack
+  - Dead
+  - Walk
+  - Damage
+  m_animator: {fileID: 4630097256080232330}
 --- !u!1 &2987320769576740507
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,9 +447,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d5a0453242b4444a28da58501eff08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_speed: 3
-  m_stopDistance: 0.05
   m_type: 2
+  m_stopDistance: 0.05
+  m_speed: 3
 --- !u!1 &6838609804312037617
 GameObject:
   m_ObjectHideFlags: 0

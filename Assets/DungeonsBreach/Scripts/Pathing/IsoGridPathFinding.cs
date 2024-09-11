@@ -76,6 +76,47 @@ public class AstarNode
 
 public static class IsoGridPathFinding
 {
+    public static IsoGridCoord[] FindRange(IsoGridCoord start,int max_depth, PathGrid grid, PathFindingMask agent_mask)
+    {
+        if (max_depth <= 0)
+            return new IsoGridCoord[] { start };
+        AstarNode startNode = new AstarNode(start);
+        startNode.G = 0;
+        var mask = grid.PathFindingMask;
+        List<AstarNode> openNodes = new List<AstarNode>() { startNode };
+        HashSet<AstarNode> closedNodes = new HashSet<AstarNode>();
+
+        while (openNodes.Count>0)
+        {
+            var currentNode = openNodes[openNodes.Count - 1];
+            openNodes.RemoveAt(openNodes.Count - 1);
+            closedNodes.Add(currentNode);
+            foreach (var adjacent in grid.SurroundingCoords(currentNode.coord))
+            {
+                var adjacentNode = new AstarNode(adjacent);
+                adjacentNode.Parent = currentNode;
+                adjacentNode.G = currentNode.G + 1;
+                if(!openNodes.Contains(adjacentNode) && !closedNodes.Contains(adjacentNode) && adjacentNode.G<=max_depth)
+                {
+                    int maskIndex = IsoGridMetrics.To2DArrayIndex(adjacent, grid.Dimension);
+                    bool maskCheck = mask[maskIndex].CheckMaskOverlap(agent_mask);
+                    if(!maskCheck)
+                        openNodes.Add(adjacentNode);
+                }
+            }
+        }
+        List<IsoGridCoord> coords = new List<IsoGridCoord>();
+        foreach (var item in closedNodes)
+        {
+            coords.Add(item.coord);
+            if(item.coord.x == 0 && item.coord.y == 0)
+            {
+                Debug.Log(item.Parent.coord);
+            }
+        }
+        return coords.ToArray();
+    }
+
 
     public static bool FindPathAstar(IsoGridCoord start, IsoGridCoord target, PathGrid grid, PathFindingMask agent_mask, out List<IsoGridCoord> path)
     {
@@ -174,5 +215,11 @@ public static class IsoGridPathFinding
     public static float ManhattanDistance(AstarNode node1, AstarNode node2)
     {
         return math.abs(node1.coord.x - node2.coord.x) + math.abs(node1.coord.y - node2.coord.y);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float ManhattanDistance(IsoGridCoord node1, IsoGridCoord node2)
+    {
+        return math.abs(node1.x - node2.x) + math.abs(node1.y - node2.y);
     }
 }

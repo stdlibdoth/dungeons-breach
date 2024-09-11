@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 793680b674fb75a459b3a7f20bb51688, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_unitName: 
   m_intrinsicStatus:
     maxHP: 3
     hp: 3
@@ -56,6 +57,7 @@ MonoBehaviour:
   m_animator: {fileID: 3278722919554687339}
   m_pathAgent: {fileID: 2349411664758627925}
   m_modulesHolder: {fileID: 48459799741188941}
+  m_animatorStates: {fileID: 1475539167984962393}
   m_unitStatus:
     maxHP: 0
     hp: 0
@@ -190,10 +192,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d92e94c8bbcda1349bb0463a76f85975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_type: 0
+  m_stopDistance: 0.05
   m_animator: {fileID: 3278722919554687339}
   m_speed: 4
-  m_stopDistance: 0.05
-  m_type: 0
   m_animateTrigger: Walk
 --- !u!1 &4414038338629365814
 GameObject:
@@ -239,8 +241,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea90184f2970ab249b4fdcb39344118a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_animator: {fileID: 3278722919554687339}
   m_type: 1
+  m_stopDistance: 0
+  m_animator: {fileID: 3278722919554687339}
 --- !u!1 &6585924235923508380
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,9 +377,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d5a0453242b4444a28da58501eff08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_speed: 3
-  m_stopDistance: 0.05
   m_type: 2
+  m_stopDistance: 0.05
+  m_speed: 3
 --- !u!1 &8608054871810516552
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,6 +391,7 @@ GameObject:
   - component: {fileID: 4849636524626688341}
   - component: {fileID: 6678110409415816114}
   - component: {fileID: 3278722919554687339}
+  - component: {fileID: 1475539167984962393}
   m_Layer: 0
   m_Name: UnitSprite
   m_TagString: Untagged
@@ -484,6 +488,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1475539167984962393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8608054871810516552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce4d6fe593625634385395e1c4bde9af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_animatorStates:
+  - Idle
+  - Attack
+  - Dead
+  - Walk
+  - Damage
+  m_animator: {fileID: 3278722919554687339}
 --- !u!1001 &6798397926641702464
 PrefabInstance:
   m_ObjectHideFlags: 0

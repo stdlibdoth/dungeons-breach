@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0596fc75870dac441b566a6b1a50611f, type: 3}
+  m_Name: UnitUIData
+  m_EditorClassIdentifier: 
+  m_data:
+  - portrait: {fileID: 226945488, guid: b013585f53b04fe40ad54909b8fab2c0, type: 3}
+    unitName: SwordMan
+  - portrait: {fileID: -908707061, guid: 8cd39bb6f9157e442b9a1f6d088f6023, type: 3}
+    unitName: Slime
+  - portrait: {fileID: -20440197, guid: 14bfcc0f08b4bf440b8fb4ccfc724aa9, type: 3}
+    unitName: Midge
+  - portrait: {fileID: -287300350, guid: f42822ae70fa11c4abc84c98f82a7459, type: 3}
+    unitName: Spider
