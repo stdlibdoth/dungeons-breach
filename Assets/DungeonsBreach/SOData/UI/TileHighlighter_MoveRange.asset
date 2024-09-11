@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 747df6c2e37def74199ad5bbeefdfb7a, type: 3}
+  m_Name: TileHighlighter_MoveRange
+  m_EditorClassIdentifier: 
+  data:
+    name: MoveRange
+    sprite:
+    - {fileID: 21300000, guid: b67614a11cf982b42823c35063e63a70, type: 3}
+    sortingOrder: 10
+    color: {r: 0.43165872, g: 1, b: 0.28616333, a: 0.6666667}

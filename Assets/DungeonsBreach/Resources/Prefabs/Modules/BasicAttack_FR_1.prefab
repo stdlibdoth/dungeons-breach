@@ -44,13 +44,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196e955cc55180f4da9ad4877930d7d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_id: BasicAttack_FR_1
+  m_id: BasicAttack
   m_unitParamBase:
     maxHP: 0
     hp: 0
     defense: 0
     moveRange: 0
     moves: 0
+  m_animationDataOverride: 0
+  m_animationData:
+    animator: {fileID: 0}
+    animationState: 
   m_profile:
     data:
     - pushDir: 0
@@ -60,5 +64,3 @@ MonoBehaviour:
       relativeCoord:
         x: -1
         y: 0
-  m_animator: {fileID: 0}
-  m_animateTrigger: Attack

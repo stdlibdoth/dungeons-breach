@@ -24,7 +24,6 @@ public class TrajectileUnit : UnitBase
     public override void Damage(ActionTileInfo attack_info, PlayBackMode mode)
     {
         m_animator.SetTrigger("Damage");
-
         var deltaStatus = UnitStatus.Empty;
         deltaStatus.hp = -1;
         UpdateStatus(deltaStatus);
@@ -47,9 +46,9 @@ public class TrajectileUnit : UnitBase
             var param = new ActionModuleParam
             {
                 unit = this,
-                confirmedCoord = new IsoGridCoord[] { coord }
+                confirmedCoord = new IsoGridCoord[] { coord },
             };
-            ActionAvailable = false;
+//            ActionAvailable = false;
             module.Actived = false;
             module.Build(param);
             m_unitStatus.moves = 0;

@@ -44,9 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d5a0453242b4444a28da58501eff08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_speed: 3
-  m_stopDistance: 0.05
   m_type: 2
+  m_stopDistance: 0.05
+  m_speed: 3
 --- !u!1 &2531450560621416496
 GameObject:
   m_ObjectHideFlags: 0
@@ -91,8 +91,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea90184f2970ab249b4fdcb39344118a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_animator: {fileID: 4317002216340408668}
   m_type: 1
+  m_stopDistance: 0
+  m_animator: {fileID: 4317002216340408668}
 --- !u!1 &3414207643235436614
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,6 +105,7 @@ GameObject:
   - component: {fileID: 8517711863623438895}
   - component: {fileID: 628976775210352802}
   - component: {fileID: 4317002216340408668}
+  - component: {fileID: 5787120800845279203}
   m_Layer: 0
   m_Name: UnitSprite
   m_TagString: Untagged
@@ -200,6 +202,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5787120800845279203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3414207643235436614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce4d6fe593625634385395e1c4bde9af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_animatorStates:
+  - Idle
+  - Attack
+  - Dead
+  - Walk
+  - Damage
+  m_animator: {fileID: 4317002216340408668}
 --- !u!1 &4726298629295110706
 GameObject:
   m_ObjectHideFlags: 0
@@ -244,10 +265,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d92e94c8bbcda1349bb0463a76f85975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_type: 0
+  m_stopDistance: 0.05
   m_animator: {fileID: 4317002216340408668}
   m_speed: 4
-  m_stopDistance: 0.05
-  m_type: 0
   m_animateTrigger: Walk
 --- !u!1 &6496683254905441269
 GameObject:
@@ -336,7 +357,7 @@ MonoBehaviour:
     value: 0
   m_locamotionsHolder: {fileID: 2833422565271852988}
   m_targetTransform: {fileID: 5731507762523004081}
-  m_initDirection: 2
+  m_direction: 0
   m_wp: []
 --- !u!1 &8355784165759294689
 GameObject:
@@ -469,6 +490,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 793680b674fb75a459b3a7f20bb51688, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_unitName: 
   m_intrinsicStatus:
     maxHP: 3
     hp: 3
@@ -478,6 +500,7 @@ MonoBehaviour:
   m_animator: {fileID: 4317002216340408668}
   m_pathAgent: {fileID: 8181829675391147248}
   m_modulesHolder: {fileID: 27593591071158598}
+  m_animatorStates: {fileID: 5787120800845279203}
   m_unitStatus:
     maxHP: 0
     hp: 0
