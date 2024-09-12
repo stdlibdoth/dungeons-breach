@@ -5,48 +5,6 @@ using Unity.Mathematics;
 using System.Runtime.CompilerServices;
 
 
-[System.Serializable]
-public struct PathFindingMask
-{
-    public byte value;
-
-    public const byte landBlocking = 0b00001111;
-    public const byte airBlocking = 0b00000111;
-    
-    public PathFindingMask(byte value)
-    {
-        this.value = value;
-    }
-
-    public static PathFindingMask operator | (PathFindingMask lhs, PathFindingMask rhs)
-    {
-        return new PathFindingMask((byte)(lhs.value | rhs.value));
-    }
-
-    public static PathFindingMask operator ^(PathFindingMask lhs, PathFindingMask rhs)
-    {
-        return new PathFindingMask((byte)(lhs.value ^ rhs.value));
-    }
-
-
-    public bool CheckMaskOverlap(PathFindingMask other_mask)
-    {
-        return (value & other_mask.value) != 0;
-    }
-}
-
-
-public enum PathFindingTile : byte
-{
-    Land = 0,
-    Obstacle = 0b1,
-    Ally = 0b10,
-    Enemy = 0b100,
-    Hole = 0b1000,
-    Water = 0b10000,
-    Trap = 0b100000,
-}
-
 public class AstarNode
 {
     public IsoGridCoord coord;

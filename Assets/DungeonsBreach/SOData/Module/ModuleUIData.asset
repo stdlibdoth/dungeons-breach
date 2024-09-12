@@ -21,3 +21,5 @@ MonoBehaviour:
     mouduleName: TrajectileSpawn
   - icon: {fileID: 21300000, guid: 5a2fa9a8448931e47bde242b7559d9c9, type: 3}
     mouduleName: ProjectileSpawn
+  - icon: {fileID: 21300000, guid: 5a2fa9a8448931e47bde242b7559d9c9, type: 3}
+    mouduleName: BasicSpawn

@@ -5,8 +5,11 @@ using UnityEngine;
 public class ProjectileUnit : UnitBase
 {
     [SerializeField] protected LocamotionType m_locamotionType;
-
-    protected IsoGridCoord m_target;
+    
+    public int TravelRange
+    {
+        get{ return m_intrinsicStatus.moveRange;}
+    }
 
     protected override void Init()
     {
@@ -23,6 +26,7 @@ public class ProjectileUnit : UnitBase
         UpdateStatus(deltaStatus);
     }
 
+
     private IEnumerator StartProjectile()
     {
         int dist = m_unitStatus.moveRange;
@@ -37,7 +41,6 @@ public class ProjectileUnit : UnitBase
                 unit = this,
                 confirmedCoord = new IsoGridCoord[] { coord },
             };
-//            ActionAvailable = false;
             module.Actived = false;
             module.Build(param);
             m_unitStatus.moves = 0;

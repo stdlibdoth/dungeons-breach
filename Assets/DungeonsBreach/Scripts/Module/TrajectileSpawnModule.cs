@@ -8,12 +8,10 @@ public class TrajectileSpawnModule : ActionModule
     [Space]
     [SerializeField] private TrajectileUnit m_spawnUnit;
     [SerializeField] private SpawnAnchor m_spawnAnchor;
-    [SerializeField] private ActionTileProfile m_profile;
     [SerializeField] private int m_spawnFrameDelay;
 
 
     public override ActionPriority Priority { get; set; }
-    public override ActionTileProfile ActionTileProfile { get { return m_profile; } }
 
     public override IAction Build<T>(T param)
     {
@@ -39,7 +37,6 @@ public class TrajectileSpawnModule : ActionModule
 
         yield return null;
     }
-
 
     private void PlayAnimation(UnitBase unit)
     {

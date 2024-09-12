@@ -22,6 +22,7 @@ public class BattleUIController : Singleton<BattleUIController>
 
 
     private TileHighlight m_pathHighlight;
+    private TileHighlight m_actionHighlight;
 
 
     public static TileHighlighterFactory TileHighlighterFactory
@@ -54,11 +55,23 @@ public class BattleUIController : Singleton<BattleUIController>
         singleton.m_pathHighlight = new TileHighlight(singleton.m_tileHighlighterFactory,coords,highliter_name);
     }
 
-    public static void DisposeRangeHighlights()
+    public static void DisposeMoveHighlights()
     {
         GetSingleton().m_pathHighlight?.Release();
     }
 
+    public static void DisposeActionHighlights()
+    {
+        GetSingleton().m_actionHighlight?.Release();
+    }
+
+    public static void HighlightActionRange(IsoGridCoord[] coords, string highliter_name)
+    {
+        var singleton = GetSingleton();
+        singleton.m_actionHighlight?.Release();
+        singleton.m_actionHighlight = new TileHighlight(singleton.m_tileHighlighterFactory,coords,highliter_name);
+    }
+    
 
     public static void ShowPointerHighlight(IsoGridCoord coord)
     {

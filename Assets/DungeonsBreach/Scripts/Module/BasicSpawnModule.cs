@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class BasicSpawnModule : ActionModule
 {
-    private ActionModuleParam m_actionParam;
+    protected ActionModuleParam m_actionParam;
     [Space]
-    [SerializeField] private UnitBase m_spawnUnit;
-    [SerializeField] private SpawnAnchor m_spawnAnchor;
-    [SerializeField] private ActionTileProfile m_profile;
-    [SerializeField] private int m_spawnFrameDelay;
+    [SerializeField] protected UnitBase m_spawnUnit;
+    [SerializeField] protected SpawnAnchor m_spawnAnchor;
+
+    [SerializeField] protected int m_spawnFrameDelay;
 
     public override ActionPriority Priority { get; set; }
-    public override ActionTileProfile ActionTileProfile { get { return m_profile; } }
 
     public override IAction Build<T>(T param)
     {
@@ -39,7 +38,7 @@ public class BasicSpawnModule : ActionModule
         yield return null;
     }
 
-    private void PlayAnimation(UnitBase unit)
+    protected void PlayAnimation(UnitBase unit)
     {
         if(m_animationDataOverride)
         {

@@ -54,10 +54,11 @@ public class UnitBase : MonoBehaviour
         get { return m_pathAgent; }
     }
 
-    public int MoveRange
+    public int MovesAvalaible
     {
         get { return m_unitStatus.moves; }
     }
+
 
     public Module[] Modules
     {
@@ -255,7 +256,7 @@ public class UnitBase : MonoBehaviour
 
     public virtual void Die()
     {
-        var tileMask = GridManager.ActivePathGrid.PathFindingTileMask(Agent.Coordinate);
+        var tileMask = GridManager.ActivePathGrid.PathingMaskSingleTile(Agent.Coordinate);
         GridManager.ActivePathGrid.UpdatePathFindingMask(Agent.Coordinate, tileMask ^ m_pathAgent.IntrinsicMask);
         //gameObject.SetActive(false);
         //m_animator.SetTrigger("Die");

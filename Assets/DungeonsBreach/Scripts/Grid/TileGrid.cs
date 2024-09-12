@@ -28,3 +28,43 @@ public class TileGrid : IsoGrid
         m_tiles = tiles;
     }
 }
+
+
+[System.Serializable]
+public struct TileMask
+{
+    public uint value;
+
+
+    public TileMask(uint value)
+    {
+        this.value = value;
+    }
+
+    public static TileMask operator | (TileMask lhs, TileMask rhs)
+    {
+        return new TileMask((byte)(lhs.value | rhs.value));
+    }
+
+    public static TileMask operator & (TileMask lhs, TileMask rhs)
+    {
+        return new TileMask((byte)(lhs.value & rhs.value));
+    }
+
+    public static TileMask operator ^(TileMask lhs, TileMask rhs)
+    {
+        return new TileMask((byte)(lhs.value ^ rhs.value));
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="other_mask"></param>
+    /// <returns>returns true if two masks have overlaped bits</returns>
+    public bool CheckMaskOverlap(TileMask other_mask)
+    {
+        return (value & other_mask.value) != 0;
+    }
+
+}

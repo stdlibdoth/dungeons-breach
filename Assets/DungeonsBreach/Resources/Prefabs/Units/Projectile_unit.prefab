@@ -305,7 +305,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1623543699
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 6
   m_Sprite: {fileID: 21300000, guid: 53b813f3e89f3d7438b8b47cc90e5eaf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.61960787}
@@ -405,7 +405,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 840c5296316803d4781b9cb69eae17c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_unitName: 
+  m_unitName: Projectile
   m_intrinsicStatus:
     maxHP: 1
     hp: 1

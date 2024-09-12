@@ -41,7 +41,7 @@ public class GridManager : Singleton<GridManager>
             for (int x = 0; x < pathGrid.Dimension.x; x++)
             {
                 IsoGridCoord coord = new IsoGridCoord(x, y);
-                if (pathGrid.PathFindingTileMask(coord).value != (byte)PathFindingTile.Land)
+                if (pathGrid.PathingMaskSingleTile(coord).value != (byte)PathingMaskBit.None)
                 {
                     var tile = Instantiate(m_blockPrefab, coord.ToWorldPosition(pathGrid), Quaternion.identity);
                     tile.SetCoord(coord);
@@ -54,7 +54,7 @@ public class GridManager : Singleton<GridManager>
     private void PopulatePathGridMask()
     {
         var block = new PathFindingMask { value = PathFindingMask.landBlocking };
-        var land = new PathFindingMask { value = (byte)PathFindingTile.Land };
+        var land = new PathFindingMask { value = (byte)PathingMaskBit.None };
         var pathGrid = ActivePathGrid;
 
         for (int y = 0; y < pathGrid.Dimension.y; y++)

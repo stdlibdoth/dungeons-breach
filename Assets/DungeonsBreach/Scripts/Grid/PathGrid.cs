@@ -22,7 +22,7 @@ public class PathGrid : IsoGrid
             return m;
         }
     }
-    public PathFindingMask PathFindingTileMask(IsoGridCoord coord)
+    public PathFindingMask PathingMaskSingleTile(IsoGridCoord coord)
     {
         return m_pathFindingMask[coord.To2DArrayIndex(m_dimension)];
     }
@@ -52,7 +52,7 @@ public class PathGrid : IsoGrid
                 return i;
             }
 
-            var tileMask = PathFindingTileMask(temp);
+            var tileMask = PathingMaskSingleTile(temp);
             target = temp;
             coord = target;
             if (tileMask.CheckMaskOverlap(mask))
@@ -62,4 +62,52 @@ public class PathGrid : IsoGrid
         }
         return int.MaxValue;
     }
+}
+
+
+[System.Serializable]
+public struct PathFindingMask
+{
+    public byte value;
+
+    public const byte landBlocking = 0b00001111;
+    public const byte airBlocking = 0b00000111;
+    
+    public PathFindingMask(byte value)
+    {
+        this.value = value;
+    }
+
+    public static PathFindingMask operator | (PathFindingMask lhs, PathFindingMask rhs)
+    {
+        return new PathFindingMask((byte)(lhs.value | rhs.value));
+    }
+
+    public static PathFindingMask operator ^(PathFindingMask lhs, PathFindingMask rhs)
+    {
+        return new PathFindingMask((byte)(lhs.value ^ rhs.value));
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="other_mask"></param>
+    /// <returns>returns true if two masks have overlaped bits</returns>
+    public bool CheckMaskOverlap(PathFindingMask other_mask)
+    {
+        return (value & other_mask.value) != 0;
+    }
+}
+
+[SerializeField]
+public enum PathingMaskBit : byte
+{
+    None = 0,
+    Obstacle = 0b1,
+    Ally = 0b10,
+    Enemy = 0b100,
+    Hole = 0b1000,
+    Water = 0b10000,
+    Trap = 0b100000,
 }

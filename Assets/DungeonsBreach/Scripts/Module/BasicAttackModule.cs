@@ -5,11 +5,8 @@ using UnityEngine;
 public class BasicAttackModule : ActionModule
 {
     private ActionModuleParam m_actionParam;
-    [Space]
-    [SerializeField]private ActionTileProfile m_profile;
 
     public override ActionPriority Priority { get; set; }
-    public override ActionTileProfile ActionTileProfile { get { return m_profile; } }
 
     public override IAction Build<T>(T param)
     {
@@ -43,7 +40,6 @@ public class BasicAttackModule : ActionModule
         }
         yield return null;
     }
-
 
     private IEnumerator PlayAnimation(UnitBase unit)
     {
