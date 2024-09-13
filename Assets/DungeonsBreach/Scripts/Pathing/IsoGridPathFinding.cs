@@ -54,7 +54,7 @@ public static class IsoGridPathFinding
                 var adjacentNode = new AstarNode(adjacent);
                 adjacentNode.Parent = currentNode;
                 adjacentNode.G = currentNode.G + 1;
-                if(!openNodes.Contains(adjacentNode) && !closedNodes.Contains(adjacentNode) && adjacentNode.G<=max_depth)
+                if(!openNodes.Contains(adjacentNode) && adjacentNode.G<=max_depth)
                 {
                     int maskIndex = IsoGridMetrics.To2DArrayIndex(adjacent, grid.Dimension);
                     bool maskCheck = mask[maskIndex].CheckMaskOverlap(agent_mask);
@@ -67,10 +67,6 @@ public static class IsoGridPathFinding
         foreach (var item in closedNodes)
         {
             coords.Add(item.coord);
-            if(item.coord.x == 0 && item.coord.y == 0)
-            {
-                Debug.Log(item.Parent.coord);
-            }
         }
         return coords.ToArray();
     }
