@@ -8,9 +8,9 @@ public class TrajectileUnit : UnitBase
 
     protected IsoGridCoord[] m_targets;
 
-    protected override void Init()
+    protected override void Spawn()
     {
-        base.Init();
+        base.Spawn();
         StartCoroutine(StartTrajectile());
     }
 

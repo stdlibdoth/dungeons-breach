@@ -11,9 +11,9 @@ public class ProjectileUnit : UnitBase
         get{ return m_intrinsicStatus.moveRange;}
     }
 
-    protected override void Init()
+    protected override void Spawn()
     {
-        base.Init();
+        base.Spawn();
         StartCoroutine(StartProjectile());
     }
 

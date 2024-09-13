@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using UnityEngine.Events;
 
 
@@ -24,24 +23,17 @@ public class UnitBase : MonoBehaviour
 
     [SerializeField] protected Transform m_modulesHolder;
     [SerializeField] protected SerializedAnimatorStates m_animatorStates;
+    [SerializeField] protected UnitHealthBar m_healthBar;
 
     [Space]
     [Header("unit status")]
     [SerializeField] protected UnitStatus m_unitStatus;
 
     protected List<ActionModule> m_actionModules = new List<ActionModule>();
-    protected UnityEvent<UnitStatus> m_onStatusChange = new UnityEvent<UnitStatus>();
 
-    //protected bool m_actionAvailable;
-    //public bool ActionAvailable
-    //{
-    //    get { return m_actionAvailable; }
-    //    set
-    //    {
-    //        m_actionAvailable = value;
-    //        m_onUnitActionAvailable.Invoke(value);
-    //    }
-    //}
+
+
+    // protected UnityEvent<UnitStatus> m_onStatusChange = new UnityEvent<UnitStatus>();
 
 
     public string UnitName
@@ -65,25 +57,28 @@ public class UnitBase : MonoBehaviour
         get { return m_modulesHolder.GetComponentsInChildren<Module>(); }
     }
 
-    public UnityEvent<UnitStatus> OnStatusChange
-    {
-        get { return m_onStatusChange;}
-    }
+    // public UnityEvent<UnitStatus> OnStatusChange
+    // {
+    //     get { return m_onStatusChange;}
+    // }
+
+
     protected void Start()
     {
-        Init();
+        Spawn();
     }
 
-    protected virtual void Init()
+    protected virtual void Spawn()
     {
         m_pathAgent.Init();
-        m_unitStatus = UnitStatus.Empty;
-        RefreshModuleStatus();
+        m_unitStatus = PreviewAppliedModuleStatus();
         m_unitStatus.hp = m_unitStatus.maxHP;
         m_unitStatus.moves = m_unitStatus.moveRange;
+        RefreshHealthBar(true);
         m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
-        RefreshModules();
+        RefreshActionModules();
         LevelManager.AddUnit(this);
+        EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitSpawn").Invoke(this);
     }
 
     public virtual bool GenerateActionAnimationData(string animation_state, out ActionAnimationData data)
@@ -105,7 +100,7 @@ public class UnitBase : MonoBehaviour
 
     #region Modules
 
-    protected virtual void RefreshModules()
+    protected virtual void RefreshActionModules()
     {
         m_actionModules.Clear();
         foreach (var item in m_modulesHolder.GetComponentsInChildren<ActionModule>(true))
@@ -114,51 +109,50 @@ public class UnitBase : MonoBehaviour
         }
     }
 
-
-    protected virtual void RefreshModuleStatus()
-    {
-        var initial = m_intrinsicStatus;
-        foreach (var module in Modules)
-        {
-            initial = module.Modified(initial);
-        }
-        m_unitStatus = initial;
-        m_onStatusChange.Invoke(m_unitStatus);
-    }
+    // protected virtual void ApplyModuleStatus()
+    // {
+    //     var initial = m_intrinsicStatus;
+    //     foreach (var module in Modules)
+    //     {
+    //         initial = module.Modified(initial);
+    //     }
+    //     m_unitStatus = initial;
+    //     //m_onStatusChange.Invoke(m_unitStatus);
+    // }
 
     public ActionModule[] ActionModules()
     {
         return m_actionModules.ToArray();
     }
 
-    public void EquipModule(Module module)
-    {
-        module.transform.SetParent(m_modulesHolder.transform, false);
-        if(module is ActionModule)
-        {
-            m_actionModules.Add((ActionModule)module);
-        }
-        RefreshModuleStatus();
-    }
+    // public void EquipModule(Module module)
+    // {
+    //     module.transform.SetParent(m_modulesHolder.transform, false);
+    //     if(module is ActionModule)
+    //     {
+    //         m_actionModules.Add((ActionModule)module);
+    //     }
+    //     RefreshModuleStatus();
+    // }
 
-    public void RemoveModule(string module_id)
-    {
-        Module m = null;
-        foreach (var module in Modules)
-        {
-            if (module.ModuleName == module_id)
-            {
-                m = module;
-                break;
-            }
-        }
-        if (m != null)
-        {
-            m_actionModules.Remove(m as ActionModule);
-            Destroy(m);
-        }
-        RefreshModuleStatus();
-    }
+    // public void RemoveModule(string module_id)
+    // {
+    //     Module m = null;
+    //     foreach (var module in Modules)
+    //     {
+    //         if (module.ModuleName == module_id)
+    //         {
+    //             m = module;
+    //             break;
+    //         }
+    //     }
+    //     if (m != null)
+    //     {
+    //         m_actionModules.Remove(m as ActionModule);
+    //         Destroy(m);
+    //     }
+    //     RefreshModuleStatus();
+    // }
 
     public bool ActivedModule(out ActionModule module)
     {
@@ -176,6 +170,19 @@ public class UnitBase : MonoBehaviour
 
     #endregion
 
+
+    #region Public Methods
+
+    public UnitStatus PreviewAppliedModuleStatus()
+    {
+        var initial = m_intrinsicStatus;
+        foreach (var module in Modules)
+        {
+            initial = module.Modified(initial);
+        }
+        return initial;
+    }
+
     public void ResetActions()
     {
         m_unitStatus.moves = m_unitStatus.moveRange;
@@ -188,7 +195,8 @@ public class UnitBase : MonoBehaviour
     public virtual void UpdateStatus(UnitStatus delta_status)
     {
         m_unitStatus += delta_status;
-        m_onStatusChange.Invoke(m_unitStatus);
+        //m_onStatusChange.Invoke(m_unitStatus);
+        RefreshHealthBar(delta_status.maxHP!=0);
         if (m_unitStatus.hp <= 0)
             Die();
     }
@@ -261,7 +269,25 @@ public class UnitBase : MonoBehaviour
         //gameObject.SetActive(false);
         //m_animator.SetTrigger("Die");
         LevelManager.RemoveUnit(this);
+        EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitDie").Invoke(this);
         Destroy(gameObject);
     }
+
+    #endregion
+
+    #region helpers
+    private void RefreshHealthBar(bool init)
+    {
+        if(m_healthBar == null)
+            return;
+        if(init)
+        {
+            m_healthBar.Init(m_unitStatus.maxHP);
+        }
+        m_healthBar.SetHP(m_unitStatus.hp);
+    }
+
+
+    #endregion
 
 }

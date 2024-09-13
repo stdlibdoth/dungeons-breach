@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "DungeonsBreach.sln"
+    "dotnet.defaultSolution": "DungeonsBreach.sln",
+    "workbench.preferredDarkColorTheme": "Default Dark Modern"
 }
