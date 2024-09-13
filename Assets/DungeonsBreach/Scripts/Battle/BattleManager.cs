@@ -30,6 +30,7 @@ public class BattleManager : Singleton<BattleManager>
     private UnityEvent<IsoGridCoord> m_onPointerCoordChange;
 
     private IsoGridCoord[] m_actionRange;
+    private IsoGridCoord[] m_moveRange;
 
     bool m_unitPathFound;
 
@@ -41,12 +42,16 @@ public class BattleManager : Singleton<BattleManager>
             if(GetSingleton().m_selectedUnit != value)
             {
                 GetSingleton().m_selectedUnit = value;
-                BattleUIController.DisposeMoveHighlights();
-                Debug.Log(value + " Selected");            
+                BattleUIController.DisposeMoveHighlights();      
                 if(value!= null && value.MovesAvalaible>0)
                 {
-                    var coords = value.Agent.ReachableCoordinates(value.MovesAvalaible,GridManager.ActivePathGrid);
-                    BattleUIController.HighlightPathRange(coords, "MoveRange");
+                    GetSingleton().m_moveRange = value.Agent.ReachableCoordinates(value.MovesAvalaible,GridManager.ActivePathGrid);
+                    BattleUIController.HighlightPathRange(GetSingleton().m_moveRange, "MoveRange");
+                }
+                else if(value == null)
+                {
+                    BattleUIController.DisposeActionHighlights();
+                    BattleUIController.HidePathTrail();
                 }
                 EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("SelectedUnitChange").Invoke(value);
             }
@@ -143,11 +148,15 @@ public class BattleManager : Singleton<BattleManager>
         bool moduleActived = SelectedUnit.ActivedModule(out var module);
         if (SelectedUnit.MovesAvalaible > 0 && !moduleActived && !SelectedUnit.Agent.IsMoving)
         {
-            var dist = IsoGridCoord.Distance(SelectedUnit.Agent.Coordinate, coord);
-            if (GridManager.ActivePathGrid.CheckRange(coord) && dist <= SelectedUnit.MovesAvalaible && dist > 0)
+            List<IsoGridCoord> range = new List<IsoGridCoord>(m_moveRange);
+            if (range.Contains(coord))
             {
                 var agent = SelectedUnit.Agent;
                 m_unitPathFound = IsoGridPathFinding.FindPathAstar(agent.Coordinate, coord, GridManager.ActivePathGrid, agent.BlockingMask, out var path);
+                if(m_unitPathFound)
+                    BattleUIController.ShowPathTrail(path);
+                else
+                    BattleUIController.HidePathTrail();
             }
         }
         else if (moduleActived && module.IsAvailable)
@@ -198,16 +207,21 @@ public class BattleManager : Singleton<BattleManager>
         var grid = GridManager.ActiveTileGrid;
         var coord = wPos.ToIsoCoordinate(grid);
 
-        if(!grid.CheckRange(coord))
-        {
-            BattleUIController.HidePointerHighlight();
-//            return;
-        }
+        bool checkRange = grid.CheckRange(coord);
 
 
         if(m_pointerGridCoord != coord)
         {
-            BattleUIController.ShowPointerHighlight(coord);
+            if(checkRange)
+            {
+                BattleUIController.ShowPointerHighlight(coord);
+            }
+            else
+            {
+                BattleUIController.HidePointerHighlight();
+                BattleUIController.HidePathTrail();
+                //BattleUIController.DisposeMoveHighlights();
+            }
             m_pointerGridCoord = coord;
             m_onPointerCoordChange.Invoke(coord);
         }
@@ -233,6 +247,7 @@ public class BattleManager : Singleton<BattleManager>
             {
                 BattleUIController.DisposeMoveHighlights();
                 SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord, PlayBackMode.Instant);
+                BattleUIController.StartPathTrailing(SelectedUnit);
             }
             else if (moduleActived && activedModule.IsAvailable)
             {

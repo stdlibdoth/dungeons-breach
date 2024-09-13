@@ -16,6 +16,8 @@ public class BattleUIController : Singleton<BattleUIController>
     [SerializeField] private TileHighlighterFactory m_tileHighlighterFactory;
 
 
+    [SerializeField] private PathTrailer m_pathTrailer;
+
     private ActionModule[] m_selectedActionModules = new ActionModule[0];
 
     private UnitBase m_prevSelection;
@@ -23,7 +25,6 @@ public class BattleUIController : Singleton<BattleUIController>
 
     private TileHighlight m_pathHighlight;
     private TileHighlight m_actionHighlight;
-
 
     public static TileHighlighterFactory TileHighlighterFactory
     {
@@ -91,9 +92,25 @@ public class BattleUIController : Singleton<BattleUIController>
     }
 
 
+    public static void ShowPathTrail(List<IsoGridCoord> path)
+    {
+        GetSingleton().m_pathTrailer.Init(path);
+    }
+
+    public static void HidePathTrail()
+    {
+        GetSingleton().m_pathTrailer.HideTrail();
+    }
+
+    public static void StartPathTrailing(UnitBase unit)
+    {
+        GetSingleton().m_pathTrailer.StartTrailing(unit);
+    }
+
+
     #endregion
 
-    #region Turn Control buttons
+    #region Turn Control
     private void UndoMovementBtnPressed()
     {
 

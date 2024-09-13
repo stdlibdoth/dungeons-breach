@@ -132,6 +132,7 @@ public class PathFindingAgent : MonoBehaviour
         var tileMask = grid.PathingMaskSingleTile(m_coord);
         grid.UpdatePathFindingMask(m_coord, tileMask ^ m_intrinsicMask);
         m_isMoving = true;
+        Debug.Log(m_isMoving);
         if (IsoGridPathFinding.FindPathAstar(m_coord, target, grid, m_blockingMask, out var path))
         {
             List<IsoGridCoord> waypoints = new List<IsoGridCoord>();
@@ -157,6 +158,7 @@ public class PathFindingAgent : MonoBehaviour
             m_onReachingTarget.RemoveAllListeners();
         }
         m_isMoving = false;
+        Debug.Log(m_isMoving);
     }
 
 
