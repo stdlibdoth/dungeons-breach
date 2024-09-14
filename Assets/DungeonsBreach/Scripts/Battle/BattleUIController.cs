@@ -26,6 +26,10 @@ public class BattleUIController : Singleton<BattleUIController>
     private TileHighlight m_pathHighlight;
     private TileHighlight m_actionHighlight;
 
+
+    private Dictionary<UnitBase,TileHighlight> m_actionTargetHighlights = new Dictionary<UnitBase, TileHighlight>();
+
+
     public static TileHighlighterFactory TileHighlighterFactory
     {
         get { return GetSingleton().m_tileHighlighterFactory; }
@@ -107,6 +111,28 @@ public class BattleUIController : Singleton<BattleUIController>
         GetSingleton().m_pathTrailer.StartTrailing(unit);
     }
 
+
+
+    public static void ShowActionTarget(UnitBase unit, IsoGridCoord[] coords)
+    {
+        var singleton = GetSingleton();
+        var factory = singleton.m_tileHighlighterFactory;
+        if(singleton.m_actionTargetHighlights.ContainsKey(unit))
+        {
+            singleton.m_actionTargetHighlights[unit].Release();
+        }
+        singleton.m_actionTargetHighlights[unit] = new TileHighlight(factory,coords,"Target");
+    }
+
+    public static void ClearAllActionTarget()
+    {
+        var singleton = GetSingleton();
+        foreach (var item in singleton.m_actionTargetHighlights)
+        {
+            item.Value.Release();
+        }
+        singleton.m_actionTargetHighlights.Clear();
+    }
 
     #endregion
 
