@@ -17,13 +17,16 @@ public class ProjectileUnit : UnitBase
         StartCoroutine(StartProjectile());
     }
 
-    public override void Damage(ActionTileInfo attack_info, PlayBackMode mode)
+    public override DamageAction Damage(ActionTileInfo attack_info)
     {
-        m_animator.SetTrigger("Damage");
-
-        var deltaStatus = UnitStatus.Empty;
-        deltaStatus.hp = -1;
-        UpdateStatus(deltaStatus);
+        var action = new SelfDamageAction();
+        DamageActionParam param = new DamageActionParam
+        {
+            animator = m_animator,
+            attackInfo = attack_info,
+            unit = this,
+        };
+        return action.Build(param) as DamageAction;
     }
 
 

@@ -8,10 +8,10 @@ public class DamageAction : IAction
     public ActionPriority Priority { get; set; }
 
     private ActionTileInfo m_attackInfo;
-    private Animator m_animator;
-    private UnitBase m_unit;
+    protected Animator m_animator;
+    protected UnitBase m_unit;
 
-    public IEnumerator ExcuteAction()
+    public virtual IEnumerator ExcuteAction()
     {
         m_animator.SetTrigger("Damage");
 
@@ -40,24 +40,39 @@ public class DamageAction : IAction
                 m_unit.UpdateStatus(deltaStatus);
                 foreach (var hit in hits)
                 {
-                    hit.Damage(temp, PlayBackMode.Instant);
+                    BattleManager.RegistorAction(hit.Damage(temp),PlayBackMode.Instant);
                 }
             }
             else
             {
                 //var pushTarget = targetTile + m_attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)m_attackInfo.pushDir];
-                m_unit.Move(m_attackInfo.pushType, targetTile, PlayBackMode.Instant, false);
+                var action = m_unit.Move(m_attackInfo.pushType, targetTile, false);
+                BattleManager.RegistorAction(action,PlayBackMode.Instant);
             }
         }
         yield return null;
     }
 
-    public IAction Build<T>(T p) where T : IActionParam
+    public virtual IAction Build<T>(T p) where T : IActionParam
     {
         var param = p as DamageActionParam;
         m_attackInfo = param.attackInfo;
         m_animator = param.animator;
         m_unit = param.unit;
         return this;
+    }
+}
+
+
+
+public class SelfDamageAction:DamageAction
+{
+    public override IEnumerator ExcuteAction()
+    {
+        m_animator.SetTrigger("Damage");
+        var deltaStatus = UnitStatus.Empty;
+        deltaStatus.hp = -1;
+        m_unit.UpdateStatus(deltaStatus);
+        yield return null;
     }
 }

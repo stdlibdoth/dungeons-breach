@@ -213,7 +213,7 @@ public class UnitBase : MonoBehaviour
         m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
     }
 
-    public virtual void ModuleAction(string module_id, IsoGridCoord[] confirmed_coord,PlayBackMode mode)
+    public virtual ActionModule ModuleAction(string module_id, IsoGridCoord[] confirmed_coord)
     {
         foreach (var module in m_actionModules)
         {
@@ -226,14 +226,14 @@ public class UnitBase : MonoBehaviour
                     confirmedCoord = confirmed_coord,
                 };
                 module.Actived = false;
-                BattleManager.RegistorAction(module.Build(param), mode);
                 m_unitStatus.moves = 0;
-                break;
+                return module.Build(param) as ActionModule;
             }
         }
+        return null;
     }
 
-    public virtual void Damage(ActionTileInfo attack_info, PlayBackMode mode)
+    public virtual DamageAction Damage(ActionTileInfo attack_info)
     {
         var action = new DamageAction();
         DamageActionParam param = new DamageActionParam
@@ -242,12 +242,11 @@ public class UnitBase : MonoBehaviour
             attackInfo = attack_info,
             unit = this,
         };
-        action.Build(param);
-        BattleManager.RegistorAction(action, mode);
+        return action.Build(param) as DamageAction;
     }
 
 
-    public virtual void Move(LocamotionType locamotion, IsoGridCoord target, PlayBackMode mode, bool use_move_point = true)
+    public virtual IAction Move(LocamotionType locamotion, IsoGridCoord target, bool use_move_point = true)
     {
         var action = new MoveAction();
         var param = new MoveActionParam
@@ -258,8 +257,8 @@ public class UnitBase : MonoBehaviour
         };
         if (use_move_point)
             m_pathAgent.OnReachingTarget.AddListener(() => m_unitStatus.moves = 0);
-        action.Build(param);
-        BattleManager.RegistorAction(action, mode);
+
+        return action.Build(param);
     }
 
     public virtual void Die()

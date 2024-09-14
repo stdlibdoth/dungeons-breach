@@ -191,7 +191,8 @@ public class BattleManager : Singleton<BattleManager>
             IsoGridCoord[] confirmed = ConfirmActionRange(actionModule);
             if (confirmed.Length > 0)
             {
-                SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed, PlayBackMode.Instant);
+                var action = SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed);
+                RegistorAction(action,PlayBackMode.Instant);
                 BattleUIController.DisposeActionHighlights();
             }
         }
@@ -200,7 +201,8 @@ public class BattleManager : Singleton<BattleManager>
             IsoGridCoord[] confirmed = ConfirmActionRange(actionModule);
             if (confirmed.Length > 0)
             {
-                SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed, PlayBackMode.EndOfTurn);
+                var action = SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed);
+                RegistorAction(action,PlayBackMode.EndOfTurn);
                 BattleUIController.DisposeActionHighlights();
                 BattleUIController.ShowActionTarget(SelectedUnit,confirmed);
             }
@@ -258,7 +260,8 @@ public class BattleManager : Singleton<BattleManager>
             if (!moduleActived && m_unitPathFound)
             {
                 BattleUIController.DisposeMoveHighlights();
-                SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord, PlayBackMode.Instant);
+                var action = SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord);
+                RegistorAction(action,PlayBackMode.Instant);
                 BattleUIController.StartPathTrailing(SelectedUnit);
             }
             else if (moduleActived && activedModule.IsAvailable)

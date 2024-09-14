@@ -162,6 +162,7 @@ public class PathFindingAgent : MonoBehaviour
     }
 
 
+    //animation only , not changing the mask
     public IEnumerator AnimateAgent(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance)
     {
         if (target == m_coord)
@@ -171,18 +172,25 @@ public class PathFindingAgent : MonoBehaviour
         yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target, stop_distance));
     }
 
-
+    //animation only , not changing the mask
     public IEnumerator AnimateAgent(LocamotionType locamotion_type, Vector3 target, float speed_override = 0)
     {
         TryGetLocamotion(locamotion_type, out var locamotion);
         yield return StartCoroutine(locamotion.StartLocamotion(target, speed_override));
     }
 
+    //no path finding
     public IEnumerator MoveStraight(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance = 0)
     {
+        var grid = GridManager.ActivePathGrid;
+        var tileMask = grid.PathingMaskSingleTile(m_coord);
+        grid.UpdatePathFindingMask(m_coord, tileMask ^ m_intrinsicMask);
+
         TryGetLocamotion(locamotion_type, out var locamotion);
         yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target, stop_distance));
         m_coord = target;
+        tileMask = grid.PathingMaskSingleTile(m_coord);
+        grid.UpdatePathFindingMask(m_coord, tileMask | m_intrinsicMask);
     }
     public IEnumerator MoveStraight(LocamotionType locamotion_type, Vector3 target,float stop_distance = 0)
     {

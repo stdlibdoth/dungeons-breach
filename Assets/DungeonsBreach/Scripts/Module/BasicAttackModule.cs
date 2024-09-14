@@ -34,7 +34,7 @@ public class BasicAttackModule : ActionModule
                 attackInfo.pushDir = attack.pushDir.RotateRelativeTo(unit.Agent.Direction);
                 foreach (var hit in hits)
                 {
-                    hit.Damage(attackInfo, PlayBackMode.Instant);
+                    BattleManager.RegistorAction(hit.Damage(attackInfo),PlayBackMode.Instant);
                 }
             }
         }
