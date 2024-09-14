@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3641161186489484294}
   - component: {fileID: 7470648670220941841}
   m_Layer: 0
-  m_Name: HP_Block
+  m_Name: UnitHP_Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

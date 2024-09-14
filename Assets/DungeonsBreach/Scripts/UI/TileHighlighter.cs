@@ -50,15 +50,6 @@ public class TileHighlight
         }
     }
 
-
-    public void SetPosition(IsoGridCoord coord)
-    {
-        for (int i = 0; i < m_highlighters.Count; i++)
-        {
-            m_highlighters[i].transform.position = coord.ToWorldPosition(GridManager.ActivePathGrid);
-        }
-    }
-
     public void Release()
     {
         foreach (var item in m_highlighters)

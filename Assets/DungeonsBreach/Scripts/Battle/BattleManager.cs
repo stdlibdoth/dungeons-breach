@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using System;
+using Unity.VisualScripting;
 
 
 public class BattleManager : Singleton<BattleManager>
@@ -41,6 +42,14 @@ public class BattleManager : Singleton<BattleManager>
         {
             if(GetSingleton().m_selectedUnit != value)
             {
+                //deactive module
+                if(GetSingleton().m_selectedUnit!= null)
+                {
+                    if(GetSingleton().m_selectedUnit.ActivedModule(out var module))
+                        module.Actived = false;
+                }
+
+                //show move range
                 GetSingleton().m_selectedUnit = value;
                 BattleUIController.DisposeMoveHighlights();      
                 if(value!= null && value.MovesAvalaible>0)
@@ -50,6 +59,7 @@ public class BattleManager : Singleton<BattleManager>
                 }
                 else if(value == null)
                 {
+
                     BattleUIController.DisposeActionHighlights();
                     BattleUIController.HidePathTrail();
                 }
@@ -135,6 +145,7 @@ public class BattleManager : Singleton<BattleManager>
         var singleton = GetSingleton();
         SelectedUnit = null;
         yield return singleton.StartCoroutine(GetSingleton().m_endTurnBoard.ExcuteActions());
+        BattleUIController.ClearAllActionTarget();
     }
 
     #region Events
@@ -191,6 +202,7 @@ public class BattleManager : Singleton<BattleManager>
             {
                 SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed, PlayBackMode.EndOfTurn);
                 BattleUIController.DisposeActionHighlights();
+                BattleUIController.ShowActionTarget(SelectedUnit,confirmed);
             }
         }
     }

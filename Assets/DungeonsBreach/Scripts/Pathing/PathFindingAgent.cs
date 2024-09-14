@@ -172,10 +172,10 @@ public class PathFindingAgent : MonoBehaviour
     }
 
 
-    public IEnumerator AnimateAgent(LocamotionType locamotion_type, Vector3 target, float stop_distance = 0)
+    public IEnumerator AnimateAgent(LocamotionType locamotion_type, Vector3 target, float speed_override = 0)
     {
         TryGetLocamotion(locamotion_type, out var locamotion);
-        yield return StartCoroutine(locamotion.StartLocamotion(target, stop_distance));
+        yield return StartCoroutine(locamotion.StartLocamotion(target, speed_override));
     }
 
     public IEnumerator MoveStraight(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance = 0)

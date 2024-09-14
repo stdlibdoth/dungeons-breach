@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 
 public class DamageAction : IAction
@@ -15,9 +16,17 @@ public class DamageAction : IAction
         m_animator.SetTrigger("Damage");
 
         var deltaStatus = UnitStatus.Empty;
-        deltaStatus.hp = -1;
+        deltaStatus.hp = -m_attackInfo.value;
         m_unit.UpdateStatus(deltaStatus);
 
+        if(m_unit.CompareTag("PlayerUnit"))
+        {
+            GameManager.UpdatePlayerStatus(new PlayerStatus{
+                maxHP = 0,
+                hp = -m_attackInfo.value,
+                defence = 0,
+            });
+        }
         if(m_attackInfo.pushDist > 0)
         {
             var targetTile = m_unit.Agent.Coordinate + m_attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)m_attackInfo.pushDir];
