@@ -30,6 +30,7 @@ public class BattleManager : Singleton<BattleManager>
     private UnitBase m_selectedUnit;
     private UnityEvent<IsoGridCoord> m_onPointerCoordChange;
 
+    private List<IsoGridCoord> m_confirmedRange = new List<IsoGridCoord>();
     private IsoGridCoord[] m_actionRange;
     private IsoGridCoord[] m_moveRange;
 
@@ -46,11 +47,13 @@ public class BattleManager : Singleton<BattleManager>
                 if(GetSingleton().m_selectedUnit!= null)
                 {
                     if(GetSingleton().m_selectedUnit.ActivedModule(out var module))
+                    {
+                        GetSingleton().StopActionPreview(module);
                         module.Actived = false;
+                    }
                 }
 
                 //show move range
-                GetSingleton().m_selectedUnit = value;
                 BattleUIController.DisposeMoveHighlights();      
                 if(value!= null && value.MovesAvalaible>0)
                 {
@@ -59,10 +62,11 @@ public class BattleManager : Singleton<BattleManager>
                 }
                 else if(value == null)
                 {
-
+                    BattleUIController.CursorController.ResetCursor();
                     BattleUIController.DisposeActionHighlights();
                     BattleUIController.HidePathTrail();
                 }
+                GetSingleton().m_selectedUnit = value;
                 EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("SelectedUnitChange").Invoke(value);
             }
         }
@@ -157,6 +161,8 @@ public class BattleManager : Singleton<BattleManager>
 
         m_unitPathFound = false;
         bool moduleActived = SelectedUnit.ActivedModule(out var module);
+
+        //move range preview
         if (SelectedUnit.MovesAvalaible > 0 && !moduleActived && !SelectedUnit.Agent.IsMoving)
         {
             List<IsoGridCoord> range = new List<IsoGridCoord>(m_moveRange);
@@ -170,12 +176,35 @@ public class BattleManager : Singleton<BattleManager>
                     BattleUIController.HidePathTrail();
             }
         }
+
+
+        //action module preview
         else if (moduleActived && module.IsAvailable)
         {
+            StopActionPreview(module);
+            BattleUIController.DisposeMoveHighlights();
+            
             SelectedUnit.SetDirection(SelectedUnit.Agent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
             m_actionRange = module.ActionRange(SelectedUnit.Agent.Coordinate,SelectedUnit.Agent.Direction);
-            BattleUIController.DisposeMoveHighlights();
             BattleUIController.HighlightActionRange(m_actionRange,"ActionRange");
+            IsoGridCoord[] confirmed = ConfirmActionRange(m_actionRange);
+            if(confirmed.Length>0)
+            {
+                BattleUIController.ActionPreviewer.InitPreview();
+                BattleUIController.CursorController.SetCursor("TargetValid");
+                var param = new ActionModuleParam
+                {
+                    unit = SelectedUnit,
+                    confirmedCoord = confirmed,
+                };
+                module.GeneratePreview(param);
+                StartCoroutine(module.StartPreview());
+            }
+            else
+            {
+                // module.StopPreview();
+                BattleUIController.CursorController.SetCursor("TargetInvalid");
+            }
         }
     }
 
@@ -188,25 +217,35 @@ public class BattleManager : Singleton<BattleManager>
         Debug.Log("Module Action: " + actionModule.ModuleName);
         if (SelectedUnit.CompareTag("PlayerUnit"))
         {
-            IsoGridCoord[] confirmed = ConfirmActionRange(actionModule);
+            IsoGridCoord[] confirmed = ConfirmActionRange(m_actionRange);
             if (confirmed.Length > 0)
             {
                 var action = SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed);
                 RegistorAction(action,PlayBackMode.Instant);
+                StopActionPreview(actionModule);
                 BattleUIController.DisposeActionHighlights();
             }
         }
         else if (SelectedUnit.CompareTag("MonsterUnit"))
         {
-            IsoGridCoord[] confirmed = ConfirmActionRange(actionModule);
+            IsoGridCoord[] confirmed = ConfirmActionRange(m_actionRange);
             if (confirmed.Length > 0)
             {
                 var action = SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed);
                 RegistorAction(action,PlayBackMode.EndOfTurn);
+                StopActionPreview(actionModule);
                 BattleUIController.DisposeActionHighlights();
                 BattleUIController.ShowActionTarget(SelectedUnit,confirmed);
             }
         }
+    }
+
+
+    private void StopActionPreview(ActionModule actionModule)
+    {
+        actionModule.StopPreview();
+        BattleUIController.ActionPreviewer.ClearPreview();
+        BattleUIController.CursorController.ResetCursor();
     }
 
     #endregion
@@ -263,18 +302,20 @@ public class BattleManager : Singleton<BattleManager>
                 var action = SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord);
                 RegistorAction(action,PlayBackMode.Instant);
                 BattleUIController.StartPathTrailing(SelectedUnit);
+                BattleUIController.CursorController.ResetCursor();
             }
             else if (moduleActived && activedModule.IsAvailable)
             {
                 ModuleActionHandler(activedModule);
+                BattleUIController.CursorController.ResetCursor();
             }
         }
     }
 
-    private IsoGridCoord[] ConfirmActionRange(ActionModule module)
+    private IsoGridCoord[] ConfirmActionRange(IsoGridCoord[] action_range)
     {    
         List<IsoGridCoord> range = new List<IsoGridCoord>();
-        foreach (var coord in m_actionRange)
+        foreach (var coord in action_range)
         {
             if (coord == m_pointerGridCoord)
                 range.Add(coord);

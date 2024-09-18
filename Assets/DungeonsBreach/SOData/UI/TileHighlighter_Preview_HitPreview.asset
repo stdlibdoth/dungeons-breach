@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 747df6c2e37def74199ad5bbeefdfb7a, type: 3}
-  m_Name: TileHighlighter_MoveRange
+  m_Name: TileHighlighter_Preview_HitPreview
   m_EditorClassIdentifier: 
   data:
-    name: MoveRange
+    name: HitPreview
     sprite:
-    - {fileID: 21300000, guid: b67614a11cf982b42823c35063e63a70, type: 3}
-    sortingOrder: 10
-    sortingLayer: Highlighter
-    color: {r: 0.43165872, g: 1, b: 0.28616333, a: 0.6666667}
+    - {fileID: 21300000, guid: 85e8f1d834200ca43953fe591c26fc0b, type: 3}
+    sortingOrder: 51
+    sortingLayer: UI
+    color: {r: 1, g: 1, b: 1, a: 1}

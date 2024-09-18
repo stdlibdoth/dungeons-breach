@@ -125,4 +125,10 @@ public static class IsoGridMetrics
         return (IsoGridDirection)index;
     }
 
+
+    public static IsoGridDirection Opposite(this IsoGridDirection direction)
+    {
+        return (IsoGridDirection)(((int)direction + 2)%4);
+    }
+
 }

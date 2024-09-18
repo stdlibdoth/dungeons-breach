@@ -16,5 +16,6 @@ MonoBehaviour:
     name: TileSelected
     sprite:
     - {fileID: 21300000, guid: 0733a4703bb74e04b94ced7e11dd68b3, type: 3}
-    sortingOrder: 10
+    sortingOrder: 100
+    sortingLayer: Highlighter
     color: {r: 0.94509804, g: 0.5803922, b: 0, a: 1}

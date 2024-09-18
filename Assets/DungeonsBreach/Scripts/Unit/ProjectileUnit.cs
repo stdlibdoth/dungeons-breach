@@ -17,16 +17,20 @@ public class ProjectileUnit : UnitBase
         StartCoroutine(StartProjectile());
     }
 
-    public override DamageAction Damage(ActionTileInfo attack_info)
+    public override UnitDamageAction Damage(ActionTileInfo attack_info)
     {
         var action = new SelfDamageAction();
         DamageActionParam param = new DamageActionParam
         {
-            animator = m_animator,
+            animationStateData = new AnimationStateData
+            {
+                animator = m_animator,
+                animationState = "Damage"
+            },
             attackInfo = attack_info,
             unit = this,
         };
-        return action.Build(param) as DamageAction;
+        return action.Build(param) as UnitDamageAction;
     }
 
 

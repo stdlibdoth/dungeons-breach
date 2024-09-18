@@ -34,7 +34,6 @@ public class PlayerStatusBar : MonoBehaviour
 
     private void ClearHP()
     {
-        Debug.Log("Clear");
         foreach (var item in m_HP)
         {
             DestroyImmediate(item);

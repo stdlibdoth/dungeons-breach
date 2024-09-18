@@ -17,4 +17,5 @@ MonoBehaviour:
     sprite:
     - {fileID: 21300000, guid: 4ee0d9fa30db4aa46b070a8c7d676665, type: 3}
     sortingOrder: 20
+    sortingLayer: Highlighter
     color: {r: 1, g: 1, b: 1, a: 1}

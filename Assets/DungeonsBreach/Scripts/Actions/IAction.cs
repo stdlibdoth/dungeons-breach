@@ -82,7 +82,7 @@ public class ActionModuleParam :IActionParam
 public class DamageActionParam:IActionParam
 {
     public ActionTileInfo attackInfo;
-    public Animator animator;
+    public AnimationStateData animationStateData;
     public UnitBase unit;
 }
 

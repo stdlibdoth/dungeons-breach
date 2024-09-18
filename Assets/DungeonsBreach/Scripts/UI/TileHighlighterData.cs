@@ -9,6 +9,7 @@ public class TileHighlighterData
     [SerializeField] public string name;
     [SerializeField] public Sprite[] sprite;
     [SerializeField] public int sortingOrder;
+    [SerializeField] public string sortingLayer;
     [SerializeField] public Color color;
 
     public static TileHighlighterData Copy(TileHighlighterData data)
@@ -18,7 +19,8 @@ public class TileHighlighterData
             sprite = data.sprite,
             name = data.name,
             sortingOrder = data.sortingOrder,
-            color = data.color
+            color = data.color,
+            sortingLayer = data.sortingLayer
         };
     }
 }

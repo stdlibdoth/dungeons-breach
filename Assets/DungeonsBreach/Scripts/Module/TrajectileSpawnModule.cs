@@ -13,9 +13,16 @@ public class TrajectileSpawnModule : ActionModule
 
     public override ActionPriority Priority { get; set; }
 
+
+    #region IAction
+
     public override IAction Build<T>(T param)
     {
         m_actionParam = param as ActionModuleParam;
+        UnitStatus deltaStatus = UnitStatus.Empty;
+        deltaStatus.moves = -m_actionParam.unit.MovesAvalaible;
+        m_actionParam.unit.UpdateStatus(deltaStatus);
+        Actived=  false;
         IsAvailable = false;
         return this;
     }
@@ -37,6 +44,27 @@ public class TrajectileSpawnModule : ActionModule
 
         yield return null;
     }
+
+
+    #endregion
+
+    #region IPreviewable
+    public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override IEnumerator StartPreview()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void StopPreview()
+    {
+        throw new System.NotImplementedException();
+    }
+    #endregion
+
 
     private void PlayAnimation(UnitBase unit)
     {

@@ -21,16 +21,20 @@ public class TrajectileUnit : UnitBase
     }
 
 
-    public override DamageAction Damage(ActionTileInfo attack_info)
+    public override UnitDamageAction Damage(ActionTileInfo attack_info)
     {
         var action = new SelfDamageAction();
         DamageActionParam param = new DamageActionParam
         {
-            animator = m_animator,
+            animationStateData = new AnimationStateData
+            {
+                animator = m_animator,
+                animationState = "Damage"
+            },
             attackInfo = attack_info,
             unit = this,
         };
-        return action.Build(param) as DamageAction;
+        return action.Build(param) as UnitDamageAction;
     }
 
     private IEnumerator StartTrajectile()
@@ -52,7 +56,6 @@ public class TrajectileUnit : UnitBase
                 unit = this,
                 confirmedCoord = new IsoGridCoord[] { coord },
             };
-//            ActionAvailable = false;
             module.Actived = false;
             module.Build(param);
             m_unitStatus.moves = 0;

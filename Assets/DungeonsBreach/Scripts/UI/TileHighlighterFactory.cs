@@ -33,32 +33,32 @@ public class TileHighlighterFactory : MonoBehaviour
     }
 
 
-    public TileHighlighter GetHighlighter(string name,IsoGridDirection dir = IsoGridDirection.SE)
+    public TileHighlighter GetHighlighter(string key,IsoGridDirection dir = IsoGridDirection.SE)
     {
-        if(!m_data.ContainsKey(name))
+        if(!m_data.ContainsKey(key))
             return null;
 
 
         var l = m_highlighterPool.Get();
-        var data = m_data[name];
-        int index = math.clamp((int)dir, 0, data.sprite.Length);
-        l.Init(data.sprite[index],data.sortingOrder,data.color);
+        var data = m_data[key];
+        int index = math.clamp((int)dir, 0, data.sprite.Length-1);
+        l.Init(data.sprite[index],data.sortingOrder,data.color,data.sortingLayer);
         return l;
     }
 
 
-    public TileHighlighter[] GetHighlighters(int number, string name,IsoGridDirection dir = IsoGridDirection.SE)
+    public TileHighlighter[] GetHighlighters(int number, string key,IsoGridDirection dir = IsoGridDirection.SE)
     {
-        if (!m_data.ContainsKey(name))
+        if (!m_data.ContainsKey(key))
             return null;
 
         var l = new TileHighlighter[number];
-        var data = m_data[name];
-        int index = math.clamp((int)dir, 0, data.sprite.Length);
+        var data = m_data[key];
+        int index = math.clamp((int)dir, 0, data.sprite.Length-1);
         for (int i = 0; i < l.Length; i++)
         {
             l[i] = m_highlighterPool.Get();
-            l[i].Init(data.sprite[index], data.sortingOrder, data.color);
+            l[i].Init(data.sprite[index], data.sortingOrder, data.color,data.sortingLayer);
         }
         return l;
     }

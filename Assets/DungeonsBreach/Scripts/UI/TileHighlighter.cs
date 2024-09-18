@@ -13,11 +13,12 @@ public class TileHighlighter : MonoBehaviour
     private ObjectPool<TileHighlighter> m_pool;
 
 
-    public void Init(Sprite sprite, int sorting_order, Color color)
+    public void Init(Sprite sprite, int sorting_order, Color color, string sorting_layer)
     {
         m_spriteRenderer.sprite = sprite;
         m_spriteRenderer.color = color;
         m_spriteRenderer.sortingOrder = sorting_order;
+        m_spriteRenderer.sortingLayerID = SortingLayer.NameToID(sorting_layer);
     }
 
     public TileHighlighter SetPool(ObjectPool<TileHighlighter> pool)
@@ -40,10 +41,10 @@ public class TileHighlight
     private List<TileHighlighter> m_highlighters;
     
 
-    public TileHighlight(TileHighlighterFactory factory, IsoGridCoord[] coords, string name, IsoGridDirection dir = IsoGridDirection.SE)
+    public TileHighlight(TileHighlighterFactory factory, IsoGridCoord[] coords, string key, IsoGridDirection dir = IsoGridDirection.SE)
     {
         m_highlighters= new List<TileHighlighter>();
-        m_highlighters = new List<TileHighlighter>(factory.GetHighlighters(coords.Length, name, dir));
+        m_highlighters = new List<TileHighlighter>(factory.GetHighlighters(coords.Length, key, dir));
         for (int i = 0; i < coords.Length; i++)
         {
             m_highlighters[i].transform.position = coords[i].ToWorldPosition(GridManager.ActivePathGrid);

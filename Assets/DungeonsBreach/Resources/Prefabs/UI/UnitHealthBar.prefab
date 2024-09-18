@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1648878206117247563}
   - component: {fileID: 5816817742609441421}
+  - component: {fileID: 7592105285624360289}
+  - component: {fileID: 866548417155531080}
   m_Layer: 0
   m_Name: UnitHealthBar
   m_TagString: Untagged
@@ -53,6 +55,46 @@ MonoBehaviour:
   m_healthSprite: {fileID: 4477026257401751294}
   m_blockersHolder: {fileID: 9018107945246107881}
   m_blockerPrefab: {fileID: 1313077111317064204, guid: a50be15218a330e478edfed56d40d6fb, type: 3}
+  m_animatorStates: {fileID: 866548417155531080}
+  m_animator: {fileID: 7592105285624360289}
+--- !u!95 &7592105285624360289
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223877573320720119}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 164dff228f9411a49a7508a0bc6219e6, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &866548417155531080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223877573320720119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce4d6fe593625634385395e1c4bde9af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_animatorStates:
+  - Damage
+  - Idle
+  - DamagePreview
+  m_animator: {fileID: 7592105285624360289}
 --- !u!1 &2196597265087566389
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e59e3adc3825a04ea9b369db9d3ca29, type: 3}
+  m_Name: CursorData
+  m_EditorClassIdentifier: 
+  m_data:
+  - key: TargetValid
+    texture: {fileID: 2800000, guid: ab9f6b0da9adeb445ac676cb184cdce0, type: 3}
+  - key: TargetInvalid
+    texture: {fileID: 2800000, guid: 06cc6fe4d844d9c4185a1593b79554bb, type: 3}
+  - key: MoveAvailable
+    texture: {fileID: 2800000, guid: 4d6f368e9d8517b41a89fb715e4c02b9, type: 3}
+  - key: MoveUnavailable
+    texture: {fileID: 2800000, guid: 8237ccacf1ab497419ac83a7a64d987f, type: 3}

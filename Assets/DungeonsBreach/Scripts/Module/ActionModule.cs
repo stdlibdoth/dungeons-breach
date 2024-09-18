@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public abstract class ActionModule : Module, IAction
+public abstract class ActionModule : Module, IAction,IPreviewable<ActionModuleParam>
 {
     [Space]
     [Header("profile")]
@@ -12,7 +12,7 @@ public abstract class ActionModule : Module, IAction
     [Space]
     [Header("Animation Data")]
     [SerializeField] protected bool m_animationDataOverride;
-    [SerializeField] protected ActionAnimationData m_animationData;
+    [SerializeField] protected AnimationStateData m_animationData;
 
     [Space]
     [Header("Blocking Mask")]
@@ -22,6 +22,7 @@ public abstract class ActionModule : Module, IAction
     protected UnityEvent<string,bool> m_onActionAvailable = new UnityEvent<string,bool>();
     protected bool m_isAvailable;
 
+    public bool Actived { get;set; }
 
     public virtual bool IsAvailable
     {
@@ -36,10 +37,10 @@ public abstract class ActionModule : Module, IAction
         }
     }
 
-    public virtual UnityEvent<string,bool> OnActionAvailable{
+    public virtual UnityEvent<string,bool> OnActionAvailable
+    {
         get { return m_onActionAvailable;}
     }
-    public bool Actived { get;set; }
 
     public virtual IsoGridCoord[] ActionRange(IsoGridCoord center, IsoGridDirection dir)
     {
@@ -62,26 +63,38 @@ public abstract class ActionModule : Module, IAction
     public abstract IEnumerator ExcuteAction();
     public abstract IAction Build<T>(T param) where T : IActionParam;
 
-    //public virtual void AnimationDataOverride(ActionAnimationData data)
-    //{
-    //    m_animationData = new ActionAnimationData 
-    //    {
-    //        animationState = data.animationState,
-    //        animator = data.animator,
-    //    };
-    //}
+    public abstract IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data);
+
+    public abstract IEnumerator StartPreview();
+
+    public abstract void StopPreview();
+
 }
 
 
 [System.Serializable]
-public class ActionAnimationData
+public class AnimationStateData
 {
     public Animator animator;
     public string animationState;
 
-
-    public void PlayAnimation()
+    public void StopAnimation()
     {
-        animator?.Play(animationState);
+        animator?.Play("Idle");
+    }
+
+    public void PlayAnimation(bool check_current_state = false)
+    {
+        if(animator == null)
+            return;
+
+        bool boo = check_current_state;
+        if(check_current_state)
+            boo = animator.GetCurrentAnimatorStateInfo(0).IsName(animationState);
+        
+        if(!boo)
+        {
+            animator.Play(animationState);
+        }
     }
 }

@@ -57,12 +57,6 @@ public class UnitBase : MonoBehaviour
         get { return m_modulesHolder.GetComponentsInChildren<Module>(); }
     }
 
-    // public UnityEvent<UnitStatus> OnStatusChange
-    // {
-    //     get { return m_onStatusChange;}
-    // }
-
-
     protected void Start()
     {
         Spawn();
@@ -81,12 +75,12 @@ public class UnitBase : MonoBehaviour
         EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitSpawn").Invoke(this);
     }
 
-    public virtual bool GenerateActionAnimationData(string animation_state, out ActionAnimationData data)
+    public virtual bool GenerateActionAnimationData(string animation_state, out AnimationStateData data)
     {
         data = null;
         if(m_animatorStates.TryGetAnimatorState(animation_state))
         {
-            data = new ActionAnimationData
+            data = new AnimationStateData
             {
                 animationState = animation_state,
                 animator = m_animator,
@@ -225,28 +219,48 @@ public class UnitBase : MonoBehaviour
                     unit = this,
                     confirmedCoord = confirmed_coord,
                 };
-                module.Actived = false;
-                m_unitStatus.moves = 0;
-                return module.Build(param) as ActionModule;
+                module.Build(param);
+                module.GeneratePreview(param);
+                return module;
             }
         }
         return null;
     }
 
-    public virtual DamageAction Damage(ActionTileInfo attack_info)
+    public virtual UnitDamageAction Damage(ActionTileInfo attack_info)
     {
-        var action = new DamageAction();
+        var action = new UnitDamageAction();
         DamageActionParam param = new DamageActionParam
         {
-            animator = m_animator,
+            animationStateData = new AnimationStateData
+            {
+                animator = m_animator,
+                animationState = "Damage",
+            },
             attackInfo = attack_info,
             unit = this,
         };
-        return action.Build(param) as DamageAction;
+
+        AnimationStateData[] animData = new AnimationStateData[2];
+        animData[0]=new AnimationStateData
+        {
+            animationState = "DamagePreview",
+            animator = m_animator,
+        };
+        animData[0].animator.SetFloat("DirBlend",(int)m_pathAgent.Direction);
+        m_healthBar.GenerateAnimationStateData("DamagePreview",out animData[1]);
+        UnitDamagePreviewData preview = new UnitDamagePreviewData
+        {   
+            unitHealthBar = m_healthBar,
+            animationData = animData,
+        };
+        action.Build(param);
+        action.GeneratePreview(preview);
+        return action;
     }
 
 
-    public virtual IAction Move(LocamotionType locamotion, IsoGridCoord target, bool use_move_point = true)
+    public virtual MoveAction Move(LocamotionType locamotion, IsoGridCoord target, bool use_move_point = true)
     {
         var action = new MoveAction();
         var param = new MoveActionParam
@@ -258,7 +272,7 @@ public class UnitBase : MonoBehaviour
         if (use_move_point)
             m_pathAgent.OnReachingTarget.AddListener(() => m_unitStatus.moves = 0);
 
-        return action.Build(param);
+        return action.Build(param) as MoveAction;
     }
 
     public virtual void Die()

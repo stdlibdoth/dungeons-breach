@@ -8,9 +8,17 @@ public class BasicAttackModule : ActionModule
 
     public override ActionPriority Priority { get; set; }
 
+
+    private List<UnitDamageAction> m_tempDamagePreview = new List<UnitDamageAction>();
+
+#region IAction
     public override IAction Build<T>(T param)
     {
         m_actionParam = param as ActionModuleParam;
+        UnitStatus deltaStatus = UnitStatus.Empty;
+        deltaStatus.moves = -m_actionParam.unit.MovesAvalaible;
+        m_actionParam.unit.UpdateStatus(deltaStatus);
+        Actived = false;
         IsAvailable = false;
         return this;
     }
@@ -61,4 +69,51 @@ public class BasicAttackModule : ActionModule
         if (animationData.animator != null)
             yield return new WaitUntil(() => !animationData.animator.GetCurrentAnimatorStateInfo(0).IsName(animationData.animationState));
     }
+
+    #endregion
+
+    #region IPreviewable
+    public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
+    {
+        // if(m_actionParam == null)
+        m_actionParam = data;
+        return this;
+    }
+
+    public override IEnumerator StartPreview()
+    {
+        var unit = m_actionParam.unit;
+        var confirmed = new List<IsoGridCoord>(m_actionParam.confirmedCoord);
+        foreach (var attack in m_profile.data)
+        {
+            IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
+            if (!confirmed.Contains(coord))
+                continue;
+
+            if (LevelManager.TryGetUnits(coord, out var hits))
+            {
+                var attackInfo = attack;
+                attackInfo.pushDir = attack.pushDir.RotateRelativeTo(unit.Agent.Direction);
+                foreach (var hit in hits)
+                {
+                   var action = hit.Damage(attackInfo);
+                   m_tempDamagePreview.Add(action);
+                   yield return action.StartPreview();
+                }
+            }
+        }
+        yield return null;
+    }
+
+    public override void StopPreview()
+    {
+        foreach (var item in m_tempDamagePreview)
+        {
+            item.StopPreview();
+        }
+        m_tempDamagePreview.Clear();
+    }
+
+
+    #endregion
 }

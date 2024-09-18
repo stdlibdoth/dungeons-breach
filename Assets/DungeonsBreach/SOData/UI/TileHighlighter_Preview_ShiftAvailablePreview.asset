@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 747df6c2e37def74199ad5bbeefdfb7a, type: 3}
-  m_Name: TileHighlighter_Unmovable
+  m_Name: TileHighlighter_Preview_ShiftAvailablePreview
   m_EditorClassIdentifier: 
   data:
-    name: Unmovable
+    name: ShiftAvailablePreview
     sprite:
-    - {fileID: 21300000, guid: d73f691ffe4e6d74da4810207018f2eb, type: 3}
     - {fileID: 21300000, guid: a87a13ed074633644ab887d62414fd5e, type: 3}
     - {fileID: 21300000, guid: ba1c6fe7f47735647ab846741f9d6fa6, type: 3}
     - {fileID: 21300000, guid: 76f801bc6cef768439a119445ef7eb1e, type: 3}
-    sortingOrder: 10
-    color: {r: 0.5176471, g: 0.5176471, b: 0.5176471, a: 1}
+    - {fileID: 21300000, guid: d73f691ffe4e6d74da4810207018f2eb, type: 3}
+    sortingOrder: 53
+    sortingLayer: Highlighter
+    color: {r: 1, g: 0.7372549, b: 0, a: 1}

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,26 +12,29 @@ public class BattleUIController : Singleton<BattleUIController>
     [SerializeField] private Button m_resetTurnBtn;
 
 
+
+    [Header("Refs")]
+    [SerializeField] private ActionPreviewer m_previewer;
+    [SerializeField] private CursorController m_cursorController;
+    [SerializeField] private PathTrailer m_pathTrailer;
     [SerializeField] private TileHighlighterFactory m_tileHighlighterFactory;
 
 
-    [SerializeField] private PathTrailer m_pathTrailer;
-
-    private ActionModule[] m_selectedActionModules = new ActionModule[0];
-
-    private UnitBase m_prevSelection;
+    private TileHighlight m_pathHL;
+    private TileHighlight m_actionRangeHL;
 
 
-    private TileHighlight m_pathHighlight;
-    private TileHighlight m_actionHighlight;
+    private Dictionary<UnitBase,TileHighlight> m_actionTargetHL = new Dictionary<UnitBase, TileHighlight>();
 
 
-    private Dictionary<UnitBase,TileHighlight> m_actionTargetHighlights = new Dictionary<UnitBase, TileHighlight>();
-
-
-    public static TileHighlighterFactory TileHighlighterFactory
+    public static ActionPreviewer ActionPreviewer
     {
-        get { return GetSingleton().m_tileHighlighterFactory; }
+        get { return GetSingleton().m_previewer; }
+    }
+
+    public static CursorController CursorController
+    {
+        get{return GetSingleton().m_cursorController;}
     }
 
 
@@ -51,33 +53,35 @@ public class BattleUIController : Singleton<BattleUIController>
         BattleManager.StartTurn();
     }
 
-    #region public methods
+    #region Range Highlights
 
     public static void HighlightPathRange(IsoGridCoord[] coords, string highliter_name)
     {
         var singleton = GetSingleton();
-        singleton.m_pathHighlight?.Release();
-        singleton.m_pathHighlight = new TileHighlight(singleton.m_tileHighlighterFactory,coords,highliter_name);
+        singleton.m_pathHL?.Release();
+        singleton.m_pathHL = new TileHighlight(singleton.m_tileHighlighterFactory,coords,highliter_name);
     }
 
     public static void DisposeMoveHighlights()
     {
-        GetSingleton().m_pathHighlight?.Release();
+        GetSingleton().m_pathHL?.Release();
     }
 
     public static void DisposeActionHighlights()
     {
-        GetSingleton().m_actionHighlight?.Release();
+        GetSingleton().m_actionRangeHL?.Release();
     }
 
     public static void HighlightActionRange(IsoGridCoord[] coords, string highliter_name)
     {
         var singleton = GetSingleton();
-        singleton.m_actionHighlight?.Release();
-        singleton.m_actionHighlight = new TileHighlight(singleton.m_tileHighlighterFactory,coords,highliter_name);
+        singleton.m_actionRangeHL?.Release();
+        singleton.m_actionRangeHL = new TileHighlight(singleton.m_tileHighlighterFactory,coords,highliter_name);
     }
     
+    #endregion
 
+    #region  pointer
     public static void ShowPointerHighlight(IsoGridCoord coord)
     {
         GetSingleton().m_pointerHighlight.transform.position = coord.ToWorldPosition(GridManager.ActivePathGrid);
@@ -95,7 +99,10 @@ public class BattleUIController : Singleton<BattleUIController>
         GetSingleton().m_pointerHighlight.gameObject.SetActive(false);
     }
 
+    #endregion
 
+
+    #region  Path trailer
     public static void ShowPathTrail(List<IsoGridCoord> path)
     {
         GetSingleton().m_pathTrailer.Init(path);
@@ -110,31 +117,34 @@ public class BattleUIController : Singleton<BattleUIController>
     {
         GetSingleton().m_pathTrailer.StartTrailing(unit);
     }
+    #endregion
 
 
-
+    #region action highlight
     public static void ShowActionTarget(UnitBase unit, IsoGridCoord[] coords)
     {
         var singleton = GetSingleton();
         var factory = singleton.m_tileHighlighterFactory;
-        if(singleton.m_actionTargetHighlights.ContainsKey(unit))
+        if(singleton.m_actionTargetHL.ContainsKey(unit))
         {
-            singleton.m_actionTargetHighlights[unit].Release();
+            singleton.m_actionTargetHL[unit].Release();
         }
-        singleton.m_actionTargetHighlights[unit] = new TileHighlight(factory,coords,"Target");
+        singleton.m_actionTargetHL[unit] = new TileHighlight(factory,coords,"Target");
     }
 
     public static void ClearAllActionTarget()
     {
         var singleton = GetSingleton();
-        foreach (var item in singleton.m_actionTargetHighlights)
+        foreach (var item in singleton.m_actionTargetHL)
         {
             item.Value.Release();
         }
-        singleton.m_actionTargetHighlights.Clear();
+        singleton.m_actionTargetHL.Clear();
     }
 
     #endregion
+
+
 
     #region Turn Control
     private void UndoMovementBtnPressed()
@@ -147,7 +157,7 @@ public class BattleUIController : Singleton<BattleUIController>
     {
 
     }
-#endregion
+    #endregion
 
 
     private void OnBattleStart()

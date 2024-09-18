@@ -15,11 +15,6 @@ public class PathFindingAgent : MonoBehaviour
     [SerializeField] private Transform m_targetTransform;
     [SerializeField] private IsoGridDirection m_direction;
 
-    [SerializeField] private List<IsoGridCoord> m_wp;
-
-
-
-
     private UnityEvent m_onReachingTarget;
 
     private List<ILocamotion> m_locamotions;
@@ -132,7 +127,6 @@ public class PathFindingAgent : MonoBehaviour
         var tileMask = grid.PathingMaskSingleTile(m_coord);
         grid.UpdatePathFindingMask(m_coord, tileMask ^ m_intrinsicMask);
         m_isMoving = true;
-        Debug.Log(m_isMoving);
         if (IsoGridPathFinding.FindPathAstar(m_coord, target, grid, m_blockingMask, out var path))
         {
             List<IsoGridCoord> waypoints = new List<IsoGridCoord>();
@@ -145,7 +139,6 @@ public class PathFindingAgent : MonoBehaviour
             }
             waypoints.Add(target);
 
-            m_wp = waypoints;
             for (int i = 0; i < waypoints.Count; i++)
             {
                 var moveTarget = waypoints[i];
@@ -157,8 +150,8 @@ public class PathFindingAgent : MonoBehaviour
             m_onReachingTarget.Invoke();
             m_onReachingTarget.RemoveAllListeners();
         }
+        Direction = locamotion.Direction;
         m_isMoving = false;
-        Debug.Log(m_isMoving);
     }
 
 
@@ -179,9 +172,10 @@ public class PathFindingAgent : MonoBehaviour
         yield return StartCoroutine(locamotion.StartLocamotion(target, speed_override));
     }
 
-    //no path finding
+    //no path finding, no iso grid snapping
     public IEnumerator MoveStraight(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance = 0)
     {
+        m_isMoving = true;
         var grid = GridManager.ActivePathGrid;
         var tileMask = grid.PathingMaskSingleTile(m_coord);
         grid.UpdatePathFindingMask(m_coord, tileMask ^ m_intrinsicMask);
@@ -191,11 +185,18 @@ public class PathFindingAgent : MonoBehaviour
         m_coord = target;
         tileMask = grid.PathingMaskSingleTile(m_coord);
         grid.UpdatePathFindingMask(m_coord, tileMask | m_intrinsicMask);
+        Direction = locamotion.Direction;
+        m_isMoving = false;
     }
+
+    //no path finding, no iso grid snapping
     public IEnumerator MoveStraight(LocamotionType locamotion_type, Vector3 target,float stop_distance = 0)
     {
+        m_isMoving = true;
         TryGetLocamotion(locamotion_type, out var locamotion);
         yield return StartCoroutine(locamotion.StartLocamotion(target, stop_distance));
         m_coord = target.ToIsoCoordinate(GridManager.ActivePathGrid);
+        Direction = locamotion.Direction;
+        m_isMoving= false;
     }
 }
