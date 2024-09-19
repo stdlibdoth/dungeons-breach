@@ -36,6 +36,7 @@ public class BattleManager : Singleton<BattleManager>
 
     bool m_unitPathFound;
 
+
     public static UnitBase SelectedUnit
     {
         get { return GetSingleton().m_selectedUnit; }
@@ -77,6 +78,12 @@ public class BattleManager : Singleton<BattleManager>
         get { return GetSingleton().m_onStartPlayerTurn; }
     }
 
+    public static int RoundCount
+    {
+        get { return m_roundCount; }
+    }
+
+    #region monobehaviour
 
     protected override void Awake()
     {
@@ -97,11 +104,7 @@ public class BattleManager : Singleton<BattleManager>
         StartTurn();
     }
 
-
-    public static int RoundCount
-    {
-        get { return m_roundCount; }
-    }
+    #endregion
 
     public static void RegistorAction(IAction action, PlayBackMode mode)
     {
@@ -171,9 +174,19 @@ public class BattleManager : Singleton<BattleManager>
                 var agent = SelectedUnit.Agent;
                 m_unitPathFound = IsoGridPathFinding.FindPathAstar(agent.Coordinate, coord, GridManager.ActivePathGrid, agent.BlockingMask, out var path);
                 if(m_unitPathFound)
+                {
                     BattleUIController.ShowPathTrail(path);
+                    BattleUIController.CursorController.SetCursor("MoveAvailable");
+                }
                 else
+                {
                     BattleUIController.HidePathTrail();
+                }
+            }
+            else
+            {
+                BattleUIController.HidePathTrail();
+                BattleUIController.CursorController.SetCursor("MoveUnavailable");
             }
         }
 
