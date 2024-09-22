@@ -28,8 +28,9 @@ public class BasicSpawnModule : ActionModule
 
     public override IEnumerator ExcuteAction()
     {
+ 
         var unit = m_actionParam.unit;
-        Debug.Log(unit + " spawn " + m_spawnUnit.name);
+        Debug.Log(unit + " spawn " + m_spawnUnit.name);       
         PlayAnimation(unit);
         Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.Agent.Direction).localPosition;
         var grid = GridManager.ActivePathGrid;

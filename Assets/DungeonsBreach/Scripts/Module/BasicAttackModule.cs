@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class BasicAttackModule : ActionModule
 {
-    private ActionModuleParam m_actionParam;
+    protected ActionModuleParam m_actionParam;
 
     public override ActionPriority Priority { get; set; }
 
 
-    private List<UnitDamageAction> m_tempDamagePreview = new List<UnitDamageAction>();
+    protected List<UnitDamageAction> m_tempDamagePreview = new List<UnitDamageAction>();
 
 #region IAction
     public override IAction Build<T>(T param)
@@ -32,7 +32,6 @@ public class BasicAttackModule : ActionModule
         foreach (var attack in m_profile.data)
         {
             IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
-            Debug.Log(coord);
             if (!confirmed.Contains(coord))
                 continue;
 

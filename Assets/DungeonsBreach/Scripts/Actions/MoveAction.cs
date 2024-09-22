@@ -27,3 +27,11 @@ public class MoveAction : IAction
         //yield return GameManager.DispachCoroutine(m_moveDelegate(m_locamotion, m_target));
     }
 }
+
+
+public class MoveActionParam:IActionParam
+{
+    public LocamotionType locamotion;
+    public IsoGridCoord target;
+    public MoveAgentDelegate moveAgentDelegate;
+}

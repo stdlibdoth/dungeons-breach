@@ -148,6 +148,15 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
 
 
+public class DamageActionParam:IActionParam
+{
+    public ActionTileInfo attackInfo;
+    public AnimationStateData animationStateData;
+    public UnitBase unit;
+}
+
+
+
 public class SelfDamageAction:UnitDamageAction
 {
     public override IEnumerator ExcuteAction()

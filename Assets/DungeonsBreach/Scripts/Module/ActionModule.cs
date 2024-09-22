@@ -42,6 +42,26 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
         get { return m_onActionAvailable;}
     }
 
+    public ActionTileProfile Profile
+    {
+        get{return m_profile;}
+    }
+
+
+    public virtual IsoGridCoord[] ActionTarget(IsoGridCoord[] confirmed, IsoGridCoord[] range)
+    {
+        List<IsoGridCoord> targets = new List<IsoGridCoord>();
+        for (int i = 0; i < confirmed.Length; i++)
+        {
+            for (int j = 0; j < range.Length; j++)
+            {
+                if(confirmed[i]== range[j])
+                    targets.Add(confirmed[i]);
+            }
+        }
+        return targets.ToArray();
+    }
+
     public virtual IsoGridCoord[] ActionRange(IsoGridCoord center, IsoGridDirection dir)
     {
         List<IsoGridCoord> range = new List<IsoGridCoord>();
@@ -70,6 +90,13 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
     public abstract void StopPreview();
 
 }
+
+public class ActionModuleParam :IActionParam
+{
+    public UnitBase unit;
+    public IsoGridCoord[] confirmedCoord;
+}
+
 
 
 [System.Serializable]

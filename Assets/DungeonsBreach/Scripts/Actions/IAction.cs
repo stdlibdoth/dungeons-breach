@@ -73,26 +73,6 @@ public interface IActionParam
 }
 
 
-public class ActionModuleParam :IActionParam
-{
-    public UnitBase unit;
-    public IsoGridCoord[] confirmedCoord;
-}
-
-public class DamageActionParam:IActionParam
-{
-    public ActionTileInfo attackInfo;
-    public AnimationStateData animationStateData;
-    public UnitBase unit;
-}
-
-public class MoveActionParam:IActionParam
-{
-    public LocamotionType locamotion;
-    public IsoGridCoord target;
-    public MoveAgentDelegate moveAgentDelegate;
-}
-
 public delegate IEnumerator MoveAgentDelegate(LocamotionType locamotion_type, IsoGridCoord target);
 public enum PlayBackMode
 {

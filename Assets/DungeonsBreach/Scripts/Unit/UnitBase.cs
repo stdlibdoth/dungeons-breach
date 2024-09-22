@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Mathematics;
 using UnityEngine.Events;
 
 
@@ -103,6 +104,20 @@ public class UnitBase : MonoBehaviour
         }
     }
 
+    public bool TryFetchModule(string module_name, out ActionModule module)
+    {
+        module = null;
+        foreach (var item in m_modulesHolder.GetComponentsInChildren<ActionModule>(true))
+        {
+            if(item.ModuleName == module_name)
+            {
+                module = item;
+                return true;
+            }
+        }
+        return false;
+    }
+
     // protected virtual void ApplyModuleStatus()
     // {
     //     var initial = m_intrinsicStatus;
@@ -189,7 +204,7 @@ public class UnitBase : MonoBehaviour
     public virtual void UpdateStatus(UnitStatus delta_status)
     {
         m_unitStatus += delta_status;
-        //m_onStatusChange.Invoke(m_unitStatus);
+        ClampHP();
         RefreshHealthBar(delta_status.maxHP!=0);
         if (m_unitStatus.hp <= 0)
             Die();
@@ -289,6 +304,12 @@ public class UnitBase : MonoBehaviour
     #endregion
 
     #region helpers
+
+    private void ClampHP()
+    {
+        m_unitStatus.hp = math.clamp(m_unitStatus.hp,int.MinValue,m_unitStatus.maxHP);
+    }
+
     private void RefreshHealthBar(bool init)
     {
         if(m_healthBar == null)

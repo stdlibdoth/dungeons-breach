@@ -20,6 +20,7 @@ public class ActionBlackboard :MonoBehaviour
         {
             yield return StartCoroutine(m_actions[i].ExcuteAction());
         }
+        BattleUIController.ActionPreviewer.ClearPreview();
         m_actions.Clear();
     }
 

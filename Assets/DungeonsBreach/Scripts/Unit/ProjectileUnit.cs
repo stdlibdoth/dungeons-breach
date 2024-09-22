@@ -5,10 +5,16 @@ using UnityEngine;
 public class ProjectileUnit : UnitBase
 {
     [SerializeField] protected LocamotionType m_locamotionType;
-    
+    [SerializeField] protected ActionModule m_attackModule;
+
     public int TravelRange
     {
         get{ return m_intrinsicStatus.moveRange;}
+    }
+
+    public ActionModule ActionModule
+    {
+        get{return m_attackModule;}
     }
 
     protected override void Spawn()
@@ -38,7 +44,6 @@ public class ProjectileUnit : UnitBase
     {
         int dist = m_unitStatus.moveRange;
         int blockDist = GridManager.ActivePathGrid.MaskLineCast(m_pathAgent.BlockingMask, m_pathAgent.Coordinate, m_pathAgent.Direction, dist, out var coord);
-        Debug.Log(coord);
         yield return m_pathAgent.MoveStraight(m_locamotionType, coord);
 
         foreach (var module in m_actionModules)

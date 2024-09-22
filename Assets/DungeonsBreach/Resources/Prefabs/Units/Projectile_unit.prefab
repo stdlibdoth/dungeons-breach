@@ -231,7 +231,6 @@ MonoBehaviour:
   m_locamotionsHolder: {fileID: 5492506359443640664}
   m_targetTransform: {fileID: 5638377013397089015}
   m_direction: 0
-  m_wp: []
 --- !u!1 &8847670265301094354
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,6 +415,7 @@ MonoBehaviour:
   m_pathAgent: {fileID: 1168797530391816210}
   m_modulesHolder: {fileID: 6126178926493806156}
   m_animatorStates: {fileID: 5525359892139414588}
+  m_healthBar: {fileID: 0}
   m_unitStatus:
     maxHP: 0
     hp: 0
@@ -423,6 +423,7 @@ MonoBehaviour:
     moveRange: 0
     moves: 0
   m_locamotionType: 0
+  m_attackModule: {fileID: 4862700876921296328}
 --- !u!1001 &4683969450184994311
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -493,3 +494,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8336565877768912139, guid: 96ec8c1d8821b234eaee60106350e54d, type: 3}
   m_PrefabInstance: {fileID: 4683969450184994311}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4862700876921296328 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 178742979124607951, guid: 96ec8c1d8821b234eaee60106350e54d, type: 3}
+  m_PrefabInstance: {fileID: 4683969450184994311}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 196e955cc55180f4da9ad4877930d7d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

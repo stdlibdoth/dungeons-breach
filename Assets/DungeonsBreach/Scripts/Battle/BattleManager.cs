@@ -30,7 +30,6 @@ public class BattleManager : Singleton<BattleManager>
     private UnitBase m_selectedUnit;
     private UnityEvent<IsoGridCoord> m_onPointerCoordChange;
 
-    private List<IsoGridCoord> m_confirmedRange = new List<IsoGridCoord>();
     private IsoGridCoord[] m_actionRange;
     private IsoGridCoord[] m_moveRange;
 
@@ -180,13 +179,14 @@ public class BattleManager : Singleton<BattleManager>
                 }
                 else
                 {
+                    BattleUIController.CursorController.SetCursor("MoveUnavailable");
                     BattleUIController.HidePathTrail();
                 }
             }
             else
             {
                 BattleUIController.HidePathTrail();
-                BattleUIController.CursorController.SetCursor("MoveUnavailable");
+                BattleUIController.CursorController.ResetCursor();
             }
         }
 
@@ -245,19 +245,21 @@ public class BattleManager : Singleton<BattleManager>
             if (confirmed.Length > 0)
             {
                 var action = SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed);
+                var targets = actionModule.ActionTarget(confirmed,m_actionRange);
                 RegistorAction(action,PlayBackMode.EndOfTurn);
-                StopActionPreview(actionModule);
+                StopActionPreview(actionModule,false);
                 BattleUIController.DisposeActionHighlights();
-                BattleUIController.ShowActionTarget(SelectedUnit,confirmed);
+                BattleUIController.ShowActionTarget(SelectedUnit,targets);
             }
         }
     }
 
 
-    private void StopActionPreview(ActionModule actionModule)
+    private void StopActionPreview(ActionModule actionModule, bool reset_highlights = true)
     {
         actionModule.StopPreview();
-        BattleUIController.ActionPreviewer.ClearPreview();
+        if(reset_highlights)
+            BattleUIController.ActionPreviewer.ClearPreview();
         BattleUIController.CursorController.ResetCursor();
     }
 
