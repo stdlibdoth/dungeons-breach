@@ -423,7 +423,7 @@ MonoBehaviour:
     moveRange: 0
     moves: 0
   m_locamotionType: 0
-  m_attackModule: {fileID: 4862700876921296328}
+  m_actionModule: {fileID: 4862700876921296328}
 --- !u!1001 &4683969450184994311
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ProjectilePreviewer : MonoBehaviour
 {
-    [SerializeField] private LineRenderer m_lineRenderer;
-    [SerializeField] private Material m_enemyMat;
-    [SerializeField] private Material m_playerMat;
+    [SerializeField] protected LineRenderer m_lineRenderer;
+    [SerializeField] protected Material m_enemyMat;
+    [SerializeField] protected Material m_playerMat;
 
 
     public virtual void SetPreviewer(Vector3 start, Vector3 end, bool is_player)

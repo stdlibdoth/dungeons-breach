@@ -51,10 +51,6 @@ MonoBehaviour:
     defense: 0
     moveRange: 0
     moves: 0
-  m_animationDataOverride: 0
-  m_animationData:
-    animator: {fileID: 0}
-    animationState: 
   m_profile:
     data:
     - pushDir: 0
@@ -64,6 +60,12 @@ MonoBehaviour:
       relativeCoord:
         x: 0
         y: 0
+  m_animationDataOverride: 0
+  m_animationData:
+    animator: {fileID: 0}
+    animationState: 
+  m_blockingMask:
+    value: 0
 --- !u!1 &1085752279389924852
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,7 +207,6 @@ MonoBehaviour:
   m_locamotionsHolder: {fileID: 4185880647813514687}
   m_targetTransform: {fileID: 6612862855358882819}
   m_direction: 0
-  m_wp: []
 --- !u!1 &4986738429978339210
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,7 +327,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1623543699
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 7e59e355ccf46fd4a849f99a31b28b26, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -413,7 +414,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1623543699
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 6
   m_Sprite: {fileID: 21300000, guid: 53b813f3e89f3d7438b8b47cc90e5eaf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.61960787}
@@ -560,7 +561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476d4160f9af0874a90b1e0489acacdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_unitName: 
+  m_unitName: Trajectile
   m_intrinsicStatus:
     maxHP: 1
     hp: 1
@@ -571,6 +572,7 @@ MonoBehaviour:
   m_pathAgent: {fileID: 3996779505363619239}
   m_modulesHolder: {fileID: 2973567055798943112}
   m_animatorStates: {fileID: 1493146824693658976}
+  m_healthBar: {fileID: 0}
   m_unitStatus:
     maxHP: 0
     hp: 0
@@ -578,6 +580,8 @@ MonoBehaviour:
     moveRange: 0
     moves: 0
   m_locamotionType: 3
+  m_actionModule: {fileID: 706438961320700361}
+  m_trajectileLocamotion: {fileID: 4046453614762223744}
 --- !u!1 &9109101939474536149
 GameObject:
   m_ObjectHideFlags: 0

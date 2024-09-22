@@ -5,6 +5,18 @@ using UnityEngine;
 public class TrajectileUnit : UnitBase
 {
     [SerializeField] protected LocamotionType m_locamotionType;
+    [SerializeField] protected ActionModule m_actionModule;
+    [SerializeField] protected TrajectoryLocamotion m_trajectileLocamotion;
+
+    public ActionModule ActionModule
+    {
+        get{return m_actionModule;}
+    }
+
+    public Trajectory2D GetTrajectory(Vector3 start, Vector3 end)
+    {
+        return m_trajectileLocamotion.GetTrajectory(start,end);
+    }
 
     protected IsoGridCoord[] m_targets;
 

@@ -57,7 +57,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
     public override IEnumerator ExcuteAction()
     {
         var unit = m_actionParam.unit;
-        Debug.Log(unit + " spawn " + m_spawnUnit.name);
+        Debug.Log(unit + " projectile " + m_spawnUnit.name);
         List<IsoGridCoord> spawnTile = new List<IsoGridCoord>();
         foreach (var tileInfo in m_profile.data)
         {
@@ -98,12 +98,12 @@ public class ProjectileSpawnModule : BasicSpawnModule
         var pUnit = m_spawnUnit as ProjectileUnit;
         var center = m_actionParam.unit.Agent.Coordinate;
         var dir = m_actionParam.unit.Agent.Direction;
+        var grid = GridManager.ActivePathGrid;
 
         foreach (var tileInfo in m_profile.data)
         {
             IsoGridCoord startCoord = tileInfo.relativeCoord.OnRelativeTo(center, dir);
             IsoGridCoord end = startCoord;
-            var grid = GridManager.ActivePathGrid;
             if(grid.CheckRange(startCoord))
             {
                 GridManager.ActivePathGrid.MaskLineCast(pUnit.Agent.BlockingMask, startCoord, dir, pUnit.TravelRange, out end);

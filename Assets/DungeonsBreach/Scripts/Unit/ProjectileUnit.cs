@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProjectileUnit : UnitBase
 {
     [SerializeField] protected LocamotionType m_locamotionType;
-    [SerializeField] protected ActionModule m_attackModule;
+    [SerializeField] protected ActionModule m_actionModule;
 
     public int TravelRange
     {
@@ -14,7 +14,7 @@ public class ProjectileUnit : UnitBase
 
     public ActionModule ActionModule
     {
-        get{return m_attackModule;}
+        get{return m_actionModule;}
     }
 
     protected override void Spawn()

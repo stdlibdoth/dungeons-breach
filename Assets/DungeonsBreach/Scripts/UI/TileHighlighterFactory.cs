@@ -21,7 +21,7 @@ public class TileHighlighterFactory : MonoBehaviour
 
     private void Awake()
     {
-        m_highlighterPool = new ObjectPool<TileHighlighter>(CreateFunction, OnObjectGet, OnObjectRelease, DestroyFuntion);
+        m_highlighterPool = new ObjectPool<TileHighlighter>(CreateFunction, OnObjectGet, OnObjectRelease, DestroyFuntion,true,15);
     }
 
     private void Start()

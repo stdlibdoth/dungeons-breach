@@ -24,6 +24,15 @@ public class TrajectoryLocamotion : LocamotionBase
     [SerializeField] private float m_gravity;
 
 
+    public Trajectory2D GetTrajectory(Vector3 start, Vector3 end)
+    {
+        float x0 = end.x - start.x;
+        float y0 = end.y - start.y;
+        float tMax = m_animationLength * m_animationCycle;
+
+        return new Trajectory2D(new float2(x0, y0), m_gravity, tMax);        
+    }
+
     private IEnumerator MoveShadow(float t, Vector3 start, Vector3 end, float stop_distance)
     {
         if (m_shadow == null)
