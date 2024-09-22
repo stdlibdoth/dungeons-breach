@@ -109,7 +109,8 @@ public class ProjectileSpawnModule : BasicSpawnModule
                 GridManager.ActivePathGrid.MaskLineCast(pUnit.Agent.BlockingMask, startCoord, dir, pUnit.TravelRange, out end);
                 Vector3 endPos = end.ToWorldPosition(grid);
                 Vector3 startPos = m_spawnAnchor.GetAnchor(dir).localPosition + (Vector3)startCoord.ToWorldPosition(grid);
-                m_previewer.SetPreviewer(startPos,endPos);         
+                bool isAlly = m_actionParam.unit.CompareTag("PlayerUnit");
+                m_previewer.SetPreviewer(startPos,endPos,isAlly);         
                 foreach (var actionTileInfo in pUnit.ActionModule.Profile.data)
                 {
                     IsoGridCoord coord = actionTileInfo.relativeCoord.OnRelativeTo(end, dir);

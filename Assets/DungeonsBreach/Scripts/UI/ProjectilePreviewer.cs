@@ -5,16 +5,18 @@ using UnityEngine;
 public class ProjectilePreviewer : MonoBehaviour
 {
     [SerializeField] private LineRenderer m_lineRenderer;
+    [SerializeField] private Material m_enemyMat;
+    [SerializeField] private Material m_playerMat;
 
 
-
-    public virtual void SetPreviewer(Vector3 start, Vector3 end)
+    public virtual void SetPreviewer(Vector3 start, Vector3 end, bool is_player)
     {
         m_lineRenderer.positionCount = 2;
         Vector3[] pos = new Vector3[2];
         pos[0] = end;
         pos[1] = start;
         m_lineRenderer.SetPositions(pos);
+        m_lineRenderer.material = is_player? m_playerMat:m_enemyMat;
         m_lineRenderer.enabled = true;
     }
 

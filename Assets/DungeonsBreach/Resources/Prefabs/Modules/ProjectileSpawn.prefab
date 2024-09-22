@@ -136,7 +136,7 @@ LineRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -480073773
   m_SortingLayer: 2
-  m_SortingOrder: 102
+  m_SortingOrder: 71
   m_Positions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
@@ -212,6 +212,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_lineRenderer: {fileID: 3482722207818593819}
+  m_enemyMat: {fileID: 2100000, guid: c369e12e870306643bde6cdb56766df8, type: 2}
+  m_playerMat: {fileID: 2100000, guid: ee09edbd73bbe794b84f4c08acb89a9c, type: 2}
 --- !u!1 &6730438637851094165
 GameObject:
   m_ObjectHideFlags: 0
