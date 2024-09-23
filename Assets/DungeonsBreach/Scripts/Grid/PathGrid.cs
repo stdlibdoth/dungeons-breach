@@ -38,7 +38,6 @@ public class PathGrid : IsoGrid
         m_pathFindingMask[coord.To2DArrayIndex(m_dimension)] = new_value;
     }
 
-
     public int MaskLineCast(PathFindingMask mask,IsoGridCoord start ,IsoGridDirection dir, int max_dist, out IsoGridCoord coord)
     {
         var target = start;

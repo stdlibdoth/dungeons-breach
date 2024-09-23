@@ -274,7 +274,6 @@ public class UnitBase : MonoBehaviour
         return action;
     }
 
-
     public virtual MoveAction Move(LocamotionType locamotion, IsoGridCoord target, bool use_move_point = true)
     {
         var action = new MoveAction();
@@ -292,14 +291,13 @@ public class UnitBase : MonoBehaviour
 
     public virtual void Die()
     {
-        var tileMask = GridManager.ActivePathGrid.PathingMaskSingleTile(Agent.Coordinate);
-        GridManager.ActivePathGrid.UpdatePathFindingMask(Agent.Coordinate, tileMask ^ m_pathAgent.IntrinsicMask);
-        //gameObject.SetActive(false);
-        //m_animator.SetTrigger("Die");
-        LevelManager.RemoveUnit(this);
-        EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitDie").Invoke(this);
-        Destroy(gameObject);
+        UnitDieAction dieAction = new UnitDieAction();
+        dieAction.Build(new UnitDieActionParam{
+            unit = this,
+        });
+        BattleManager.RegistorAction(dieAction,PlayBackMode.Temp);
     }
+
 
     #endregion
 
@@ -320,7 +318,6 @@ public class UnitBase : MonoBehaviour
         }
         m_healthBar.SetHP(m_unitStatus.hp);
     }
-
 
     #endregion
 

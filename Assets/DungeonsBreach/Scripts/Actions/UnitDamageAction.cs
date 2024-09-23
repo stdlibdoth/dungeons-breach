@@ -56,11 +56,12 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
             }
             else if(GridManager.ActiveTileGrid.CheckRange(targetTile))
             {
+                Debug.Log("push");
                 var action = unit.Move(attackInfo.pushType, targetTile, false);
-                BattleManager.RegistorAction(action,PlayBackMode.Instant);
+                yield return action.ExcuteAction();
             }
-        }
-        yield return null;
+        }   
+        yield return BattleManager.ExcuteTempActions();
     }
 
     public virtual IAction Build<T>(T p) where T : IActionParam

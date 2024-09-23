@@ -53,6 +53,7 @@ public class UnitStatusPanel : MonoBehaviour
                 continue;
 
             ModuleToggle toggle = m_togglePool.Get();
+            toggle.transform.SetAsLastSibling();
             m_toggles.Add(module.ModuleName, toggle);
             var moduleUIData = m_moduleUIDataSO.GetData(module.ModuleName);
             toggle.Init(moduleUIData.icon);

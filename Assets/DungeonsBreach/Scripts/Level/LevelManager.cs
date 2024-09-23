@@ -71,5 +71,8 @@ public class LevelManager : Singleton<LevelManager>
     public static void RemoveUnit<T>(T unit) where T : UnitBase
     {
         GetSingleton().m_units.Remove(unit);
+        // var grid = GridManager.ActivePathGrid;
+        // var tileMask = grid.PathingMaskSingleTile(unit.Agent.Coordinate);
+        // grid.UpdatePathFindingMask(unit.Agent.Coordinate, tileMask ^ unit.Agent.IntrinsicMask);
     }
 }
