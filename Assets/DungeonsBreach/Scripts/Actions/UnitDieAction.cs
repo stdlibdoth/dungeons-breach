@@ -23,7 +23,8 @@ public class UnitDieAction : IAction
         //m_animator.SetTrigger("Die");
         LevelManager.RemoveUnit(unit);
         EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitDie").Invoke(unit);
-        GameObject.Destroy(unit.gameObject);
+        //GameObject.Destroy(unit.gameObject);
+        unit.gameObject.SetActive(false);
         yield return null;
     }
 }

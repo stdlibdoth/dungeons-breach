@@ -20,9 +20,9 @@ public class TrajectileUnit : UnitBase
 
     protected IsoGridCoord[] m_targets;
 
-    protected override void Spawn()
+    protected override void SpawnUnit()
     {
-        base.Spawn();
+        base.SpawnUnit();
         StartCoroutine(StartTrajectile());
     }
 
@@ -73,5 +73,14 @@ public class TrajectileUnit : UnitBase
             m_unitStatus.moves = 0;
             yield return module.ExcuteAction();
         }
+    }
+
+    public override void Die()
+    {
+        UnitDieAction dieAction = new UnitDieAction();
+        dieAction.Build(new UnitDieActionParam{
+            unit = this,
+        });
+        BattleManager.RegistorAction(dieAction,PlayBackMode.Instant);
     }
 }

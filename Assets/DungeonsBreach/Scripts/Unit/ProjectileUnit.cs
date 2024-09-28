@@ -17,9 +17,9 @@ public class ProjectileUnit : UnitBase
         get{return m_actionModule;}
     }
 
-    protected override void Spawn()
+    protected override void SpawnUnit()
     {
-        base.Spawn();
+        base.SpawnUnit();
         StartCoroutine(StartProjectile());
     }
 
@@ -58,5 +58,14 @@ public class ProjectileUnit : UnitBase
             m_unitStatus.moves = 0;
             yield return module.ExcuteAction();
         }
+    }
+    
+    public override void Die()
+    {
+        UnitDieAction dieAction = new UnitDieAction();
+        dieAction.Build(new UnitDieActionParam{
+            unit = this,
+        });
+        BattleManager.RegistorAction(dieAction,PlayBackMode.Instant);
     }
 }

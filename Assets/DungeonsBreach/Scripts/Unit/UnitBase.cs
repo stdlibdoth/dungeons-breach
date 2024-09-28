@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
-using UnityEngine.Events;
+using DG.Tweening;
 
 
 [System.Serializable]
@@ -25,6 +25,9 @@ public class UnitBase : MonoBehaviour
     [SerializeField] protected Transform m_modulesHolder;
     [SerializeField] protected SerializedAnimatorStates m_animatorStates;
     [SerializeField] protected UnitHealthBar m_healthBar;
+
+
+    [SerializeField] protected SpriteRenderer m_spriteRenderer;
 
     [Space]
     [Header("unit status")]
@@ -60,11 +63,12 @@ public class UnitBase : MonoBehaviour
 
     protected void Start()
     {
-        Spawn();
+        SpawnUnit();
     }
 
-    protected virtual void Spawn()
+    protected virtual void SpawnUnit()
     {
+        m_animator.enabled = false;
         m_pathAgent.Init();
         m_unitStatus = PreviewAppliedModuleStatus();
         m_unitStatus.hp = m_unitStatus.maxHP;
@@ -72,6 +76,7 @@ public class UnitBase : MonoBehaviour
         RefreshHealthBar(true);
         m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
         RefreshActionModules();
+        StartCoroutine(Spawn(m_pathAgent.Coordinate).ExcuteAction());
         LevelManager.AddUnit(this);
         EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitSpawn").Invoke(this);
     }
@@ -241,6 +246,23 @@ public class UnitBase : MonoBehaviour
         }
         return null;
     }
+    #endregion
+
+    #region Actions
+
+    public virtual UnitSpawnAction Spawn(IsoGridCoord coord)
+    {
+        var action = new UnitSpawnAction();
+        var param = new CoroutineActionParam
+        {
+            coroutineDelegate = ()=>{
+                return UnitSpawnAnimation(1f);
+            }
+        };
+        action.Build(param);
+        return action;
+    }
+
 
     public virtual UnitDamageAction Damage(ActionTileInfo attack_info)
     {
@@ -317,6 +339,20 @@ public class UnitBase : MonoBehaviour
             m_healthBar.Init(m_unitStatus.maxHP);
         }
         m_healthBar.SetHP(m_unitStatus.hp);
+    }
+
+
+    private IEnumerator UnitSpawnAnimation(float duration)
+    {
+        if(m_spriteRenderer!= null)
+        {
+            var color = m_spriteRenderer.color;
+            color.a = 0;
+            m_spriteRenderer.color = color;
+            m_spriteRenderer.DOFade(1,duration-0.1f);
+        }
+        yield return new WaitForSeconds(duration);
+        m_animator.enabled = true;
     }
 
     #endregion

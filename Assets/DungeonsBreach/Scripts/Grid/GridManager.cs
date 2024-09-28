@@ -27,12 +27,6 @@ public class GridManager : Singleton<GridManager>
         GenenratePathGrid();
     }
 
-
-    private void Start()
-    {
-    }
-
-
     public void GenenratePathGrid()
     {
         var pathGrid = ActivePathGrid;

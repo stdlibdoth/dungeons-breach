@@ -43,6 +43,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
             if (LevelManager.TryGetUnits(targetTile, out var hits))
             {
                 var temp = ActionTileInfo.Default;
+                temp.value = 1;
                 float stopDist = GridManager.ActivePathGrid.CellSize / 2;
                 Vector3 pos = unit.Agent.Coordinate.ToWorldPosition(GridManager.ActivePathGrid);
                 yield return unit.StartCoroutine(unit.Agent.AnimateAgent(LocamotionType.Shift, targetTile, stopDist));
@@ -123,8 +124,6 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData);
                 
                 //preview unit shift position
-
-
             }
         }
         m_damagePreviewCache.Add(this);

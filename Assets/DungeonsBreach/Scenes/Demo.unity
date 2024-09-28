@@ -9289,6 +9289,7 @@ MonoBehaviour:
   m_modulesHolder: {fileID: 1928555714525697086}
   m_animatorStates: {fileID: 404418988090611905}
   m_healthBar: {fileID: 1481531414}
+  m_spriteRenderer: {fileID: 5799932534553225677}
   m_unitStatus:
     maxHP: 0
     hp: 0
@@ -9539,6 +9540,7 @@ MonoBehaviour:
   m_modulesHolder: {fileID: 8479461073552210890}
   m_animatorStates: {fileID: 28071787234908780}
   m_healthBar: {fileID: 924619169}
+  m_spriteRenderer: {fileID: 7878634396068946309}
   m_unitStatus:
     maxHP: 0
     hp: 0
@@ -10003,6 +10005,7 @@ MonoBehaviour:
   m_modulesHolder: {fileID: 5732740654414821160}
   m_animatorStates: {fileID: 5758126841192078909}
   m_healthBar: {fileID: 127252569}
+  m_spriteRenderer: {fileID: 60831822631510277}
   m_unitStatus:
     maxHP: 0
     hp: 0
@@ -10531,6 +10534,7 @@ MonoBehaviour:
   m_modulesHolder: {fileID: 2808268805195486371}
   m_animatorStates: {fileID: 6262329041241209776}
   m_healthBar: {fileID: 1523631955}
+  m_spriteRenderer: {fileID: 787402852364414095}
   m_unitStatus:
     maxHP: 0
     hp: 0
@@ -10595,6 +10599,7 @@ MonoBehaviour:
   m_modulesHolder: {fileID: 8639484427348601710}
   m_animatorStates: {fileID: 3171127968814855963}
   m_healthBar: {fileID: 1289536479}
+  m_spriteRenderer: {fileID: 5174431257190362617}
   m_unitStatus:
     maxHP: 0
     hp: 0
