@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 {
@@ -11,13 +12,15 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
     private static List<UnitDamageAction> m_damagePreviewCache = new List<UnitDamageAction>();
 
+    private Sequence m_animationSeq;
+
 
     #region IAction
 
     public virtual IEnumerator ExcuteAction()
     {
-        var animationData = m_damageActionParam.animationStateData;
-        animationData.PlayAnimation();
+        if(m_damageActionParam.animationAction!= null)
+            yield return m_damageActionParam.animationAction.Invoke();
 
         var unit = m_damageActionParam.unit;
         var attackInfo = m_damageActionParam.attackInfo;
@@ -87,10 +90,8 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         var attackInfo = m_damageActionParam.attackInfo;
                 
         //Preview animation
-        foreach (var animationData in m_previewData.animationData)
-        {
-            animationData.PlayAnimation(true);
-        }
+        m_previewData.unitHealthBar.StartDamangeAnimation(-1);
+        StartPreviewAnimation();
 
         m_previewData.unitHealthBar.SetPreview(0,-attackInfo.value);
         if(attackInfo.pushDist > 0)
@@ -135,33 +136,38 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         foreach (var item in m_damagePreviewCache)
         {
             item.m_previewData.unitHealthBar.ResetPreview();
-            foreach (var animationData in item.m_previewData.animationData)
-            {
-                animationData.StopAnimation();
-            }        
+            m_previewData.spriteRenderer.color = Color.white;
+            m_animationSeq.Kill();
         }
         m_damagePreviewCache.Clear();
     }
 
     #endregion
-}
 
+    private void StartPreviewAnimation()
+    {
+        m_animationSeq = DOTween.Sequence();
+        m_animationSeq.Append(m_previewData.spriteRenderer.DOFade(0.1f,0.2f))
+        .Append(m_previewData.spriteRenderer.DOFade(1f,0.2f))
+        .SetLoops(-1);
+    }
+}
 
 
 public class DamageActionParam:IActionParam
 {
     public ActionTileInfo attackInfo;
-    public AnimationStateData animationStateData;
+    public CoroutineDelegate animationAction;
     public UnitBase unit;
 }
-
 
 
 public class SelfDamageAction:UnitDamageAction
 {
     public override IEnumerator ExcuteAction()
     {
-        m_damageActionParam.animationStateData.PlayAnimation();
+        if(m_damageActionParam.animationAction!= null)
+            yield return m_damageActionParam.animationAction.Invoke();
         var deltaStatus = UnitStatus.Empty;
         deltaStatus.hp = -1;
         m_damageActionParam.unit.UpdateStatus(deltaStatus);

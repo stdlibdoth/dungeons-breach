@@ -34,7 +34,7 @@ public class UnitBase : MonoBehaviour
     [SerializeField] protected UnitStatus m_unitStatus;
 
     protected List<ActionModule> m_actionModules = new List<ActionModule>();
-
+    protected Sequence m_damangePreviewDOTweeen;
 
 
     // protected UnityEvent<UnitStatus> m_onStatusChange = new UnityEvent<UnitStatus>();
@@ -255,9 +255,7 @@ public class UnitBase : MonoBehaviour
         var action = new UnitSpawnAction();
         var param = new CoroutineActionParam
         {
-            coroutineDelegate = ()=>{
-                return UnitSpawnAnimation(1f);
-            }
+            coroutineDelegate = UnitSpawnAnimation    
         };
         action.Build(param);
         return action;
@@ -269,27 +267,15 @@ public class UnitBase : MonoBehaviour
         var action = new UnitDamageAction();
         DamageActionParam param = new DamageActionParam
         {
-            animationStateData = new AnimationStateData
-            {
-                animator = m_animator,
-                animationState = "Damage",
-            },
+            animationAction = UnitDamangeAnimation,
             attackInfo = attack_info,
             unit = this,
         };
 
-        AnimationStateData[] animData = new AnimationStateData[2];
-        animData[0]=new AnimationStateData
-        {
-            animationState = "DamagePreview",
-            animator = m_animator,
-        };
-        animData[0].animator.SetFloat("DirBlend",(int)m_pathAgent.Direction);
-        m_healthBar.GenerateAnimationStateData("DamagePreview",out animData[1]);
         UnitDamagePreviewData preview = new UnitDamagePreviewData
         {   
             unitHealthBar = m_healthBar,
-            animationData = animData,
+            spriteRenderer = m_spriteRenderer,
         };
         action.Build(param);
         action.GeneratePreview(preview);
@@ -342,17 +328,33 @@ public class UnitBase : MonoBehaviour
     }
 
 
-    private IEnumerator UnitSpawnAnimation(float duration)
+    private IEnumerator UnitSpawnAnimation()
     {
         if(m_spriteRenderer!= null)
         {
             var color = m_spriteRenderer.color;
             color.a = 0;
             m_spriteRenderer.color = color;
-            m_spriteRenderer.DOFade(1,duration-0.1f);
+            m_spriteRenderer.DOFade(1,1-0.1f);
         }
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSeconds(1);
         m_animator.enabled = true;
+    }
+
+    private IEnumerator UnitDamangeAnimation()
+    {
+        var sequence = DOTween.Sequence();
+        sequence.Append(m_spriteRenderer.DOColor(Color.red,0.1f))
+        .Append(m_spriteRenderer.DOColor(Color.white,0.1f));
+        yield return new WaitForSeconds(0.21f);
+    }
+
+    private IEnumerator StartDamangePreviewAnimation()
+    {
+        var sequence = DOTween.Sequence();
+        sequence.Append(m_spriteRenderer.DOColor(Color.red,0.1f))
+        .Append(m_spriteRenderer.DOColor(Color.white,0.1f));
+        yield return new WaitForSeconds(0.21f);
     }
 
     #endregion

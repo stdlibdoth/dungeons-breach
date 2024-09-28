@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
+using DG.Tweening;
 
 public class UnitHealthBar : MonoBehaviour
 {
@@ -25,10 +25,11 @@ public class UnitHealthBar : MonoBehaviour
     private List<GameObject> m_blockers = new List<GameObject>();
 
 
-    private float m_unitWidthPv;
-    private int m_maxHPPv;
     private List<int> m_deltaHP = new List<int>();
     private List<int> m_deltaMaxHP = new List<int>();
+
+    private Sequence m_frameSeq;
+    private Sequence m_healthSeq;
 
     public void Init(int maxHP)
     {
@@ -65,6 +66,29 @@ public class UnitHealthBar : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="loops"> -1 to set infinity</param>
+    public void StartDamangeAnimation(int loops)
+    {
+        m_frameSeq = DOTween.Sequence(this);
+        m_healthSeq = DOTween.Sequence(this);
+        m_frameSeq.Append(m_frameSprite.DOFade(0.1f,0.2f))
+        .Append(m_frameSprite.DOFade(1f,0.2f))
+        .SetLoops(loops);
+        m_healthSeq.Append(m_healthSprite.DOFade(0.1f,0.2f))
+        .Append(m_healthSprite.DOFade(1f,0.2f))
+        .SetLoops(loops);
+    }
+
+    private void StopDamageAnimation()
+    {
+        m_healthSprite.color = Color.white;
+        m_frameSprite.color = Color.white;
+        m_frameSeq.Kill();
+        m_healthSeq.Kill();
+    }
 
     private void ClearBlockers()
     {
@@ -120,12 +144,12 @@ public class UnitHealthBar : MonoBehaviour
 
     public void ResetPreview()
     {
+        StopDamageAnimation();
         Init(m_maxHP);
         SetHP(m_hp);
         m_deltaHP.Clear();
         m_deltaMaxHP.Clear();
     }
-
     #endregion
 
 

@@ -8185,7 +8185,6 @@ MonoBehaviour:
   - Attack
   - Dead
   - Walk
-  - Damage
   - DamagePreview
   m_animator: {fileID: 5508276259666342661}
 --- !u!212 &60831822631510277
@@ -8349,7 +8348,6 @@ MonoBehaviour:
   - Attack
   - Dead
   - Walk
-  - Damage
   - DamagePreview
   m_animator: {fileID: 2778438136853522593}
 --- !u!1 &452097392530542298
@@ -9245,8 +9243,6 @@ MonoBehaviour:
   - Attack
   - Dead
   - Walk
-  - Damage
-  - DamagePreview
   m_animator: {fileID: 2778031732861587793}
 --- !u!1 &3173978893027868656
 GameObject:
@@ -10116,7 +10112,6 @@ MonoBehaviour:
   - Attack
   - Dead
   - Walk
-  - Damage
   - DamagePreview
   m_animator: {fileID: 5264110008690717387}
 --- !u!212 &5799932534553225677
@@ -10256,7 +10251,6 @@ MonoBehaviour:
   - Attack
   - Dead
   - Walk
-  - Damage
   - DamagePreview
   m_animator: {fileID: 4711149405121068714}
 --- !u!4 &6284497313131182129

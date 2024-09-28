@@ -12,6 +12,6 @@ public interface IPreviewable<T>
 
 public class UnitDamagePreviewData
 {
-    public AnimationStateData[] animationData;
+    public SpriteRenderer spriteRenderer;
     public UnitHealthBar unitHealthBar;
 }

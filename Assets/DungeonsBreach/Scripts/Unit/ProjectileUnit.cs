@@ -28,11 +28,6 @@ public class ProjectileUnit : UnitBase
         var action = new SelfDamageAction();
         DamageActionParam param = new DamageActionParam
         {
-            animationStateData = new AnimationStateData
-            {
-                animator = m_animator,
-                animationState = "Damage"
-            },
             attackInfo = attack_info,
             unit = this,
         };
