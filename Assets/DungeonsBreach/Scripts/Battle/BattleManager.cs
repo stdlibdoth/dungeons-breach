@@ -13,17 +13,6 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] private string m_monsterTag;
     [SerializeField] private string m_playerTag;
 
-
-
-    [SerializeField] private ActionBlackboard m_startTurnBoard;
-    [SerializeField] private ActionBlackboard m_endTurnBoard;
-    private static Queue<IAction> m_tempActions = new Queue<IAction>();
-
-    private static int m_roundCount;
-
-    private UnityEvent m_onStartPlayerTurn = new UnityEvent();
-
-
     private DefaultInputActions m_inputActions;
     private IsoGridCoord m_pointerGridCoord;
 
@@ -72,16 +61,6 @@ public class BattleManager : Singleton<BattleManager>
         }
     }
 
-    public static UnityEvent OnStartPlayerTurn
-    {
-        get { return GetSingleton().m_onStartPlayerTurn; }
-    }
-
-    public static int RoundCount
-    {
-        get { return m_roundCount; }
-    }
-
     #region monobehaviour
 
     protected override void Awake()
@@ -100,40 +79,13 @@ public class BattleManager : Singleton<BattleManager>
         m_inputActions.UI.Click.performed += OnClick;
         m_inputActions.UI.RightClick.performed += OnRightClick;
         yield return new WaitForEndOfFrame();
-        StartTurn();
+        yield return StartCoroutine(StartTurn());
     }
 
     #endregion
 
-    public static void RegistorAction(IAction action, PlayBackMode mode)
-    {
-        switch (mode)
-        {
-            case PlayBackMode.Instant:
-                GetSingleton().StartCoroutine(action.ExcuteAction());
-                break;
-            case PlayBackMode.Temp:
-                m_tempActions.Enqueue(action);
-                break;
-            case PlayBackMode.EndOfTurn:
-                GetSingleton().m_endTurnBoard.AddAction(action);
-                break;
-            default:
-                break;
-        }
-    }
 
-    public static IEnumerator ExcuteTempActions()
-    {
-        var singlton = GetSingleton();
-        while (m_tempActions.TryDequeue(out var action))
-        {
-            yield return singlton.StartCoroutine(action.ExcuteAction());
-        }
-    }
-
-
-    public static void StartTurn()
+    public static IEnumerator StartTurn()
     {
         foreach (var unit in LevelManager.Units)
         {
@@ -141,16 +93,14 @@ public class BattleManager : Singleton<BattleManager>
             unit.UpdateStatus(status);
             unit.ResetActions();
         }
-
-        GetSingleton().m_onStartPlayerTurn.Invoke();
+        yield return EndPlayerTurn();
     }
 
 
     public static IEnumerator EndPlayerTurn()
     {
-        var singleton = GetSingleton();
         SelectedUnit = null;
-        yield return singleton.StartCoroutine(GetSingleton().m_endTurnBoard.ExcuteActions());
+        yield return ActionTurn.StartActionTurns(ActionTurnType.Environment,ActionTurnType.EnemySpawn);
         BattleUIController.ClearAllActionTarget();
     }
 
@@ -211,6 +161,7 @@ public class BattleManager : Singleton<BattleManager>
                     confirmedCoord = confirmed,
                 };
                 module.GeneratePreview(param);
+                module.PreviewKey = ActionPreviewer.GlobalPreviewKey;
                 StartCoroutine(module.StartPreview());
             }
             else
@@ -234,7 +185,7 @@ public class BattleManager : Singleton<BattleManager>
             if (confirmed.Length > 0)
             {
                 var action = SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed);
-                RegistorAction(action,PlayBackMode.Instant);
+                StartCoroutine(action.ExcuteAction());
                 StopActionPreview(actionModule);
                 BattleUIController.DisposeActionHighlights();
             }
@@ -246,8 +197,20 @@ public class BattleManager : Singleton<BattleManager>
             {
                 var action = SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed);
                 var targets = actionModule.ActionTarget(confirmed,m_actionRange);
-                RegistorAction(action,PlayBackMode.EndOfTurn);
-                StopActionPreview(actionModule,false);
+                ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).RegistorAction(action);
+                StopActionPreview(actionModule);
+
+                var param = new ActionModuleParam
+                {
+                    unit = SelectedUnit,
+                    confirmedCoord = confirmed,
+                };
+                BattleUIController.ActionPreviewer.InitPreview();
+                action.GeneratePreview(param);
+                StartCoroutine(action.StartPreview());
+                action.StopPreview();
+
+
                 BattleUIController.DisposeActionHighlights();
                 BattleUIController.ShowActionTarget(SelectedUnit,targets);
             }
@@ -255,11 +218,10 @@ public class BattleManager : Singleton<BattleManager>
     }
 
 
-    private void StopActionPreview(ActionModule actionModule, bool reset_highlights = true)
+    private void StopActionPreview(ActionModule actionModule)
     {
         actionModule.StopPreview();
-        if(reset_highlights)
-            BattleUIController.ActionPreviewer.ClearPreview();
+        BattleUIController.ActionPreviewer.ClearPreview(ActionPreviewer.GlobalPreviewKey);
         BattleUIController.CursorController.ResetCursor();
     }
 
@@ -315,7 +277,7 @@ public class BattleManager : Singleton<BattleManager>
             {
                 BattleUIController.DisposeMoveHighlights();
                 var action = SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord);
-                RegistorAction(action,PlayBackMode.Instant);
+                StartCoroutine(action.ExcuteAction());
                 BattleUIController.StartPathTrailing(SelectedUnit);
                 BattleUIController.CursorController.ResetCursor();
             }

@@ -13,12 +13,7 @@ public class TrajectileSpawnModule : ActionModule
     [Header("UI")]
     [SerializeField] private TrajectilePreviewer m_previewer;
 
-
     protected List<UnitDamageAction> m_tempDamagePreview = new List<UnitDamageAction>();
-
-
-    public override ActionPriority Priority { get; set; }
-
 
     #region IAction
 
@@ -57,6 +52,7 @@ public class TrajectileSpawnModule : ActionModule
     #region IPreviewable
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
+        PreviewKey = UnitBase.NextPreviewKey;
         m_actionParam = data;
         return this;
     }
@@ -86,6 +82,8 @@ public class TrajectileSpawnModule : ActionModule
                     foreach (var hit in hits)
                     {
                         var action = hit.Damage(info);
+                        action.PreviewKey = PreviewKey;
+                        Debug.Log(PreviewKey.GetHashCode());
                         m_tempDamagePreview.Add(action);
                         yield return action.StartPreview();
                     }

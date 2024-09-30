@@ -179,7 +179,6 @@ public class PathFindingAgent : MonoBehaviour
         var grid = GridManager.ActivePathGrid;
         var tileMask = grid.PathingMaskSingleTile(m_coord);
         grid.UpdatePathFindingMask(m_coord, tileMask ^ m_intrinsicMask);
-
         TryGetLocamotion(locamotion_type, out var locamotion);
         yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target, stop_distance));
         m_coord = target;

@@ -6,9 +6,6 @@ public class BasicAttackModule : ActionModule
 {
     protected ActionModuleParam m_actionParam;
 
-    public override ActionPriority Priority { get; set; }
-
-
     protected List<UnitDamageAction> m_tempDamagePreview = new List<UnitDamageAction>();
 
 #region IAction
@@ -26,9 +23,13 @@ public class BasicAttackModule : ActionModule
     public override IEnumerator ExcuteAction()
     {
         var unit = m_actionParam.unit;
-        Debug.Log(unit + "  attack");
+        Debug.Log(unit +"  " + ModuleName + "  action");
         yield return PlayAnimation(unit);
         var confirmed = new List<IsoGridCoord>(m_actionParam.confirmedCoord);
+
+        if((object)m_previewKey == this)
+            BattleUIController.ActionPreviewer.ClearPreview(this);
+
         foreach (var attack in m_profile.data)
         {
             IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
@@ -41,11 +42,10 @@ public class BasicAttackModule : ActionModule
                 attackInfo.pushDir = attack.pushDir.RotateRelativeTo(unit.Agent.Direction);
                 foreach (var hit in hits)
                 {
-                    BattleManager.RegistorAction(hit.Damage(attackInfo),PlayBackMode.Instant);
+                    StartCoroutine(hit.Damage(attackInfo).ExcuteAction());
                 }
             }
         }
-        yield return null;
     }
 
     private IEnumerator PlayAnimation(UnitBase unit)
@@ -72,9 +72,18 @@ public class BasicAttackModule : ActionModule
     #endregion
 
     #region IPreviewable
+
+    public override void ResetPreviewKey()
+    {
+        foreach (var item in m_tempDamagePreview)
+        {
+            item.ResetPreviewKey();
+        }
+    }
+
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
-        // if(m_actionParam == null)
+        m_previewKey = this;
         m_actionParam = data;
         return this;
     }
@@ -96,6 +105,7 @@ public class BasicAttackModule : ActionModule
                 foreach (var hit in hits)
                 {
                    var action = hit.Damage(attackInfo);
+                   action.PreviewKey = PreviewKey;
                    m_tempDamagePreview.Add(action);
                    yield return action.StartPreview();
                 }
@@ -112,7 +122,6 @@ public class BasicAttackModule : ActionModule
         }
         m_tempDamagePreview.Clear();
     }
-
 
     #endregion
 }

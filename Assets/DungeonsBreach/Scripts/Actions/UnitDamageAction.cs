@@ -7,6 +7,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 {
     public ActionPriority Priority { get; set; }
 
+    public object PreviewKey{get; set;}
     protected DamageActionParam m_damageActionParam;
     protected UnitDamagePreviewData m_previewData;
 
@@ -14,13 +15,13 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
     private Sequence m_animationSeq;
 
-
     #region IAction
 
     public virtual IEnumerator ExcuteAction()
     {
         if(m_damageActionParam.animationAction!= null)
-            yield return m_damageActionParam.animationAction.Invoke();
+            GameManager.DispachCoroutine(m_damageActionParam.animationAction.Invoke());
+
 
         var unit = m_damageActionParam.unit;
         var attackInfo = m_damageActionParam.attackInfo;
@@ -28,7 +29,6 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         var deltaStatus = UnitStatus.Empty;
         deltaStatus.hp = -attackInfo.value;
         unit.UpdateStatus(deltaStatus);
-
 
         //for testing player status only, remove later
         if(unit.CompareTag("PlayerUnit"))
@@ -39,6 +39,9 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 defence = 0,
             });
         }
+
+        if(PreviewKey == this)
+            BattleUIController.ActionPreviewer.ClearPreview(this);
 
         if(attackInfo.pushDist > 0)
         {
@@ -55,17 +58,17 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 unit.UpdateStatus(deltaStatus);
                 foreach (var hit in hits)
                 {
-                    BattleManager.RegistorAction(hit.Damage(temp),PlayBackMode.Instant);
+                    yield return hit.Damage(temp).ExcuteAction();
                 }
             }
             else if(GridManager.ActiveTileGrid.CheckRange(targetTile))
             {
-                Debug.Log("push");
+
                 var action = unit.Move(attackInfo.pushType, targetTile, false);
                 yield return action.ExcuteAction();
             }
         }   
-        yield return BattleManager.ExcuteTempActions();
+        yield return ActionTurn.ExcuteTempActions();
     }
 
     public virtual IAction Build<T>(T p) where T : IActionParam
@@ -78,8 +81,18 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
     #region IPreviewable
 
+
+    public void ResetPreviewKey()
+    {
+        foreach (var item in m_damagePreviewCache)
+        {
+            item.PreviewKey = item;
+        }
+    }
+
     public IPreviewable<UnitDamagePreviewData> GeneratePreview(UnitDamagePreviewData data)
     {
+        PreviewKey = this;
         m_previewData = data;
         return this;
     }
@@ -87,13 +100,17 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
     public IEnumerator StartPreview()
     {
         var unit = m_damageActionParam.unit;
+        Debug.Log(unit);
         var attackInfo = m_damageActionParam.attackInfo;
-                
         //Preview animation
         m_previewData.unitHealthBar.StartDamangeAnimation(-1);
         StartPreviewAnimation();
 
+        //Preview health
         m_previewData.unitHealthBar.SetPreview(0,-attackInfo.value);
+        m_damagePreviewCache.Add(this);
+
+        //Preview recursive damage actions
         if(attackInfo.pushDist > 0)
         {
             var targetTile = unit.Agent.Coordinate + attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)attackInfo.pushDir];
@@ -104,17 +121,17 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 //UIPreview
                 var hitPreviewData0 = new ActionPreviewerData("HitPreview",
                 attackInfo.pushDir.Opposite(),unit.Agent.Coordinate);
-                BattleUIController.ActionPreviewer.RegistorPreview(hitPreviewData0);
+                BattleUIController.ActionPreviewer.RegistorPreview(hitPreviewData0,PreviewKey);
 
                 var shiftPreviewData = new ActionPreviewerData("ShiftUnavailablePreview",
                 attackInfo.pushDir,unit.Agent.Coordinate);
-                BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData);
+                BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData,PreviewKey);
                 foreach (var hit in hits)
                 {
                     IPreviewable<UnitDamagePreviewData> preview = hit.Damage(temp);
                     var hitPreviewData1 = new ActionPreviewerData("HitPreview",
                     attackInfo.pushDir,targetTile);
-                    BattleUIController.ActionPreviewer.RegistorPreview(hitPreviewData1);
+                    BattleUIController.ActionPreviewer.RegistorPreview(hitPreviewData1,PreviewKey);
                     yield return preview.StartPreview();
                 }
             }
@@ -122,12 +139,11 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
             {
                 var shiftPreviewData = new ActionPreviewerData("ShiftAvailablePreview",
                 attackInfo.pushDir,unit.Agent.Coordinate);
-                BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData);
+                BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData,PreviewKey);
                 
                 //preview unit shift position
             }
         }
-        m_damagePreviewCache.Add(this);
         yield return null;
     }
 
@@ -135,9 +151,10 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
     {
         foreach (var item in m_damagePreviewCache)
         {
+            Debug.Log(item.m_damageActionParam.unit);
             item.m_previewData.unitHealthBar.ResetPreview();
-            m_previewData.spriteRenderer.color = Color.white;
-            m_animationSeq.Kill();
+            item.m_previewData.spriteRenderer.color = Color.white;
+            item.m_animationSeq.Kill();
         }
         m_damagePreviewCache.Clear();
     }
@@ -168,6 +185,9 @@ public class SelfDamageAction:UnitDamageAction
     {
         if(m_damageActionParam.animationAction!= null)
             yield return m_damageActionParam.animationAction.Invoke();
+
+        if(PreviewKey == this)
+            BattleUIController.ActionPreviewer.ClearPreview(this);
         var deltaStatus = UnitStatus.Empty;
         deltaStatus.hp = -1;
         m_damageActionParam.unit.UpdateStatus(deltaStatus);

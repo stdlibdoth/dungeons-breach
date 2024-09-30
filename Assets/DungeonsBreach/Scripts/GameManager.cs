@@ -32,8 +32,8 @@ public class GameManager : Singleton<GameManager>
         GetSingleton().m_PlayerStatusBar.SetHealthBar(GetSingleton().m_playerStatus);
     }
 
-    public static Coroutine DispachCoroutine(IEnumerator coroutine)
+    public static void DispachCoroutine(IEnumerator coroutine)
     {
-        return GetSingleton().StartCoroutine(coroutine);
+        GetSingleton().StartCoroutine(coroutine);
     }
 }

@@ -74,9 +74,3 @@ public interface IActionParam
 
 
 public delegate IEnumerator MoveAgentDelegate(LocamotionType locamotion_type, IsoGridCoord target);
-public enum PlayBackMode
-{
-    Instant,
-    Temp,
-    EndOfTurn
-}

@@ -89,6 +89,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
 
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
+        PreviewKey = UnitBase.NextPreviewKey;
         m_actionParam = data;
         return this;
     }
@@ -110,7 +111,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
                 Vector3 endPos = end.ToWorldPosition(grid);
                 Vector3 startPos = m_spawnAnchor.GetAnchor(dir).localPosition + (Vector3)startCoord.ToWorldPosition(grid);
                 bool isAlly = m_actionParam.unit.CompareTag("PlayerUnit");
-                m_previewer.SetPreviewer(startPos,endPos,isAlly);         
+                m_previewer.SetPreviewer(startPos,endPos,isAlly);
                 foreach (var actionTileInfo in pUnit.ActionModule.Profile.data)
                 {
                     IsoGridCoord coord = actionTileInfo.relativeCoord.OnRelativeTo(end, dir);
@@ -122,6 +123,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
                         foreach (var hit in hits)
                         {
                             var action = hit.Damage(info);
+                            action.PreviewKey = PreviewKey;
                             m_tempDamagePreview.Add(action);
                             yield return action.StartPreview();
                         }

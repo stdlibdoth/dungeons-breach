@@ -11,8 +11,6 @@ public class BasicSpawnModule : ActionModule
 
     [SerializeField] protected int m_spawnFrameDelay;
 
-    public override ActionPriority Priority { get; set; }
-
 
     #region IAction
     public override IAction Build<T>(T param)

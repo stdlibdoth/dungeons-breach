@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class HealModule : BasicAttackModule
 {
-    public override ActionPriority Priority {get; set;}
-
 
     #region IAction
     public override IAction Build<T>(T param)

@@ -21,6 +21,7 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
 
     protected UnityEvent<string,bool> m_onActionAvailable = new UnityEvent<string,bool>();
     protected bool m_isAvailable;
+    protected object m_previewKey;
 
     public bool Actived { get;set; }
 
@@ -79,7 +80,19 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
         return range.ToArray();
     }
 
-    public abstract ActionPriority Priority { get; set; }
+    public virtual object PreviewKey
+    {
+        get{return m_previewKey;}
+        set{m_previewKey = value;}
+    }
+
+    public virtual void ResetPreviewKey()
+    {
+        m_previewKey = this;
+    }
+
+    public ActionPriority Priority { get; set; }
+
     public abstract IEnumerator ExcuteAction();
     public abstract IAction Build<T>(T param) where T : IActionParam;
 

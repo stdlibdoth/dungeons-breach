@@ -573,6 +573,7 @@ MonoBehaviour:
   m_modulesHolder: {fileID: 2973567055798943112}
   m_animatorStates: {fileID: 1493146824693658976}
   m_healthBar: {fileID: 0}
+  m_spriteRenderer: {fileID: 1443900181578040287}
   m_unitStatus:
     maxHP: 0
     hp: 0

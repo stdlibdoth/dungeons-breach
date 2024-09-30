@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class CoroutineAction : IAction
 {
+    public ActionPriority Priority { get; set; }
     protected  CoroutineActionParam m_param;
-
-    public virtual ActionPriority Priority { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
     public virtual IAction Build<T>(T param) where T : IActionParam
     {
         m_param = param as CoroutineActionParam;

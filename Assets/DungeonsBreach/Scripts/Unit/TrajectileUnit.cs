@@ -70,12 +70,18 @@ public class TrajectileUnit : UnitBase
         }
     }
 
+    // public override UnitSpawnAction Spawn(IsoGridCoord coord)
+    // {
+    //     return new UnitSpawnAction();
+    // }
+
     public override void Die()
     {
         UnitDieAction dieAction = new UnitDieAction();
+        BattleUIController.ActionPreviewer.ClearPreview(m_previewKey);
         dieAction.Build(new UnitDieActionParam{
             unit = this,
         });
-        BattleManager.RegistorAction(dieAction,PlayBackMode.Instant);
+        StartCoroutine(dieAction.ExcuteAction());
     }
 }

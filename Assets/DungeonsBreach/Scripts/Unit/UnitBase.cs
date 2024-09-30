@@ -37,8 +37,23 @@ public class UnitBase : MonoBehaviour
     protected Sequence m_damangePreviewDOTweeen;
 
 
-    // protected UnityEvent<UnitStatus> m_onStatusChange = new UnityEvent<UnitStatus>();
+    protected object m_previewKey;
 
+
+    protected static object[] m_previewKeys = new object[]{new object(),new object()};
+    public static object NextPreviewKey
+    {
+        get{
+            return m_previewKeys[1];
+        }
+    }
+
+    public object PreviewKey
+    {
+        get{
+            return m_previewKey;
+        }
+    }
 
     public string UnitName
     {
@@ -68,7 +83,7 @@ public class UnitBase : MonoBehaviour
 
     protected virtual void SpawnUnit()
     {
-        m_animator.enabled = false;
+        //m_animator.enabled = false;
         m_pathAgent.Init();
         m_unitStatus = PreviewAppliedModuleStatus();
         m_unitStatus.hp = m_unitStatus.maxHP;
@@ -78,6 +93,12 @@ public class UnitBase : MonoBehaviour
         RefreshActionModules();
         StartCoroutine(Spawn(m_pathAgent.Coordinate).ExcuteAction());
         LevelManager.AddUnit(this);
+
+        //increment preview key
+        m_previewKey = m_previewKeys[1];
+        m_previewKeys[1] = m_previewKeys[0];
+        m_previewKeys[0] = new object();
+
         EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitSpawn").Invoke(this);
     }
 
@@ -303,7 +324,7 @@ public class UnitBase : MonoBehaviour
         dieAction.Build(new UnitDieActionParam{
             unit = this,
         });
-        BattleManager.RegistorAction(dieAction,PlayBackMode.Temp);
+        ActionTurn.RegistorTempAction(dieAction);
     }
 
 
@@ -346,7 +367,7 @@ public class UnitBase : MonoBehaviour
         var sequence = DOTween.Sequence();
         sequence.Append(m_spriteRenderer.DOColor(Color.red,0.1f))
         .Append(m_spriteRenderer.DOColor(Color.white,0.1f));
-        yield return new WaitForSeconds(0.21f);
+        yield return null;
     }
 
     private IEnumerator StartDamangePreviewAnimation()
@@ -354,7 +375,7 @@ public class UnitBase : MonoBehaviour
         var sequence = DOTween.Sequence();
         sequence.Append(m_spriteRenderer.DOColor(Color.red,0.1f))
         .Append(m_spriteRenderer.DOColor(Color.white,0.1f));
-        yield return new WaitForSeconds(0.21f);
+        yield return new WaitForSeconds(0.20f);
     }
 
     #endregion

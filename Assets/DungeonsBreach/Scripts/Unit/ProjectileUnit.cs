@@ -61,6 +61,7 @@ public class ProjectileUnit : UnitBase
         dieAction.Build(new UnitDieActionParam{
             unit = this,
         });
-        BattleManager.RegistorAction(dieAction,PlayBackMode.Instant);
+        BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
+        StartCoroutine(dieAction.ExcuteAction());
     }
 }
