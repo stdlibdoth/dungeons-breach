@@ -40,10 +40,19 @@ public class BasicAttackModule : ActionModule
             {
                 var attackInfo = attack;
                 attackInfo.pushDir = attack.pushDir.RotateRelativeTo(unit.Agent.Direction);
+                List<IAction> damageActions = new List<IAction>();
                 foreach (var hit in hits)
                 {
-                    StartCoroutine(hit.Damage(attackInfo).ExcuteAction());
+                    damageActions.Add(hit.Damage(attackInfo));
+                    //yield return StartCoroutine(hit.Damage(attackInfo).ExcuteAction());
+                    //yield return hit.Damage(attackInfo).ExcuteAction();
                 }
+                damageActions.Sort((a,b)=>new ActionComparer().Compare(a,b));
+                for (int i = 0; i < damageActions.Count; i++)
+                {
+                    yield return damageActions[i].ExcuteAction();
+                }
+
             }
         }
     }

@@ -76,7 +76,7 @@ public class UnitBase : MonoBehaviour
         get { return m_modulesHolder.GetComponentsInChildren<Module>(); }
     }
 
-    protected void Start()
+    protected virtual void Start()
     {
         SpawnUnit();
     }

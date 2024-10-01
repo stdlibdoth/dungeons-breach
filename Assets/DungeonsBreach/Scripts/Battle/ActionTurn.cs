@@ -40,6 +40,7 @@ public partial class ActionTurn
         var actions = SortActions();
         for (int i = 0; i < actions.Count; i++)
         {
+            Debug.Log("turn start---------------------------------");
             yield return actions[i].ExcuteAction();
         }
 

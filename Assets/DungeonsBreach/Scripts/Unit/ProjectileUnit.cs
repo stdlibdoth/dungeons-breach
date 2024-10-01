@@ -17,10 +17,9 @@ public class ProjectileUnit : UnitBase
         get{return m_actionModule;}
     }
 
-    protected override void SpawnUnit()
+    protected override void Start()
     {
-        base.SpawnUnit();
-        StartCoroutine(StartProjectile());
+
     }
 
     public override UnitDamageAction Damage(ActionTileInfo attack_info)
@@ -35,8 +34,10 @@ public class ProjectileUnit : UnitBase
     }
 
 
-    private IEnumerator StartProjectile()
+    public IEnumerator StartProjectile()
     {
+        base.SpawnUnit();
+
         int dist = m_unitStatus.moveRange;
         int blockDist = GridManager.ActivePathGrid.MaskLineCast(m_pathAgent.BlockingMask, m_pathAgent.Coordinate, m_pathAgent.Direction, dist, out var coord);
         yield return m_pathAgent.MoveStraight(m_locamotionType, coord);

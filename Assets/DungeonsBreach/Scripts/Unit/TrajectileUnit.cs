@@ -20,11 +20,11 @@ public class TrajectileUnit : UnitBase
 
     protected IsoGridCoord[] m_targets;
 
-    protected override void SpawnUnit()
+    protected override void Start()
     {
-        base.SpawnUnit();
-        StartCoroutine(StartTrajectile());
+
     }
+
 
     public virtual void SetTargets(IsoGridCoord[] targets)
     {
@@ -44,8 +44,9 @@ public class TrajectileUnit : UnitBase
         return action.Build(param) as UnitDamageAction;
     }
 
-    private IEnumerator StartTrajectile()
+    public IEnumerator StartTrajectile()
     {
+        base.SpawnUnit();
         foreach (var t in m_targets)
         {
             yield return MoveAndAction(t);

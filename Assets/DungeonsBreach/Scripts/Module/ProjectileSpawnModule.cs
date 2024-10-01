@@ -80,9 +80,10 @@ public class ProjectileSpawnModule : BasicSpawnModule
             var pos = (Vector3)coord.ToWorldPosition(grid) + relativePos;
             var dir = unit.Agent.Coordinate.DirectionTo(coord, grid);
             var spawn = Instantiate(m_spawnUnit, pos, Quaternion.identity);
+            var pUnit = spawn as ProjectileUnit;
             spawn.SetDirection(dir);
+            yield return pUnit.StartProjectile();
         }
-        yield return null;
     }
 
 

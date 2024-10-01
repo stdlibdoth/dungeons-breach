@@ -122,6 +122,7 @@ public class PathFindingAgent : MonoBehaviour
         if(target == m_coord)
             yield break;
 
+
         TryGetLocamotion(locamotion_type,out var locamotion);
         var grid = GridManager.ActivePathGrid;
         var tileMask = grid.PathingMaskSingleTile(m_coord);
@@ -142,7 +143,7 @@ public class PathFindingAgent : MonoBehaviour
             for (int i = 0; i < waypoints.Count; i++)
             {
                 var moveTarget = waypoints[i];
-                yield return StartCoroutine(locamotion.StartLocamotion(m_coord, moveTarget));
+                yield return locamotion.StartLocamotion(m_coord, moveTarget);
                 m_coord = moveTarget;
             }
             tileMask = grid.PathingMaskSingleTile(m_coord);

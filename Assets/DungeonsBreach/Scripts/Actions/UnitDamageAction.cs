@@ -52,6 +52,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 temp.value = 1;
                 float stopDist = GridManager.ActivePathGrid.CellSize / 2;
                 Vector3 pos = unit.Agent.Coordinate.ToWorldPosition(GridManager.ActivePathGrid);
+                Debug.Log("block unit" + hits[0]);
                 yield return unit.StartCoroutine(unit.Agent.AnimateAgent(LocamotionType.Shift, targetTile, stopDist));
                 yield return unit.StartCoroutine(unit.Agent.AnimateAgent(LocamotionType.Shift, pos, 3));
                 deltaStatus.hp = -1;
@@ -73,6 +74,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
     public virtual IAction Build<T>(T p) where T : IActionParam
     {
+        Priority = new ActionPriority{value = 0};
         m_damageActionParam = p as DamageActionParam;
         return this;
     }
@@ -181,6 +183,14 @@ public class DamageActionParam:IActionParam
 
 public class SelfDamageAction:UnitDamageAction
 {
+
+    public override IAction Build<T>(T p)
+    {
+        Priority = new ActionPriority{value = -1};
+        m_damageActionParam = p as DamageActionParam;
+        return this;
+    }
+
     public override IEnumerator ExcuteAction()
     {
         if(m_damageActionParam.animationAction!= null)

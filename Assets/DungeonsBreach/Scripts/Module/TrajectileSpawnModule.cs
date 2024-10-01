@@ -42,8 +42,7 @@ public class TrajectileSpawnModule : ActionModule
         var spawn = Instantiate(m_spawnUnit, pos, Quaternion.identity);
         spawn.SetTargets(m_actionParam.confirmedCoord);
         spawn.SetDirection(dir);
-
-        yield return null;
+        yield return spawn.StartTrajectile();
     }
 
 
@@ -83,7 +82,6 @@ public class TrajectileSpawnModule : ActionModule
                     {
                         var action = hit.Damage(info);
                         action.PreviewKey = PreviewKey;
-                        Debug.Log(PreviewKey.GetHashCode());
                         m_tempDamagePreview.Add(action);
                         yield return action.StartPreview();
                     }

@@ -48,9 +48,9 @@ public class BattleUIController : Singleton<BattleUIController>
     private IEnumerator EndTurnActions()
     {
         m_endPlayerTurnBtn.interactable = false;
-        yield return StartCoroutine(BattleManager.EndPlayerTurn());
+        yield return BattleManager.EndPlayerTurn();
         m_endPlayerTurnBtn.interactable = true;
-        BattleManager.StartTurn();
+        yield return BattleManager.StartTurn();
     }
 
     #region Range Highlights

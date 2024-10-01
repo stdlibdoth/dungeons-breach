@@ -93,7 +93,7 @@ public class BattleManager : Singleton<BattleManager>
             unit.UpdateStatus(status);
             unit.ResetActions();
         }
-        yield return EndPlayerTurn();
+        yield return null;
     }
 
 
