@@ -37,23 +37,7 @@ public class UnitBase : MonoBehaviour
     protected Sequence m_damangePreviewDOTweeen;
 
 
-    protected object m_previewKey;
-
-
-    protected static object[] m_previewKeys = new object[]{new object(),new object()};
-    public static object NextPreviewKey
-    {
-        get{
-            return m_previewKeys[1];
-        }
-    }
-
-    public object PreviewKey
-    {
-        get{
-            return m_previewKey;
-        }
-    }
+    public PreviewKey PreviewKey{get;set;}
 
     public string UnitName
     {
@@ -93,11 +77,6 @@ public class UnitBase : MonoBehaviour
         RefreshActionModules();
         StartCoroutine(Spawn(m_pathAgent.Coordinate).ExcuteAction());
         LevelManager.AddUnit(this);
-
-        //increment preview key
-        m_previewKey = m_previewKeys[1];
-        m_previewKeys[1] = m_previewKeys[0];
-        m_previewKeys[0] = new object();
 
         EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitSpawn").Invoke(this);
     }

@@ -7,13 +7,18 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 {
     public ActionPriority Priority { get; set; }
 
-    public object PreviewKey{get; set;}
+    public PreviewKey PreviewKey{get; set;}
     protected DamageActionParam m_damageActionParam;
     protected UnitDamagePreviewData m_previewData;
 
     private static List<UnitDamageAction> m_damagePreviewCache = new List<UnitDamageAction>();
 
     private Sequence m_animationSeq;
+
+    public UnitDamageAction()
+    {
+        PreviewKey = new PreviewKey(this);
+    }
 
     #region IAction
 
@@ -40,8 +45,8 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
             });
         }
 
-        if(PreviewKey == this)
-            BattleUIController.ActionPreviewer.ClearPreview(this);
+        // if(PreviewKey == this)
+        //     BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
 
         if(attackInfo.pushDist > 0)
         {
@@ -88,19 +93,20 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
     {
         foreach (var item in m_damagePreviewCache)
         {
-            item.PreviewKey = item;
+            item.PreviewKey.UpdateKey(item);
         }
     }
 
     public IPreviewable<UnitDamagePreviewData> GeneratePreview(UnitDamagePreviewData data)
     {
-        PreviewKey = this;
+        PreviewKey = new PreviewKey(this);
         m_previewData = data;
         return this;
     }
 
     public IEnumerator StartPreview()
     {
+        Debug.Log(PreviewKey.GetHashCode());
         var unit = m_damageActionParam.unit;
         Debug.Log(unit);
         var attackInfo = m_damageActionParam.attackInfo;
@@ -197,7 +203,7 @@ public class SelfDamageAction:UnitDamageAction
             yield return m_damageActionParam.animationAction.Invoke();
 
         if(PreviewKey == this)
-            BattleUIController.ActionPreviewer.ClearPreview(this);
+            BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
         var deltaStatus = UnitStatus.Empty;
         deltaStatus.hp = -1;
         m_damageActionParam.unit.UpdateStatus(deltaStatus);

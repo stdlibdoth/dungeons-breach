@@ -62,6 +62,7 @@ public class ProjectileUnit : UnitBase
         dieAction.Build(new UnitDieActionParam{
             unit = this,
         });
+        Debug.Log("previewkey: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
         BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
         StartCoroutine(dieAction.ExcuteAction());
     }

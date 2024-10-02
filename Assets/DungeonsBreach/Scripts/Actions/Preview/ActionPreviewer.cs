@@ -8,37 +8,25 @@ public class ActionPreviewer : MonoBehaviour
 
 
       
-    private Dictionary<object,List<ActionPreviewerData>> m_data;
-    private Dictionary<object,List<TileHighlighter>> m_highlighters;
+    private Dictionary<PreviewKey,List<ActionPreviewerData>> m_data = new Dictionary<PreviewKey, List<ActionPreviewerData>>();
+    private Dictionary<PreviewKey,List<TileHighlighter>> m_highlighters = new Dictionary<PreviewKey, List<TileHighlighter>>();
 
     private bool m_initialized;
-    private object m_globalKey;
-
-
-    private static object m_globalPreviewKey = new object();
-    public static object GlobalPreviewKey
-    {
-        get {return m_globalPreviewKey;}
-    }
 
     public void InitPreview()
     {
-        m_data = new Dictionary<object, List<ActionPreviewerData>>();
-        m_highlighters =new Dictionary<object, List<TileHighlighter>>();
         m_initialized =true;
-        m_globalKey = new object();
     }
 
 
-    public void RegistorPreview(ActionPreviewerData data,object key = null)
+    public void RegistorPreview(ActionPreviewerData data,PreviewKey key)
     {
         if(!m_initialized)
         {
             throw new System.Exception("Previewer not initialized");
         }
-
-        if(key == null)
-            key = m_globalKey;
+        // if(PreviewKey.IsNull(key))
+        //     key = m_globalKey;
             
         if(!m_data.ContainsKey(key))
         {
@@ -46,38 +34,34 @@ public class ActionPreviewer : MonoBehaviour
             m_highlighters[key] = new List<TileHighlighter>();
         }
         m_data[key].Add(data);
+        Debug.Log("add   " + key.GetHashCode());
         GeneratePreviewElement(data, key);
     }
 
 
-    public void ClearPreview(object key)
+    public void ClearPreview(PreviewKey key)
     {
         if(!m_initialized)
             return;
-
+        Debug.Log("clear   " + key.GetHashCode() + "  " + m_data.ContainsKey(key));
         if(!m_data.ContainsKey(key))
             return;
+        
         foreach (var item in m_highlighters[key])
         {
+            Debug.Log("release  " + key.GetHashCode());
             item.Release();
         }
-        m_highlighters.Clear();
-        m_initialized = false;
+        m_highlighters.Remove(key);
+        m_data.Remove(key);
+        Debug.Log(m_data.Count);
     }
 
-    // public void ClearAll()
-    // {
-    //     foreach (var item in m_data)
-    //     {
-    //         ClearPreview(item.Key);
-    //     }
-    // }
-
-
-    private void GeneratePreviewElement(ActionPreviewerData data, object key)
+    private void GeneratePreviewElement(ActionPreviewerData data, PreviewKey key)
     {
         Debug.Log(data.highlighterKey);
         var hl = m_factory.GetHighlighter(data.highlighterKey,data.dir);
+        hl.SetPreviewKey(key);
         hl.transform.position = data.coord.ToWorldPosition(GridManager.ActiveTileGrid);
         m_highlighters[key].Add(hl);
     }

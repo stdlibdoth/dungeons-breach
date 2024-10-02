@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IPreviewable<T>
 {
-    public object PreviewKey{get;set;}
+    public PreviewKey PreviewKey{get;set;}
     public IPreviewable<T> GeneratePreview(T data);
     public IEnumerator StartPreview();
     public void StopPreview();

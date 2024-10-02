@@ -8,6 +8,11 @@ public class BasicAttackModule : ActionModule
 
     protected List<UnitDamageAction> m_tempDamagePreview = new List<UnitDamageAction>();
 
+    public BasicAttackModule()
+    {
+        m_previewKey = new PreviewKey(this);
+    }
+
 #region IAction
     public override IAction Build<T>(T param)
     {
@@ -27,8 +32,8 @@ public class BasicAttackModule : ActionModule
         yield return PlayAnimation(unit);
         var confirmed = new List<IsoGridCoord>(m_actionParam.confirmedCoord);
 
-        if((object)m_previewKey == this)
-            BattleUIController.ActionPreviewer.ClearPreview(this);
+        if(m_previewKey == this)
+            BattleUIController.ActionPreviewer.ClearPreview(m_previewKey);
 
         foreach (var attack in m_profile.data)
         {
@@ -92,7 +97,7 @@ public class BasicAttackModule : ActionModule
 
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
-        m_previewKey = this;
+        m_previewKey = new PreviewKey(this);
         m_actionParam = data;
         return this;
     }

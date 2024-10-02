@@ -161,7 +161,7 @@ public class BattleManager : Singleton<BattleManager>
                     confirmedCoord = confirmed,
                 };
                 module.GeneratePreview(param);
-                module.PreviewKey = ActionPreviewer.GlobalPreviewKey;
+                module.PreviewKey = PreviewKey.GlobalKey;
                 StartCoroutine(module.StartPreview());
             }
             else
@@ -221,7 +221,7 @@ public class BattleManager : Singleton<BattleManager>
     private void StopActionPreview(ActionModule actionModule)
     {
         actionModule.StopPreview();
-        BattleUIController.ActionPreviewer.ClearPreview(ActionPreviewer.GlobalPreviewKey);
+        BattleUIController.ActionPreviewer.ClearPreview(PreviewKey.GlobalKey);
         BattleUIController.CursorController.ResetCursor();
     }
 

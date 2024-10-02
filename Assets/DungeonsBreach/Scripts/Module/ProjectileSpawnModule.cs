@@ -81,6 +81,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
             var dir = unit.Agent.Coordinate.DirectionTo(coord, grid);
             var spawn = Instantiate(m_spawnUnit, pos, Quaternion.identity);
             var pUnit = spawn as ProjectileUnit;
+            pUnit.PreviewKey = PreviewKey;
             spawn.SetDirection(dir);
             yield return pUnit.StartProjectile();
         }
@@ -90,7 +91,8 @@ public class ProjectileSpawnModule : BasicSpawnModule
 
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
-        PreviewKey = UnitBase.NextPreviewKey;
+        PreviewKey = new PreviewKey(this);
+        Debug.Log("generate key: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
         m_actionParam = data;
         return this;
     }

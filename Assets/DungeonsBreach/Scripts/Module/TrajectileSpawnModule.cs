@@ -23,7 +23,7 @@ public class TrajectileSpawnModule : ActionModule
         UnitStatus deltaStatus = UnitStatus.Empty;
         deltaStatus.moves = -m_actionParam.unit.MovesAvalaible;
         m_actionParam.unit.UpdateStatus(deltaStatus);
-        Actived=  false;
+        Actived = false;
         IsAvailable = false;
         return this;
     }
@@ -40,6 +40,7 @@ public class TrajectileSpawnModule : ActionModule
         var pos = (Vector3)unit.Agent.Coordinate.ToWorldPosition(grid) + relativePos;
         var dir = unit.Agent.Coordinate.DirectionTo(m_actionParam.confirmedCoord[0], grid);
         var spawn = Instantiate(m_spawnUnit, pos, Quaternion.identity);
+        spawn.PreviewKey = PreviewKey;
         spawn.SetTargets(m_actionParam.confirmedCoord);
         spawn.SetDirection(dir);
         yield return spawn.StartTrajectile();
@@ -51,7 +52,8 @@ public class TrajectileSpawnModule : ActionModule
     #region IPreviewable
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
-        PreviewKey = UnitBase.NextPreviewKey;
+        PreviewKey = new PreviewKey(this);
+        Debug.Log("generate key: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
         m_actionParam = data;
         return this;
     }

@@ -39,7 +39,6 @@ public class ShiftMoveLocamotion : LocamotionBase
 
     public override IEnumerator StartLocamotion(float3 end, float speed_override)
     {
-        Debug.Log("speed");
         StartCoroutine(LocamotionMoveCoroutineSpeed(end,speed_override));
         yield return new WaitUntil(()=>{
             return m_distance<m_stopDistance;

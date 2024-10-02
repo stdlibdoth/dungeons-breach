@@ -21,9 +21,20 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
 
     protected UnityEvent<string,bool> m_onActionAvailable = new UnityEvent<string,bool>();
     protected bool m_isAvailable;
-    protected object m_previewKey;
+    protected PreviewKey m_previewKey;
+    protected PreviewKey m_lastKey;
 
     public bool Actived { get;set; }
+
+    public virtual PreviewKey PreviewKey
+    {
+        get{return m_previewKey;}
+        set
+        {
+            m_lastKey = m_previewKey;
+            m_previewKey = value;
+        }
+    }
 
     public virtual bool IsAvailable
     {
@@ -80,15 +91,9 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
         return range.ToArray();
     }
 
-    public virtual object PreviewKey
-    {
-        get{return m_previewKey;}
-        set{m_previewKey = value;}
-    }
-
     public virtual void ResetPreviewKey()
     {
-        m_previewKey = this;
+        m_previewKey = m_lastKey;
     }
 
     public ActionPriority Priority { get; set; }

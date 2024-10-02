@@ -10,6 +10,7 @@ using UnityEngine.Pool;
 public class TileHighlighter : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer m_spriteRenderer;
+    [SerializeField] private int previewkey;
     private ObjectPool<TileHighlighter> m_pool;
 
 
@@ -25,6 +26,11 @@ public class TileHighlighter : MonoBehaviour
     {
         m_pool = pool;
         return this;
+    }
+
+    public void SetPreviewKey(PreviewKey key)
+    {
+        previewkey = key.GetHashCode();
     }
 
     public void Release()
