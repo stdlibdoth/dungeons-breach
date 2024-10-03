@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PlayerUnit
   - MonsterUnit
+  - Stationary
   layers:
   - Default
   - TransparentFX

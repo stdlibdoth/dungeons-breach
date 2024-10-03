@@ -10,6 +10,7 @@ public struct UnitStatus
     public int defense;
     public int moveRange;
     public int moves;
+    public int stationary;
 
 
     public static UnitStatus Empty
@@ -23,6 +24,7 @@ public struct UnitStatus
                 defense = 0,
                 moveRange = 0,
                 moves = 0,
+                stationary = 0,
             };
         }
     }
@@ -38,6 +40,7 @@ public struct UnitStatus
                 defense = 0,
                 moveRange = 0,
                 moves = 0,
+                stationary = 0
             };
         }
     }
@@ -52,6 +55,7 @@ public struct UnitStatus
             defense = lhs.defense + rhs.defense,
             moveRange = lhs.moveRange + rhs.moveRange,
             moves = lhs.moves + rhs.moves,
+            stationary = lhs.stationary + rhs.stationary
         };
     }
 
@@ -64,6 +68,7 @@ public struct UnitStatus
             defense = lhs.defense - rhs.defense,
             moveRange = lhs.moveRange - rhs.moveRange,
             moves = lhs.moves - rhs.moves,
+            stationary = lhs.stationary - rhs.stationary
         };
     }
 }

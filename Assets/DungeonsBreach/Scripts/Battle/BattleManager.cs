@@ -101,7 +101,6 @@ public class BattleManager : Singleton<BattleManager>
     {
         SelectedUnit = null;
         yield return ActionTurn.StartActionTurns(ActionTurnType.Environment,ActionTurnType.EnemySpawn);
-        BattleUIController.ClearAllActionTarget();
     }
 
     #region Events
@@ -212,7 +211,7 @@ public class BattleManager : Singleton<BattleManager>
 
 
                 BattleUIController.DisposeActionHighlights();
-                BattleUIController.ShowActionTarget(SelectedUnit,targets);
+                BattleUIController.ShowActionTarget(actionModule,targets);
             }
         }
     }

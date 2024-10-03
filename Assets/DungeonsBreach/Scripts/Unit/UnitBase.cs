@@ -14,6 +14,7 @@ public enum UnitDirection
     Left,
 }
 
+
 public class UnitBase : MonoBehaviour
 {
     [Header("refs")]
@@ -25,6 +26,7 @@ public class UnitBase : MonoBehaviour
     [SerializeField] protected Transform m_modulesHolder;
     [SerializeField] protected SerializedAnimatorStates m_animatorStates;
     [SerializeField] protected UnitHealthBar m_healthBar;
+
 
 
     [SerializeField] protected SpriteRenderer m_spriteRenderer;
@@ -53,6 +55,10 @@ public class UnitBase : MonoBehaviour
     {
         get { return m_unitStatus.moves; }
     }
+    public bool IsStationary
+    {
+        get{return m_unitStatus.stationary !=0;}
+    }
 
 
     public Module[] Modules
@@ -73,7 +79,8 @@ public class UnitBase : MonoBehaviour
         m_unitStatus.hp = m_unitStatus.maxHP;
         m_unitStatus.moves = m_unitStatus.moveRange;
         RefreshHealthBar(true);
-        m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
+        if(m_animator!= null)
+            m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
         RefreshActionModules();
         StartCoroutine(Spawn(m_pathAgent.Coordinate).ExcuteAction());
         LevelManager.AddUnit(this);
@@ -218,13 +225,13 @@ public class UnitBase : MonoBehaviour
     public virtual void TurnCW(IsoGridDirection relative_dir)
     {
         m_pathAgent.Direction = m_pathAgent.Direction.RotateRelativeTo(relative_dir);
-        m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
+        m_animator?.SetFloat("DirBlend", (int)m_pathAgent.Direction);
     }
 
     public virtual void SetDirection(IsoGridDirection dir)
     {
         m_pathAgent.Direction = dir;
-        m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
+        m_animator?.SetFloat("DirBlend", (int)m_pathAgent.Direction);
     }
 
     public virtual ActionModule ModuleAction(string module_id, IsoGridCoord[] confirmed_coord)
@@ -338,7 +345,8 @@ public class UnitBase : MonoBehaviour
             m_spriteRenderer.DOFade(1,1-0.1f);
         }
         yield return new WaitForSeconds(1);
-        m_animator.enabled = true;
+        if(m_animator !=null)
+            m_animator.enabled = true;
     }
 
     private IEnumerator UnitDamangeAnimation()
@@ -347,14 +355,6 @@ public class UnitBase : MonoBehaviour
         sequence.Append(m_spriteRenderer.DOColor(Color.red,0.1f))
         .Append(m_spriteRenderer.DOColor(Color.white,0.1f));
         yield return null;
-    }
-
-    private IEnumerator StartDamangePreviewAnimation()
-    {
-        var sequence = DOTween.Sequence();
-        sequence.Append(m_spriteRenderer.DOColor(Color.red,0.1f))
-        .Append(m_spriteRenderer.DOColor(Color.white,0.1f));
-        yield return new WaitForSeconds(0.20f);
     }
 
     #endregion

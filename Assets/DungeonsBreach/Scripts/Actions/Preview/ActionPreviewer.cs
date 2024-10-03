@@ -43,7 +43,6 @@ public class ActionPreviewer : MonoBehaviour
     {
         if(!m_initialized)
             return;
-        Debug.Log("clear   " + key.GetHashCode() + "  " + m_data.ContainsKey(key));
         if(!m_data.ContainsKey(key))
             return;
         

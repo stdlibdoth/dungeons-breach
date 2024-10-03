@@ -24,6 +24,9 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
     public virtual IEnumerator ExcuteAction()
     {
+        if(m_damageActionParam == null)
+            yield break;
+
         if(m_damageActionParam.animationAction!= null)
             GameManager.DispachCoroutine(m_damageActionParam.animationAction.Invoke());
 
@@ -35,20 +38,10 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         deltaStatus.hp = -attackInfo.value;
         unit.UpdateStatus(deltaStatus);
 
-        //for testing player status only, remove later
-        if(unit.CompareTag("PlayerUnit"))
-        {
-            GameManager.UpdatePlayerStatus(new PlayerStatus{
-                maxHP = 0,
-                hp = -attackInfo.value,
-                defence = 0,
-            });
-        }
-
         // if(PreviewKey == this)
         //     BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
 
-        if(attackInfo.pushDist > 0)
+        if(attackInfo.pushDist > 0 && !unit.IsStationary)
         {
             var targetTile = unit.Agent.Coordinate + attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)attackInfo.pushDir];
             if (LevelManager.TryGetUnits(targetTile, out var hits))
@@ -106,9 +99,10 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
     public IEnumerator StartPreview()
     {
-        Debug.Log(PreviewKey.GetHashCode());
+        if(m_previewData == null)
+            yield break;
+
         var unit = m_damageActionParam.unit;
-        Debug.Log(unit);
         var attackInfo = m_damageActionParam.attackInfo;
         //Preview animation
         m_previewData.unitHealthBar.StartDamangeAnimation(-1);
@@ -122,7 +116,14 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         if(attackInfo.pushDist > 0)
         {
             var targetTile = unit.Agent.Coordinate + attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)attackInfo.pushDir];
-            if (LevelManager.TryGetUnits(targetTile, out var hits))
+
+            if(unit.IsStationary)
+            {
+                var shiftPreviewData = new ActionPreviewerData("ShiftUnavailablePreview",
+                attackInfo.pushDir,unit.Agent.Coordinate);
+                BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData,PreviewKey);
+            }
+            else if (LevelManager.TryGetUnits(targetTile, out var hits))
             {
                 var temp = ActionTileInfo.Default;
                 m_previewData.unitHealthBar.SetPreview(0,-1);

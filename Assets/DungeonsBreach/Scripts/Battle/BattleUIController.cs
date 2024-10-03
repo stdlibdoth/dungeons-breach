@@ -24,8 +24,6 @@ public class BattleUIController : Singleton<BattleUIController>
     private TileHighlight m_actionRangeHL;
 
 
-    private Dictionary<UnitBase,TileHighlight> m_actionTargetHL = new Dictionary<UnitBase, TileHighlight>();
-
 
     public static ActionPreviewer ActionPreviewer
     {
@@ -121,25 +119,14 @@ public class BattleUIController : Singleton<BattleUIController>
 
 
     #region action highlight
-    public static void ShowActionTarget(UnitBase unit, IsoGridCoord[] coords)
+    public static void ShowActionTarget(ActionModule module, IsoGridCoord[] coords)
     {
         var singleton = GetSingleton();
-        var factory = singleton.m_tileHighlighterFactory;
-        if(singleton.m_actionTargetHL.ContainsKey(unit))
+        for (int i = 0; i < coords.Length; i++)
         {
-            singleton.m_actionTargetHL[unit].Release();
+            var data = new ActionPreviewerData("Target",IsoGridDirection.SE,coords[i]);
+            ActionPreviewer.RegistorPreview(data,module.PreviewKey);
         }
-        singleton.m_actionTargetHL[unit] = new TileHighlight(factory,coords,"Target");
-    }
-
-    public static void ClearAllActionTarget()
-    {
-        var singleton = GetSingleton();
-        foreach (var item in singleton.m_actionTargetHL)
-        {
-            item.Value.Release();
-        }
-        singleton.m_actionTargetHL.Clear();
     }
 
     #endregion
