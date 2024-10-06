@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public abstract class ActionModule : Module, IAction,IPreviewable<ActionModuleParam>
+public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleParam>
 {
     [Space]
     [Header("profile")]
@@ -19,16 +19,25 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
     [SerializeField] protected PathFindingMask m_blockingMask;
 
 
-    protected UnityEvent<string,bool> m_onActionAvailable = new UnityEvent<string,bool>();
+    protected UnityEvent<string, bool> m_onActionAvailable = new UnityEvent<string, bool>();
     protected bool m_isAvailable;
     protected PreviewKey m_previewKey;
     protected PreviewKey m_lastKey;
 
-    public bool Actived { get;set; }
+    protected IsoGridCoord[] m_confirmedActionRange;
+    protected ActionModuleParam m_actionParam;
+
+
+    public ActionModuleParam ActionParam
+    {
+        get{return m_actionParam;}
+    }
+
+    public bool Actived { get; set; }
 
     public virtual PreviewKey PreviewKey
     {
-        get{return m_previewKey;}
+        get { return m_previewKey; }
         set
         {
             m_lastKey = m_previewKey;
@@ -41,7 +50,7 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
         get { return m_isAvailable; }
         set
         {
-            if(value!= m_isAvailable)
+            if (value != m_isAvailable)
             {
                 m_isAvailable = value;
                 m_onActionAvailable.Invoke(ModuleName, value);
@@ -49,51 +58,59 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
         }
     }
 
-    public virtual UnityEvent<string,bool> OnActionAvailable
+    public virtual UnityEvent<string, bool> OnActionAvailable
     {
-        get { return m_onActionAvailable;}
+        get { return m_onActionAvailable; }
     }
 
     public ActionTileProfile Profile
     {
-        get{return m_profile;}
+        get { return m_profile; }
     }
 
 
-    public virtual IsoGridCoord[] ActionTarget(IsoGridCoord[] confirmed, IsoGridCoord[] range)
-    {
-        List<IsoGridCoord> targets = new List<IsoGridCoord>();
-        for (int i = 0; i < confirmed.Length; i++)
-        {
-            for (int j = 0; j < range.Length; j++)
-            {
-                if(confirmed[i]== range[j])
-                    targets.Add(confirmed[i]);
-            }
-        }
-        return targets.ToArray();
-    }
+    // public virtual IsoGridCoord[] ActionTarget()
+    // {
+    //     List<IsoGridCoord> targets = new List<IsoGridCoord>();
+    //     var range = ActionRangeInternal(m_actionParam.unit.Agent.Coordinate, m_actionParam.unit.Agent.Direction);
+    //     for (int i = 0; i < m_confirmedActionRange.Length; i++)
+    //     {
+    //         for (int j = 0; j < range.Length; j++)
+    //         {
+    //             if (m_confirmedActionRange[i] == range[j])
+    //                 targets.Add(m_confirmedActionRange[i]);
+    //         }
+    //     }
+    //     return targets.ToArray();
+    // }
 
-    public virtual IsoGridCoord[] ActionRange(IsoGridCoord center, IsoGridDirection dir)
+    public IsoGridCoord[] ActionRange()
     {
-        List<IsoGridCoord> range = new List<IsoGridCoord>();
-        foreach (var tileInfo in m_profile.data)
-        {
-            IsoGridCoord coord = tileInfo.relativeCoord.OnRelativeTo(center, dir);
-            var grid = GridManager.ActivePathGrid;
-            if(grid.CheckRange(coord))
-            {
-                bool overlap = m_blockingMask.CheckMaskOverlap(grid.PathingMaskSingleTile(coord));
-                if(!overlap)
-                    range.Add(coord);
-            }
-        }
-        return range.ToArray();
+        return ActionRangeInternal(m_actionParam.unit.Agent.Coordinate, m_actionParam.unit.Agent.Direction);
     }
 
     public virtual void ResetPreviewKey()
     {
         m_previewKey = m_lastKey;
+    }
+
+    public virtual IsoGridCoord[] ConfirmActionTargets()
+    {
+        var actionRange = ActionRangeInternal(m_actionParam.unit.Agent.Coordinate, m_actionParam.unit.Agent.Direction);
+        List<IsoGridCoord> confirmedTargets = new List<IsoGridCoord>();
+        foreach (var inputCoord in m_actionParam.actionInputCoords)
+        {
+            foreach (var coord in actionRange)
+            {
+                if (coord == inputCoord)
+                {
+                    confirmedTargets.Add(inputCoord);
+                    break;
+                }
+            }
+        }
+        m_confirmedActionRange = confirmedTargets.ToArray();
+        return confirmedTargets.ToArray();
     }
 
     public ActionPriority Priority { get; set; }
@@ -107,12 +124,44 @@ public abstract class ActionModule : Module, IAction,IPreviewable<ActionModulePa
 
     public abstract void StopPreview();
 
+
+    protected virtual IsoGridCoord[] ActionRangeInternal(IsoGridCoord center, IsoGridDirection dir)
+    {
+        List<IsoGridCoord> range = new List<IsoGridCoord>();
+        foreach (var tileInfo in m_profile.data)
+        {
+            IsoGridCoord coord = tileInfo.relativeCoord.OnRelativeTo(center, dir);
+            var grid = GridManager.ActivePathGrid;
+            if (grid.CheckRange(coord))
+            {
+                bool overlap = m_blockingMask.CheckMaskOverlap(grid.PathingMaskSingleTile(coord));
+                if (!overlap)
+                    range.Add(coord);
+            }
+        }
+        return range.ToArray();
+    }
+
 }
 
-public class ActionModuleParam :IActionParam
+public class ActionModuleParam : IActionParam
 {
     public UnitBase unit;
-    public IsoGridCoord[] confirmedCoord;
+
+    public IsoGridCoord[] actionInputCoords;
+
+    public IsoGridCoord[] WorldCoord
+    {
+        get
+        {
+            IsoGridCoord[] worldCoord = new IsoGridCoord[actionInputCoords.Length];
+            for (int i = 0; i < actionInputCoords.Length; i++)
+            {
+                worldCoord[i] = actionInputCoords[i].OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
+            }
+            return worldCoord;
+        }
+    }
 }
 
 
@@ -130,14 +179,14 @@ public class AnimationStateData
 
     public void PlayAnimation(bool check_current_state = false)
     {
-        if(animator == null)
+        if (animator == null)
             return;
 
         bool boo = check_current_state;
-        if(check_current_state)
+        if (check_current_state)
             boo = animator.GetCurrentAnimatorStateInfo(0).IsName(animationState);
-        
-        if(!boo)
+
+        if (!boo)
         {
             animator.Play(animationState);
         }

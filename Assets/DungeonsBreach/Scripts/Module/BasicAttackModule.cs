@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class BasicAttackModule : ActionModule
 {
-    protected ActionModuleParam m_actionParam;
-
     protected List<UnitDamageAction> m_tempDamagePreview = new List<UnitDamageAction>();
 
     public BasicAttackModule()
@@ -20,8 +18,6 @@ public class BasicAttackModule : ActionModule
         UnitStatus deltaStatus = UnitStatus.Empty;
         deltaStatus.moves = -m_actionParam.unit.MovesAvalaible;
         m_actionParam.unit.UpdateStatus(deltaStatus);
-        Actived = false;
-        IsAvailable = false;
         return this;
     }
 
@@ -30,7 +26,7 @@ public class BasicAttackModule : ActionModule
         var unit = m_actionParam.unit;
         Debug.Log(unit +"  " + ModuleName + "  action");
         yield return PlayAnimation(unit);
-        var confirmed = new List<IsoGridCoord>(m_actionParam.confirmedCoord);
+        var confirmed = new List<IsoGridCoord>(m_confirmedActionRange);
 
         if(m_previewKey == this)
             BattleUIController.ActionPreviewer.ClearPreview(m_previewKey);
@@ -105,7 +101,7 @@ public class BasicAttackModule : ActionModule
     public override IEnumerator StartPreview()
     {
         var unit = m_actionParam.unit;
-        var confirmed = new List<IsoGridCoord>(m_actionParam.confirmedCoord);
+        var confirmed = new List<IsoGridCoord>(m_confirmedActionRange);
         foreach (var attack in m_profile.data)
         {
             IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);

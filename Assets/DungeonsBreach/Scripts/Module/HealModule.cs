@@ -18,7 +18,7 @@ public class HealModule : BasicAttackModule
         Debug.Log(unit + "  heal");
         if(m_animationDataOverride)
             m_animationData.PlayAnimation();
-        var confirmed = new List<IsoGridCoord>(m_actionParam.confirmedCoord);
+        var confirmed = new List<IsoGridCoord>(m_confirmedActionRange);
         foreach (var attack in m_profile.data)
         {
             IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);

@@ -30,10 +30,12 @@ public class PreviewKey : IComparable<PreviewKey>, IEquatable<PreviewKey>
         m_count++;
     }
 
-    // public static bool IsNull(PreviewKey key)
-    // {
-    //     return key.Equals(null);
-    // }
+    public static bool IsNull(PreviewKey key)
+    {
+        if((object)key == null)
+            return true;
+        return key.Equals(null);
+    }
     public void UpdateKey(object obj)
     {
         m_keyObj = obj;
@@ -46,6 +48,8 @@ public class PreviewKey : IComparable<PreviewKey>, IEquatable<PreviewKey>
 
     public bool Equals(PreviewKey other)
     {
+        if((object)other == null)
+            return (object)this == null;
         return m_keyObj == other.m_keyObj;
     }
 

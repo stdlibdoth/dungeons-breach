@@ -13,7 +13,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
     protected List<IsoGridCoord> m_actionTargets = new List<IsoGridCoord>();
     protected List<UnitDamageAction> m_tempDamagePreview = new List<UnitDamageAction>();
 
-    public override IsoGridCoord[] ActionRange(IsoGridCoord center, IsoGridDirection dir)
+    protected override IsoGridCoord[] ActionRangeInternal(IsoGridCoord center, IsoGridDirection dir)
     {
         m_actionTargets.Clear();
         List<IsoGridCoord> range = new List<IsoGridCoord>();
@@ -32,26 +32,19 @@ public class ProjectileSpawnModule : BasicSpawnModule
                 for (int i = 0; i <= blockDist; i++)
                 {
                     range.Add(startCoord + i*IsoGridMetrics.GridDirectionToCoord[(int)dir]);
-                    m_actionTargets.Add(stopCoord);
                 }
+                m_actionTargets.Add(stopCoord);
             }
         }
         return range.ToArray();
     }
 
 
-    public override IsoGridCoord[] ActionTarget(IsoGridCoord[] confirmed_coords, IsoGridCoord[] range)
+    public override IsoGridCoord[] ConfirmActionTargets()
     {
-        List<IsoGridCoord> targets = new List<IsoGridCoord>();
-        foreach (var c in confirmed_coords)
-        {
-            foreach (var t in m_actionTargets)
-            {
-                if(t.x == c.x || t.y == c.y)
-                    targets.Add(t);
-            }
-        }
-        return targets.ToArray();
+        ActionRangeInternal(m_actionParam.unit.Agent.Coordinate, m_actionParam.unit.Agent.Direction);
+        m_confirmedActionRange = m_actionTargets.ToArray();
+        return m_actionTargets.ToArray();
     }
 
     public override IEnumerator ExcuteAction()
@@ -62,7 +55,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
         foreach (var tileInfo in m_profile.data)
         {
             var c = tileInfo.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
-            foreach (var confirmed in m_actionParam.confirmedCoord)
+            foreach (var confirmed in m_confirmedActionRange)
             {
                 if(confirmed.x == c.x || confirmed.y == c.y)
                     spawnTile.Add(c);

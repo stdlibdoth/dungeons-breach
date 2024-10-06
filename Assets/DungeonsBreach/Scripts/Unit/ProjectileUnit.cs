@@ -47,10 +47,11 @@ public class ProjectileUnit : UnitBase
             var param = new ActionModuleParam
             {
                 unit = this,
-                confirmedCoord = new IsoGridCoord[] { coord },
+                actionInputCoords = new IsoGridCoord[] { coord },
             };
             module.Actived = false;
             module.Build(param);
+            module.ConfirmActionTargets();
             m_unitStatus.moves = 0;
             yield return module.ExcuteAction();
         }

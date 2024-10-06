@@ -234,25 +234,6 @@ public class UnitBase : MonoBehaviour
         m_animator?.SetFloat("DirBlend", (int)m_pathAgent.Direction);
     }
 
-    public virtual ActionModule ModuleAction(string module_id, IsoGridCoord[] confirmed_coord)
-    {
-        foreach (var module in m_actionModules)
-        {
-            Debug.Log(module_id + " : " + module.ModuleName);
-            if(module.ModuleName == module_id)
-            {
-                var param = new ActionModuleParam
-                {
-                    unit = this,
-                    confirmedCoord = confirmed_coord,
-                };
-                module.Build(param);
-                module.GeneratePreview(param);
-                return module;
-            }
-        }
-        return null;
-    }
     #endregion
 
     #region Actions

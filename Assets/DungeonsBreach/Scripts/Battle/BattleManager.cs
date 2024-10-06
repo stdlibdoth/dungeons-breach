@@ -30,12 +30,12 @@ public class BattleManager : Singleton<BattleManager>
         get { return GetSingleton().m_selectedUnit; }
         private set
         {
-            if(GetSingleton().m_selectedUnit != value)
+            if (GetSingleton().m_selectedUnit != value)
             {
                 //deactive module
-                if(GetSingleton().m_selectedUnit!= null)
+                if (GetSingleton().m_selectedUnit != null)
                 {
-                    if(GetSingleton().m_selectedUnit.ActivedModule(out var module))
+                    if (GetSingleton().m_selectedUnit.ActivedModule(out var module))
                     {
                         GetSingleton().StopActionPreview(module);
                         module.Actived = false;
@@ -43,13 +43,13 @@ public class BattleManager : Singleton<BattleManager>
                 }
 
                 //show move range
-                BattleUIController.DisposeMoveHighlights();      
-                if(value!= null && value.MovesAvalaible>0)
+                BattleUIController.DisposeMoveHighlights();
+                if (value != null && value.MovesAvalaible > 0)
                 {
-                    GetSingleton().m_moveRange = value.Agent.ReachableCoordinates(value.MovesAvalaible,GridManager.ActivePathGrid);
+                    GetSingleton().m_moveRange = value.Agent.ReachableCoordinates(value.MovesAvalaible, GridManager.ActivePathGrid);
                     BattleUIController.HighlightPathRange(GetSingleton().m_moveRange, "MoveRange");
                 }
-                else if(value == null)
+                else if (value == null)
                 {
                     BattleUIController.CursorController.ResetCursor();
                     BattleUIController.DisposeActionHighlights();
@@ -85,6 +85,7 @@ public class BattleManager : Singleton<BattleManager>
     #endregion
 
 
+    #region  public methods
     public static IEnumerator StartTurn()
     {
         foreach (var unit in LevelManager.Units)
@@ -100,8 +101,21 @@ public class BattleManager : Singleton<BattleManager>
     public static IEnumerator EndPlayerTurn()
     {
         SelectedUnit = null;
-        yield return ActionTurn.StartActionTurns(ActionTurnType.Environment,ActionTurnType.EnemySpawn);
+        yield return ActionTurn.StartActionTurns(ActionTurnType.Environment, ActionTurnType.EnemySpawn);
     }
+
+
+    public static void UpdateModuleAction(ActionModule action_module, UnitBase action_unit, IsoGridCoord delta)
+    {
+        var param = action_module.ActionParam;
+        for (int i = 0; i < param.actionInputCoords.Length; i++)
+        {
+            param.actionInputCoords[i] += delta;
+        }
+        GetSingleton().ModuleActionHandlerInternal(action_module,action_unit,param.actionInputCoords);
+    }
+
+    #endregion
 
     #region Events
 
@@ -121,7 +135,7 @@ public class BattleManager : Singleton<BattleManager>
             {
                 var agent = SelectedUnit.Agent;
                 m_unitPathFound = IsoGridPathFinding.FindPathAstar(agent.Coordinate, coord, GridManager.ActivePathGrid, agent.BlockingMask, out var path);
-                if(m_unitPathFound)
+                if (m_unitPathFound)
                 {
                     BattleUIController.ShowPathTrail(path);
                     BattleUIController.CursorController.SetCursor("MoveAvailable");
@@ -145,20 +159,21 @@ public class BattleManager : Singleton<BattleManager>
         {
             StopActionPreview(module);
             BattleUIController.DisposeMoveHighlights();
-            
+
             SelectedUnit.SetDirection(SelectedUnit.Agent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
-            m_actionRange = module.ActionRange(SelectedUnit.Agent.Coordinate,SelectedUnit.Agent.Direction);
-            BattleUIController.HighlightActionRange(m_actionRange,"ActionRange");
-            IsoGridCoord[] confirmed = ConfirmActionRange(m_actionRange);
-            if(confirmed.Length>0)
+            var param = new ActionModuleParam
+            {
+                unit = SelectedUnit,
+                actionInputCoords = new IsoGridCoord[] { m_pointerGridCoord },
+            };
+            module.Build(param);
+            m_actionRange = module.ActionRange();
+            BattleUIController.HighlightActionRange(m_actionRange, "ActionRange");
+            IsoGridCoord[] confirmed = module.ConfirmActionTargets();
+            if (confirmed.Length > 0)
             {
                 BattleUIController.ActionPreviewer.InitPreview();
                 BattleUIController.CursorController.SetCursor("TargetValid");
-                var param = new ActionModuleParam
-                {
-                    unit = SelectedUnit,
-                    confirmedCoord = confirmed,
-                };
                 module.GeneratePreview(param);
                 module.PreviewKey = PreviewKey.GlobalKey;
                 StartCoroutine(module.StartPreview());
@@ -175,46 +190,47 @@ public class BattleManager : Singleton<BattleManager>
 
     #region Helpers
 
-    private void ModuleActionHandler(ActionModule actionModule)
+    private void ModuleActionHandlerInternal(ActionModule action_module, UnitBase action_unit, IsoGridCoord[] input_coords)
     {
-        Debug.Log("Module Action: " + actionModule.ModuleName);
-        if (SelectedUnit.CompareTag("PlayerUnit"))
+        Debug.Log("Module Action: " + action_module.ModuleName);
+        var param = new ActionModuleParam
         {
-            IsoGridCoord[] confirmed = ConfirmActionRange(m_actionRange);
+            unit = action_unit,
+            actionInputCoords = input_coords,
+        };
+        action_module.Build(param);
+        var confirmed = action_module.ConfirmActionTargets();
+        action_module.Actived = false;
+        action_module.IsAvailable = false;
+        if (action_unit.CompareTag("PlayerUnit"))
+        {
             if (confirmed.Length > 0)
             {
-                var action = SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed);
-                StartCoroutine(action.ExcuteAction());
-                StopActionPreview(actionModule);
+                action_module.GeneratePreview(param);
+                StartCoroutine(action_module.ExcuteAction());
+                StopActionPreview(action_module);
                 BattleUIController.DisposeActionHighlights();
             }
         }
-        else if (SelectedUnit.CompareTag("MonsterUnit"))
+        else if (action_unit.CompareTag("MonsterUnit"))
         {
-            IsoGridCoord[] confirmed = ConfirmActionRange(m_actionRange);
             if (confirmed.Length > 0)
             {
-                var action = SelectedUnit.ModuleAction(actionModule.ModuleName, confirmed);
-                var targets = actionModule.ActionTarget(confirmed,m_actionRange);
-                ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).RegistorAction(action);
-                StopActionPreview(actionModule);
+                ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).RegistorAction(action_module);
+                StopActionPreview(action_module);
 
-                var param = new ActionModuleParam
-                {
-                    unit = SelectedUnit,
-                    confirmedCoord = confirmed,
-                };
                 BattleUIController.ActionPreviewer.InitPreview();
-                action.GeneratePreview(param);
-                StartCoroutine(action.StartPreview());
-                action.StopPreview();
+                action_module.GeneratePreview(param);
+                StartCoroutine(action_module.StartPreview());
+                action_module.StopPreview();
 
 
                 BattleUIController.DisposeActionHighlights();
-                BattleUIController.ShowActionTarget(actionModule,targets);
+                BattleUIController.ShowActionTarget(action_module, confirmed);
             }
         }
     }
+
 
 
     private void StopActionPreview(ActionModule actionModule)
@@ -239,9 +255,9 @@ public class BattleManager : Singleton<BattleManager>
         bool checkRange = grid.CheckRange(coord);
 
 
-        if(m_pointerGridCoord != coord)
+        if (m_pointerGridCoord != coord)
         {
-            if(checkRange)
+            if (checkRange)
             {
                 BattleUIController.ShowPointerHighlight(coord);
             }
@@ -282,22 +298,22 @@ public class BattleManager : Singleton<BattleManager>
             }
             else if (moduleActived && activedModule.IsAvailable)
             {
-                ModuleActionHandler(activedModule);
+                ModuleActionHandlerInternal(activedModule, SelectedUnit, new IsoGridCoord[]{m_pointerGridCoord});
                 BattleUIController.CursorController.ResetCursor();
             }
         }
     }
 
-    private IsoGridCoord[] ConfirmActionRange(IsoGridCoord[] action_range)
-    {    
-        List<IsoGridCoord> range = new List<IsoGridCoord>();
-        foreach (var coord in action_range)
-        {
-            if (coord == m_pointerGridCoord)
-                range.Add(coord);
-        }
-        return range.ToArray();
-    }
+    // private IsoGridCoord[] ConfirmActionRange(IsoGridCoord[] action_range, IsoGridCoord input)
+    // {
+    //     List<IsoGridCoord> range = new List<IsoGridCoord>();
+    //     foreach (var coord in action_range)
+    //     {
+    //         if (coord == input)
+    //             range.Add(coord);
+    //     }
+    //     return range.ToArray();
+    // }
 
 
     private void OnRightClick(InputAction.CallbackContext obj)
@@ -309,4 +325,14 @@ public class BattleManager : Singleton<BattleManager>
     }
 
     #endregion
+
+
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(10, 70, 100, 30), "Update"))
+        {
+            var turn = ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction);
+            turn.UpdateActionTurn();
+        }
+    }
 }

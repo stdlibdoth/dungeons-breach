@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BasicSpawnModule : ActionModule
 {
-    protected ActionModuleParam m_actionParam;
     [Space]
     [SerializeField] protected UnitBase m_spawnUnit;
     [SerializeField] protected SpawnAnchor m_spawnAnchor;
@@ -19,21 +18,21 @@ public class BasicSpawnModule : ActionModule
         UnitStatus deltaStatus = UnitStatus.Empty;
         deltaStatus.moves = -m_actionParam.unit.MovesAvalaible;
         m_actionParam.unit.UpdateStatus(deltaStatus);
-        Actived = false;
-        IsAvailable = false;
         return this;
     }
 
     public override IEnumerator ExcuteAction()
     {
- 
+        if(m_confirmedActionRange.Length<=0)
+            yield break;
+
         var unit = m_actionParam.unit;
         Debug.Log(unit + " spawn " + m_spawnUnit.name);       
         PlayAnimation(unit);
         Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.Agent.Direction).localPosition;
         var grid = GridManager.ActivePathGrid;
         yield return new WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
-        foreach (var coord in m_actionParam.confirmedCoord)
+        foreach (var coord in m_confirmedActionRange)
         {
             var pos = (Vector3)coord.ToWorldPosition(grid) + relativePos;
             var dir = unit.Agent.Coordinate.DirectionTo(coord, grid);

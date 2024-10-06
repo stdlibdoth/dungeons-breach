@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TrajectileSpawnModule : ActionModule
 {
-    private ActionModuleParam m_actionParam;
     [Space]
     [SerializeField] private TrajectileUnit m_spawnUnit;
     [SerializeField] private SpawnAnchor m_spawnAnchor;
@@ -23,13 +22,14 @@ public class TrajectileSpawnModule : ActionModule
         UnitStatus deltaStatus = UnitStatus.Empty;
         deltaStatus.moves = -m_actionParam.unit.MovesAvalaible;
         m_actionParam.unit.UpdateStatus(deltaStatus);
-        Actived = false;
-        IsAvailable = false;
         return this;
     }
 
     public override IEnumerator ExcuteAction()
     {
+        if(m_confirmedActionRange.Length<=0)
+            yield break;
+
         var unit = m_actionParam.unit;
         Debug.Log(unit + " trajectile " + m_spawnUnit.name);
         PlayAnimation(unit);
@@ -38,10 +38,10 @@ public class TrajectileSpawnModule : ActionModule
         yield return new WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
 
         var pos = (Vector3)unit.Agent.Coordinate.ToWorldPosition(grid) + relativePos;
-        var dir = unit.Agent.Coordinate.DirectionTo(m_actionParam.confirmedCoord[0], grid);
+        var dir = unit.Agent.Coordinate.DirectionTo(m_confirmedActionRange[0], grid);
         var spawn = Instantiate(m_spawnUnit, pos, Quaternion.identity);
         spawn.PreviewKey = PreviewKey;
-        spawn.SetTargets(m_actionParam.confirmedCoord);
+        spawn.SetTargets(m_confirmedActionRange);
         spawn.SetDirection(dir);
         yield return spawn.StartTrajectile();
     }
@@ -65,7 +65,7 @@ public class TrajectileSpawnModule : ActionModule
         IsoGridCoord startCoord = m_actionParam.unit.Agent.Coordinate;
         var grid = GridManager.ActivePathGrid;
 
-        foreach (var confirmedCoord in m_actionParam.confirmedCoord)
+        foreach (var confirmedCoord in m_confirmedActionRange)
         {    
             IsoGridCoord end = confirmedCoord;
             Vector3 endPos = end.ToWorldPosition(grid);

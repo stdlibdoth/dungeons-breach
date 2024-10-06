@@ -121,7 +121,6 @@ public class BattleUIController : Singleton<BattleUIController>
     #region action highlight
     public static void ShowActionTarget(ActionModule module, IsoGridCoord[] coords)
     {
-        var singleton = GetSingleton();
         for (int i = 0; i < coords.Length; i++)
         {
             var data = new ActionPreviewerData("Target",IsoGridDirection.SE,coords[i]);
