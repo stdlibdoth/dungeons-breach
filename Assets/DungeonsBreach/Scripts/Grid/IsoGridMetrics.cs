@@ -99,6 +99,21 @@ public static class IsoGridMetrics
         return new IsoGridCoord(-coord.y, coord.x);
     }
 
+    public static IsoGridCoord RotateCCW(this IsoGridCoord coord, int turn_count)
+    {
+        IsoGridCoord result = coord;
+        for (int i = 0; i < turn_count; i++)
+        {
+            result = result.RotateCCW();
+        }
+        return result;
+    }
+
+    private static IsoGridCoord RotateCCW(this IsoGridCoord coord)
+    {
+        return new IsoGridCoord(-coord.y, coord.x);
+    }
+
     public static IsoGridDirection RotateRelativeTo(this IsoGridDirection relative, IsoGridDirection base_dir)
     {
         int index = ((int)base_dir + (int)relative) % directionCount;

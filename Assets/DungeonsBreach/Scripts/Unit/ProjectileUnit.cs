@@ -37,18 +37,14 @@ public class ProjectileUnit : UnitBase
     public IEnumerator StartProjectile()
     {
         base.SpawnUnit();
-
+        Debug.Log("spawn pos" + m_pathAgent.Coordinate);
         int dist = m_unitStatus.moveRange;
         int blockDist = GridManager.ActivePathGrid.MaskLineCast(m_pathAgent.BlockingMask, m_pathAgent.Coordinate, m_pathAgent.Direction, dist, out var coord);
         yield return m_pathAgent.MoveStraight(m_locamotionType, coord);
 
         foreach (var module in m_actionModules)
         {
-            var param = new ActionModuleParam
-            {
-                unit = this,
-                actionInputCoords = new IsoGridCoord[] { coord },
-            };
+            var param = new ActionModuleParam(this,new IsoGridCoord[] { coord },false);
             module.Actived = false;
             module.Build(param);
             module.ConfirmActionTargets();

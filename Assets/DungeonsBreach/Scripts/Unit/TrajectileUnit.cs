@@ -59,11 +59,7 @@ public class TrajectileUnit : UnitBase
         yield return m_pathAgent.MoveStraight(m_locamotionType, coord);
         foreach (var module in m_actionModules)
         {
-            var param = new ActionModuleParam
-            {
-                unit = this,
-                actionInputCoords = new IsoGridCoord[] { coord },
-            };
+            var param = new ActionModuleParam(this,new IsoGridCoord[] { coord },false);
             module.Actived = false;
             module.Build(param);
             module.ConfirmActionTargets();
@@ -71,11 +67,6 @@ public class TrajectileUnit : UnitBase
             yield return module.ExcuteAction();
         }
     }
-
-    // public override UnitSpawnAction Spawn(IsoGridCoord coord)
-    // {
-    //     return new UnitSpawnAction();
-    // }
 
     public override void Die()
     {

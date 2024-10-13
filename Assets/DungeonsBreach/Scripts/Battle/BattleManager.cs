@@ -51,6 +51,8 @@ public class BattleManager : Singleton<BattleManager>
                 }
                 else if (value == null)
                 {
+                    GetSingleton().m_selectedUnit.Agent.StopMovePreview();
+                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).UpdateActionPreview();
                     BattleUIController.CursorController.ResetCursor();
                     BattleUIController.DisposeActionHighlights();
                     BattleUIController.HidePathTrail();
@@ -105,14 +107,14 @@ public class BattleManager : Singleton<BattleManager>
     }
 
 
-    public static void UpdateModuleAction(ActionModule action_module, UnitBase action_unit, IsoGridCoord delta)
+    public static void UpdateActionPreview(ActionModule action_module)
     {
-        var param = action_module.ActionParam;
-        for (int i = 0; i < param.actionInputCoords.Length; i++)
-        {
-            param.actionInputCoords[i] += delta;
-        }
-        GetSingleton().ModuleActionHandlerInternal(action_module,action_unit,param.actionInputCoords);
+        GetSingleton().UpdateModuleActionPreview(action_module);
+    }
+
+    public static void TriggerModuleActionPreview(ActionModule action_module)
+    {
+        GetSingleton().TriggerActionPreview(action_module);
     }
 
     #endregion
@@ -126,7 +128,7 @@ public class BattleManager : Singleton<BattleManager>
 
         m_unitPathFound = false;
         bool moduleActived = SelectedUnit.ActivedModule(out var module);
-
+        SelectedUnit.Agent.StopMovePreview();
         //move range preview
         if (SelectedUnit.MovesAvalaible > 0 && !moduleActived && !SelectedUnit.Agent.IsMoving)
         {
@@ -138,10 +140,15 @@ public class BattleManager : Singleton<BattleManager>
                 if (m_unitPathFound)
                 {
                     BattleUIController.ShowPathTrail(path);
+                    SelectedUnit.Agent.StartMovePreview(coord);
+                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).UpdateActionPreview();
+                    if(SelectedUnit.CompareTag("PlayerUnit"))
+                        ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).CheckPreview();
                     BattleUIController.CursorController.SetCursor("MoveAvailable");
                 }
                 else
                 {
+                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).UpdateActionPreview();
                     BattleUIController.CursorController.SetCursor("MoveUnavailable");
                     BattleUIController.HidePathTrail();
                 }
@@ -157,15 +164,11 @@ public class BattleManager : Singleton<BattleManager>
         //action module preview
         else if (moduleActived && module.IsAvailable)
         {
-            StopActionPreview(module);
             BattleUIController.DisposeMoveHighlights();
+            StopActionPreview(module);
 
             SelectedUnit.SetDirection(SelectedUnit.Agent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
-            var param = new ActionModuleParam
-            {
-                unit = SelectedUnit,
-                actionInputCoords = new IsoGridCoord[] { m_pointerGridCoord },
-            };
+            var param = new ActionModuleParam(SelectedUnit, new IsoGridCoord[] { m_pointerGridCoord }, false);
             module.Build(param);
             m_actionRange = module.ActionRange();
             BattleUIController.HighlightActionRange(m_actionRange, "ActionRange");
@@ -173,14 +176,13 @@ public class BattleManager : Singleton<BattleManager>
             if (confirmed.Length > 0)
             {
                 BattleUIController.ActionPreviewer.InitPreview();
-                BattleUIController.CursorController.SetCursor("TargetValid");
                 module.GeneratePreview(param);
+                BattleUIController.CursorController.SetCursor("TargetValid");
                 module.PreviewKey = PreviewKey.GlobalKey;
                 StartCoroutine(module.StartPreview());
             }
             else
             {
-                // module.StopPreview();
                 BattleUIController.CursorController.SetCursor("TargetInvalid");
             }
         }
@@ -190,14 +192,42 @@ public class BattleManager : Singleton<BattleManager>
 
     #region Helpers
 
-    private void ModuleActionHandlerInternal(ActionModule action_module, UnitBase action_unit, IsoGridCoord[] input_coords)
+    private void TriggerActionPreview(ActionModule action_module)
+    {
+        action_module.StopPreview();
+        IsoGridCoord[] confirmed = action_module.ConfirmActionTargets();
+        if (confirmed.Length > 0)
+        {
+            BattleUIController.ActionPreviewer.InitPreview();
+            action_module.PreviewKey = PreviewKey.GlobalKey;
+            StartCoroutine(action_module.StartPreview());
+        }
+    }
+
+    private void UpdateModuleActionPreview(ActionModule action_module)
+    {
+        var confirmed = action_module.ConfirmActionTargets();
+        if (action_module.ActionParam.unit.CompareTag("MonsterUnit"))
+        {
+            if (confirmed.Length > 0)
+            {
+                StopActionPreview(action_module);
+                BattleUIController.ActionPreviewer.InitPreview();
+                action_module.PreviewKey = new PreviewKey(action_module);
+                StartCoroutine(action_module.StartPreview());
+                action_module.StopPreview();
+
+                BattleUIController.DisposeActionHighlights();
+                BattleUIController.ShowActionTarget(action_module, confirmed);
+            }
+        }
+    }
+
+
+    private void ModuleActionHandler(ActionModule action_module, UnitBase action_unit, IsoGridCoord[] input_coords)
     {
         Debug.Log("Module Action: " + action_module.ModuleName);
-        var param = new ActionModuleParam
-        {
-            unit = action_unit,
-            actionInputCoords = input_coords,
-        };
+        var param = new ActionModuleParam(action_unit, input_coords, false);
         action_module.Build(param);
         var confirmed = action_module.ConfirmActionTargets();
         action_module.Actived = false;
@@ -223,7 +253,6 @@ public class BattleManager : Singleton<BattleManager>
                 action_module.GeneratePreview(param);
                 StartCoroutine(action_module.StartPreview());
                 action_module.StopPreview();
-
 
                 BattleUIController.DisposeActionHighlights();
                 BattleUIController.ShowActionTarget(action_module, confirmed);
@@ -254,7 +283,6 @@ public class BattleManager : Singleton<BattleManager>
 
         bool checkRange = grid.CheckRange(coord);
 
-
         if (m_pointerGridCoord != coord)
         {
             if (checkRange)
@@ -278,6 +306,7 @@ public class BattleManager : Singleton<BattleManager>
         if (!grid.CheckRange(m_pointerGridCoord))
             return;
 
+        SelectedUnit?.Agent.StopMovePreview();
         ActionModule activedModule = null;
         bool moduleActived = SelectedUnit == null ? false : SelectedUnit.ActivedModule(out activedModule);
         bool selectCondition = LevelManager.TryGetUnits(m_pointerGridCoord, out var units) && (!moduleActived);
@@ -298,7 +327,7 @@ public class BattleManager : Singleton<BattleManager>
             }
             else if (moduleActived && activedModule.IsAvailable)
             {
-                ModuleActionHandlerInternal(activedModule, SelectedUnit, new IsoGridCoord[]{m_pointerGridCoord});
+                ModuleActionHandler(activedModule, SelectedUnit, new IsoGridCoord[] { m_pointerGridCoord });
                 BattleUIController.CursorController.ResetCursor();
             }
         }
@@ -332,7 +361,7 @@ public class BattleManager : Singleton<BattleManager>
         if (GUI.Button(new Rect(10, 70, 100, 30), "Update"))
         {
             var turn = ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction);
-            turn.UpdateActionTurn();
+            turn.UpdateActionPreview();
         }
     }
 }

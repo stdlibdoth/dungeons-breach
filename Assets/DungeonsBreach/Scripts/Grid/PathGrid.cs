@@ -38,25 +38,36 @@ public class PathGrid : IsoGrid
         m_pathFindingMask[coord.To2DArrayIndex(m_dimension)] = new_value;
     }
 
+    public void ResetMaskBits(IsoGridCoord coord, PathFindingMask reset_mask)
+    {
+        var mask = m_pathFindingMask[coord.To2DArrayIndex(m_dimension)];
+        m_pathFindingMask[coord.To2DArrayIndex(m_dimension)] = mask & (~reset_mask);
+    }
+
+    public void SetMaskBits(IsoGridCoord coord, PathFindingMask set_mask)
+    {
+        var mask = m_pathFindingMask[coord.To2DArrayIndex(m_dimension)];
+        m_pathFindingMask[coord.To2DArrayIndex(m_dimension)] = mask | set_mask;
+    }
+
+
     public int MaskLineCast(PathFindingMask mask,IsoGridCoord start ,IsoGridDirection dir, int max_dist, out IsoGridCoord coord)
     {
-        var target = start;
-        coord = target;
+        coord = start;
         for (int i = 0; i < max_dist; i++)
         {
-            var temp = target + IsoGridMetrics.GridDirectionToCoord[(int)dir];
+            var temp = start + i*IsoGridMetrics.GridDirectionToCoord[(int)dir];
             if (!CheckRange(temp))
             {
-                coord = target;
-                return i;
+                coord = start + (i-1)*IsoGridMetrics.GridDirectionToCoord[(int)dir];;
+                return i-1;
             }
 
             var tileMask = PathingMaskSingleTile(temp);
-            target = temp;
-            coord = target;
+            coord = temp;
             if (tileMask.CheckMaskOverlap(mask))
             {
-                return i + 1;
+                return i;
             }
         }
         return int.MaxValue;
@@ -85,6 +96,16 @@ public struct PathFindingMask
     public static PathFindingMask operator ^(PathFindingMask lhs, PathFindingMask rhs)
     {
         return new PathFindingMask((byte)(lhs.value ^ rhs.value));
+    }
+
+    public static PathFindingMask operator &(PathFindingMask lhs, PathFindingMask rhs)
+    {
+        return new PathFindingMask((byte)(lhs.value & rhs.value));
+    }
+
+    public static PathFindingMask operator ~(PathFindingMask mask)
+    {
+        return new PathFindingMask((byte)(~mask.value));
     }
 
 

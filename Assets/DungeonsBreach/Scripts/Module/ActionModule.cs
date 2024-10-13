@@ -30,7 +30,7 @@ public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleP
 
     public ActionModuleParam ActionParam
     {
-        get{return m_actionParam;}
+        get { return m_actionParam; }
     }
 
     public bool Actived { get; set; }
@@ -68,22 +68,6 @@ public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleP
         get { return m_profile; }
     }
 
-
-    // public virtual IsoGridCoord[] ActionTarget()
-    // {
-    //     List<IsoGridCoord> targets = new List<IsoGridCoord>();
-    //     var range = ActionRangeInternal(m_actionParam.unit.Agent.Coordinate, m_actionParam.unit.Agent.Direction);
-    //     for (int i = 0; i < m_confirmedActionRange.Length; i++)
-    //     {
-    //         for (int j = 0; j < range.Length; j++)
-    //         {
-    //             if (m_confirmedActionRange[i] == range[j])
-    //                 targets.Add(m_confirmedActionRange[i]);
-    //         }
-    //     }
-    //     return targets.ToArray();
-    // }
-
     public IsoGridCoord[] ActionRange()
     {
         return ActionRangeInternal(m_actionParam.unit.Agent.Coordinate, m_actionParam.unit.Agent.Direction);
@@ -98,7 +82,7 @@ public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleP
     {
         var actionRange = ActionRangeInternal(m_actionParam.unit.Agent.Coordinate, m_actionParam.unit.Agent.Direction);
         List<IsoGridCoord> confirmedTargets = new List<IsoGridCoord>();
-        foreach (var inputCoord in m_actionParam.actionInputCoords)
+        foreach (var inputCoord in m_actionParam.GetInputCoordinates(false))
         {
             foreach (var coord in actionRange)
             {
@@ -141,25 +125,53 @@ public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleP
         }
         return range.ToArray();
     }
-
 }
 
 public class ActionModuleParam : IActionParam
 {
     public UnitBase unit;
 
-    public IsoGridCoord[] actionInputCoords;
+    //relative to action module
+    private IsoGridCoord[] actionInputCoords;
 
-    public IsoGridCoord[] WorldCoord
+    public ActionModuleParam(UnitBase unit, IsoGridCoord[] coords, bool is_relative)
     {
-        get
+        this.unit = unit;
+        actionInputCoords = new IsoGridCoord[coords.Length];
+        SetActionInputCoordinatesInternal(coords, is_relative);
+    }
+
+    public IsoGridCoord[] GetInputCoordinates(bool is_relative)
+    {
+        IsoGridCoord[] coords = new IsoGridCoord[actionInputCoords.Length];
+        actionInputCoords.CopyTo(coords, 0);
+        if (!is_relative)
         {
-            IsoGridCoord[] worldCoord = new IsoGridCoord[actionInputCoords.Length];
             for (int i = 0; i < actionInputCoords.Length; i++)
             {
-                worldCoord[i] = actionInputCoords[i].OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
+                coords[i] = actionInputCoords[i].OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
             }
-            return worldCoord;
+        }
+        return coords;
+    }
+
+    private void SetActionInputCoordinatesInternal(IsoGridCoord[] input, bool is_relative)
+    {
+        if (is_relative)
+        {
+            for (int i = 0; i < input.Length; i++)
+            {
+                actionInputCoords[i] = input[i];
+            }
+        }
+        else
+        {
+            for (int i = 0; i < input.Length; i++)
+            {
+                actionInputCoords[i] = input[i] - unit.Agent.Coordinate;
+                int turnCount = IsoGridMetrics.directionCount - (int)unit.Agent.Direction;
+                actionInputCoords[i] = actionInputCoords[i].RotateCCW(turnCount);
+            }
         }
     }
 }

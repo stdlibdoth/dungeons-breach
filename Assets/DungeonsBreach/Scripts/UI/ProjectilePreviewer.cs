@@ -4,24 +4,30 @@ using UnityEngine;
 
 public class ProjectilePreviewer : MonoBehaviour
 {
-    [SerializeField] protected LineRenderer m_lineRenderer;
+    //[SerializeField] protected LineRenderer m_lineRenderer;
     [SerializeField] protected Material m_enemyMat;
     [SerializeField] protected Material m_playerMat;
 
+    [Tooltip("In terms of grid's cell size")]
+    [SerializeField] private float m_interval;
+    [SerializeField] protected string m_highlighterKeyPlayer;
+    [SerializeField] protected string m_highlighterKeyMonster;
 
-    public virtual void SetPreviewer(Vector3 start, Vector3 end, bool is_player)
+
+
+    public virtual void SetPreviewer(Vector3 start, Vector3 end, bool is_player, PreviewKey preview_key)
     {
-        m_lineRenderer.positionCount = 2;
-        Vector3[] pos = new Vector3[2];
-        pos[0] = end;
-        pos[1] = start;
-        m_lineRenderer.SetPositions(pos);
-        m_lineRenderer.material = is_player? m_playerMat:m_enemyMat;
-        m_lineRenderer.enabled = true;
+        float cellSize = GridManager.ActiveTileGrid.CellSize;
+        float interval = m_interval*cellSize;
+        float offset = 0.5f*interval;
+        int highlightCount = (int)(Vector3.Distance(start,end)/interval);
+        Vector3 dir = (end -start).normalized;
+        string highlighterKey = is_player? m_highlighterKeyPlayer:m_highlighterKeyMonster;
+        for (int i = 0; i < highlightCount; i++)
+        {
+            var position = start + offset*dir + i*dir*interval;
+            BattleUIController.ActionPreviewer.RegistorPreview(highlighterKey,position,preview_key);
+        }
     }
 
-    public void ClearPreviewer()
-    {
-        m_lineRenderer.enabled = false;
-    }
 }

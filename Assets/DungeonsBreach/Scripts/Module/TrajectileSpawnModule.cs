@@ -53,7 +53,7 @@ public class TrajectileSpawnModule : ActionModule
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
         PreviewKey = new PreviewKey(this);
-        Debug.Log("generate key: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
+        //Debug.Log("generate key: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
         m_actionParam = data;
         return this;
     }
@@ -66,18 +66,18 @@ public class TrajectileSpawnModule : ActionModule
         var grid = GridManager.ActivePathGrid;
 
         foreach (var confirmedCoord in m_confirmedActionRange)
-        {    
+        {
             IsoGridCoord end = confirmedCoord;
             Vector3 endPos = end.ToWorldPosition(grid);
             Vector3 startPos = m_spawnAnchor.GetAnchor(dir).localPosition + (Vector3)startCoord.ToWorldPosition(grid);
             bool isAlly = m_actionParam.unit.CompareTag("PlayerUnit");
-            m_previewer.SetPreviewer(startPos,endPos,isAlly);
+            m_previewer.SetPreviewer(startPos, endPos, isAlly, PreviewKey);
             foreach (var actionTileInfo in tUnit.ActionModule.Profile.data)
             {
                 IsoGridCoord coord = actionTileInfo.relativeCoord.OnRelativeTo(end, dir);
                 var info = actionTileInfo;
                 info.pushDir = info.pushDir.RotateRelativeTo(m_actionParam.unit.Agent.Direction);
-                if(grid.CheckRange(coord))
+                if (grid.CheckRange(coord))
                 {
                     LevelManager.TryGetUnits(end, out var hits);
                     foreach (var hit in hits)
@@ -88,7 +88,7 @@ public class TrajectileSpawnModule : ActionModule
                         yield return action.StartPreview();
                     }
                 }
-            }         
+            }
         }
         yield return null;
     }
@@ -100,7 +100,6 @@ public class TrajectileSpawnModule : ActionModule
             item.StopPreview();
         }
         m_tempDamagePreview.Clear();
-        m_previewer.ClearPreviewer();
     }
     #endregion
 

@@ -105,6 +105,7 @@ MonoBehaviour:
     defense: 0
     moveRange: 0
     moves: 0
+    stationary: 0
   m_profile:
     data:
     - pushDir: 0
@@ -276,11 +277,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64b1f616815e0fb499bbcab71bba15d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_lineRenderer: {fileID: 2400399687677239103}
   m_enemyMat: {fileID: 2100000, guid: b55c3b056ee25044ebe2465b110bf4b3, type: 2}
   m_playerMat: {fileID: 2100000, guid: d640aee83f6d666479c5b25c37032186, type: 2}
+  m_interval: 0
+  m_highlighterKeyPlayer: TrajectilePreviewPlayer
+  m_highlighterKeyMonster: TrajectilePreviewMonster
+  m_trajectileUnit: {fileID: 0}
   m_numOfSamples: 12
-  m_trajectoryLocamotion: {fileID: 0}
 --- !u!120 &2400399687677239103
 LineRenderer:
   serializedVersion: 2

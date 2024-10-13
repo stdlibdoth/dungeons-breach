@@ -6,7 +6,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
 {
 
     [Header("UI")]
-    [SerializeField]private ProjectilePreviewer m_previewer;
+    [SerializeField]private ProjectilePreviewer m_projectilePreviewer;
 
 
 
@@ -50,7 +50,9 @@ public class ProjectileSpawnModule : BasicSpawnModule
     public override IEnumerator ExcuteAction()
     {
         var unit = m_actionParam.unit;
+
         Debug.Log(unit + " projectile " + m_spawnUnit.name);
+
         List<IsoGridCoord> spawnTile = new List<IsoGridCoord>();
         foreach (var tileInfo in m_profile.data)
         {
@@ -65,6 +67,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
             yield break;
 
         PlayAnimation(unit);
+        Debug.Log(unit.Agent.Direction);
         Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.Agent.Direction).localPosition;
         var grid = GridManager.ActivePathGrid;
         yield return new WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
@@ -85,7 +88,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
         PreviewKey = new PreviewKey(this);
-        Debug.Log("generate key: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
+        //Debug.Log("generate key: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
         m_actionParam = data;
         return this;
     }
@@ -106,8 +109,8 @@ public class ProjectileSpawnModule : BasicSpawnModule
                 GridManager.ActivePathGrid.MaskLineCast(pUnit.Agent.BlockingMask, startCoord, dir, pUnit.TravelRange, out end);
                 Vector3 endPos = end.ToWorldPosition(grid);
                 Vector3 startPos = m_spawnAnchor.GetAnchor(dir).localPosition + (Vector3)startCoord.ToWorldPosition(grid);
-                bool isAlly = m_actionParam.unit.CompareTag("PlayerUnit");
-                m_previewer.SetPreviewer(startPos,endPos,isAlly);
+                bool isPlayer = m_actionParam.unit.CompareTag("PlayerUnit");
+                m_projectilePreviewer.SetPreviewer(startPos,endPos,isPlayer,PreviewKey);
                 foreach (var actionTileInfo in pUnit.ActionModule.Profile.data)
                 {
                     IsoGridCoord coord = actionTileInfo.relativeCoord.OnRelativeTo(end, dir);
@@ -137,6 +140,5 @@ public class ProjectileSpawnModule : BasicSpawnModule
             item.StopPreview();
         }
         m_tempDamagePreview.Clear();
-        m_previewer.ClearPreviewer();
     }
 }

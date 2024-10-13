@@ -11,15 +11,17 @@ public class PathFindingAgent : MonoBehaviour
     [SerializeField] private PathFindingMask m_intrinsicMask;
     [SerializeField] private PathFindingMask m_blockingMask;
     [SerializeField] private PathFindingMask m_fallingMask;
+    [SerializeField] private IsoGridDirection m_direction;
+
     [SerializeField] private Transform m_locamotionsHolder;
     [SerializeField] private Transform m_targetTransform;
-    [SerializeField] private IsoGridDirection m_direction;
+    [SerializeField] private MovePreviewer m_movePreviewer;
 
     private UnityEvent m_onReachingTarget;
 
     private List<ILocamotion> m_locamotions;
     private IsoGridCoord m_coord;
-    private IsoGridCoord m_prevCoord;
+    private IsoGridCoord m_originCoord;
 
     private bool m_isMoving;
 
@@ -89,6 +91,7 @@ public class PathFindingAgent : MonoBehaviour
     {
         var grid = GridManager.ActivePathGrid;
         m_coord = m_targetTransform.position.ToIsoCoordinate(grid);
+        m_originCoord = m_coord;
         Direction = m_direction;
         var tileMask = grid.PathingMaskSingleTile(m_coord);
         grid.UpdatePathFindingMask(m_coord, tileMask | m_intrinsicMask);
@@ -121,8 +124,7 @@ public class PathFindingAgent : MonoBehaviour
     {
         if(target == m_coord)
             yield break;
-
-
+        Debug.Log(Coordinate);
         TryGetLocamotion(locamotion_type,out var locamotion);
         var grid = GridManager.ActivePathGrid;
         var tileMask = grid.PathingMaskSingleTile(m_coord);
@@ -145,6 +147,7 @@ public class PathFindingAgent : MonoBehaviour
                 var moveTarget = waypoints[i];
                 yield return locamotion.StartLocamotion(m_coord, moveTarget);
                 m_coord = moveTarget;
+                m_originCoord = m_coord;
             }
             tileMask = grid.PathingMaskSingleTile(m_coord);
             grid.UpdatePathFindingMask(m_coord, tileMask | m_intrinsicMask);
@@ -153,8 +156,33 @@ public class PathFindingAgent : MonoBehaviour
         }
         Direction = locamotion.Direction;
         m_isMoving = false;
+        Debug.Log(Coordinate);
     }
 
+
+    //Set the preview of the Agent
+    public void StartMovePreview(IsoGridCoord target)
+    {
+        if (m_movePreviewer == null)
+            return;
+        var grid = GridManager.ActivePathGrid;
+        grid.ResetMaskBits(m_coord,m_intrinsicMask);
+        m_originCoord = m_coord;
+        m_coord = target;
+        grid.SetMaskBits(target,m_intrinsicMask);
+        m_movePreviewer.StartPreview(target.ToWorldPosition(grid));
+    }
+
+    public void StopMovePreview()
+    {
+        if (m_movePreviewer == null)
+            return;
+        var grid = GridManager.ActivePathGrid;
+        grid.ResetMaskBits(m_coord, m_intrinsicMask);
+        m_coord = m_originCoord;
+        grid.SetMaskBits(m_coord, m_intrinsicMask);
+        m_movePreviewer.StopPreview();
+    }
 
     //animation only , not changing the mask
     public IEnumerator AnimateAgent(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance)
@@ -183,6 +211,7 @@ public class PathFindingAgent : MonoBehaviour
         TryGetLocamotion(locamotion_type, out var locamotion);
         yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target, stop_distance));
         m_coord = target;
+        m_originCoord = m_coord;
         tileMask = grid.PathingMaskSingleTile(m_coord);
         grid.UpdatePathFindingMask(m_coord, tileMask | m_intrinsicMask);
         Direction = locamotion.Direction;
@@ -196,6 +225,7 @@ public class PathFindingAgent : MonoBehaviour
         TryGetLocamotion(locamotion_type, out var locamotion);
         yield return StartCoroutine(locamotion.StartLocamotion(target, stop_distance));
         m_coord = target.ToIsoCoordinate(GridManager.ActivePathGrid);
+        m_originCoord = m_coord;
         Direction = locamotion.Direction;
         m_isMoving= false;
     }

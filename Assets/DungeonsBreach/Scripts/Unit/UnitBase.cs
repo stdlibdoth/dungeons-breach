@@ -276,12 +276,14 @@ public class UnitBase : MonoBehaviour
         var param = new MoveActionParam
         {
             locamotion = locamotion,
-            moveAgentDelegate = m_pathAgent.MoveAgent,
+            agent = m_pathAgent,
             target = target,
         };
         if (use_move_point)
             m_pathAgent.OnReachingTarget.AddListener(() => m_unitStatus.moves = 0);
-
+        m_pathAgent.OnReachingTarget.AddListener(()=>{
+            ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).UpdateActionPreview();
+        });
         return action.Build(param) as MoveAction;
     }
 

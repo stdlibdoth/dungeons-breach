@@ -15,8 +15,10 @@ public class HealModule : BasicAttackModule
     public override IEnumerator ExcuteAction()
     {
         var unit = m_actionParam.unit;
+
         Debug.Log(unit + "  heal");
-        if(m_animationDataOverride)
+
+        if (m_animationDataOverride)
             m_animationData.PlayAnimation();
         var confirmed = new List<IsoGridCoord>(m_confirmedActionRange);
         foreach (var attack in m_profile.data)

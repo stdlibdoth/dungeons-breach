@@ -160,7 +160,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
     {
         foreach (var item in m_damagePreviewCache)
         {
-            Debug.Log(item.m_damageActionParam.unit);
+            //Debug.Log(item.m_damageActionParam.unit);
             item.m_previewData.unitHealthBar.ResetPreview();
             item.m_previewData.spriteRenderer.color = Color.white;
             item.m_animationSeq.Kill();
