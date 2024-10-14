@@ -194,7 +194,7 @@ public class BattleManager : Singleton<BattleManager>
 
     private void TriggerActionPreview(ActionModule action_module)
     {
-        action_module.StopPreview();
+        action_module.StopDamagePreview();
         IsoGridCoord[] confirmed = action_module.ConfirmActionTargets();
         if (confirmed.Length > 0)
         {
@@ -215,10 +215,9 @@ public class BattleManager : Singleton<BattleManager>
                 BattleUIController.ActionPreviewer.InitPreview();
                 action_module.PreviewKey = new PreviewKey(action_module);
                 StartCoroutine(action_module.StartPreview());
-                action_module.StopPreview();
+                action_module.StopDamagePreview();
 
                 BattleUIController.DisposeActionHighlights();
-                BattleUIController.ShowActionTarget(action_module, confirmed);
             }
         }
     }
@@ -252,10 +251,9 @@ public class BattleManager : Singleton<BattleManager>
                 BattleUIController.ActionPreviewer.InitPreview();
                 action_module.GeneratePreview(param);
                 StartCoroutine(action_module.StartPreview());
-                action_module.StopPreview();
+                action_module.StopDamagePreview();
 
                 BattleUIController.DisposeActionHighlights();
-                BattleUIController.ShowActionTarget(action_module, confirmed);
             }
         }
     }
@@ -264,7 +262,7 @@ public class BattleManager : Singleton<BattleManager>
 
     private void StopActionPreview(ActionModule actionModule)
     {
-        actionModule.StopPreview();
+        actionModule.StopDamagePreview();
         BattleUIController.ActionPreviewer.ClearPreview(PreviewKey.GlobalKey);
         BattleUIController.CursorController.ResetCursor();
     }
@@ -327,6 +325,7 @@ public class BattleManager : Singleton<BattleManager>
             }
             else if (moduleActived && activedModule.IsAvailable)
             {
+                Debug.Log(activedModule.name);
                 ModuleActionHandler(activedModule, SelectedUnit, new IsoGridCoord[] { m_pointerGridCoord });
                 BattleUIController.CursorController.ResetCursor();
             }

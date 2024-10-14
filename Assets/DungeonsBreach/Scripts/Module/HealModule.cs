@@ -9,6 +9,9 @@ public class HealModule : BasicAttackModule
     public override IAction Build<T>(T param)
     {
         m_actionParam = param as ActionModuleParam;
+        UnitStatus deltaStatus = UnitStatus.Empty;
+        deltaStatus.moves = -m_actionParam.unit.MovesAvalaible;
+        m_actionParam.unit.UpdateStatus(deltaStatus);
         return this;
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
+using TMPro;
 
 
 
@@ -10,8 +11,10 @@ using UnityEngine.Pool;
 public class TileHighlighter : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer m_spriteRenderer;
-    [SerializeField] private int previewkey;
+    [SerializeField] private TextMeshPro m_TMP;
+    
     private ObjectPool<TileHighlighter> m_pool;
+    private int previewkey;
 
 
     public void Init(Sprite sprite, int sorting_order, Color color, string sorting_layer)
@@ -28,13 +31,24 @@ public class TileHighlighter : MonoBehaviour
         return this;
     }
 
+    public void SetText(string text)
+    {
+        if (m_TMP == null)
+            return;
+
+        m_TMP.text = text;
+        m_TMP.gameObject.SetActive(true);
+    }
+
+
     public void SetPreviewKey(PreviewKey key)
     {
         previewkey = key.GetHashCode();
     }
 
-    public void Release()
+    public virtual void Release()
     {
+        m_TMP?.gameObject.SetActive(false);
         m_pool.Release(this);
     }
 }

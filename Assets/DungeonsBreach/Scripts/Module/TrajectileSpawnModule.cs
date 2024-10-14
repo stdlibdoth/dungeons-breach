@@ -77,6 +77,12 @@ public class TrajectileSpawnModule : ActionModule
                 IsoGridCoord coord = actionTileInfo.relativeCoord.OnRelativeTo(end, dir);
                 var info = actionTileInfo;
                 info.pushDir = info.pushDir.RotateRelativeTo(m_actionParam.unit.Agent.Direction);
+
+
+                var target = info.Copy();
+                target.relativeCoord = coord;
+                BattleUIController.ShowActionTarget(this, target);
+
                 if (grid.CheckRange(coord))
                 {
                     LevelManager.TryGetUnits(end, out var hits);
@@ -93,11 +99,11 @@ public class TrajectileSpawnModule : ActionModule
         yield return null;
     }
 
-    public override void StopPreview()
+    public override void StopDamagePreview()
     {
         foreach (var item in m_tempDamagePreview)
         {
-            item.StopPreview();
+            item.StopDamagePreview();
         }
         m_tempDamagePreview.Clear();
     }

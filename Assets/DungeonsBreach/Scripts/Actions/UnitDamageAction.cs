@@ -24,6 +24,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
     public virtual IEnumerator ExcuteAction()
     {
+        Debug.Log("hit");
         if(m_damageActionParam == null)
             yield break;
 
@@ -37,9 +38,6 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         var deltaStatus = UnitStatus.Empty;
         deltaStatus.hp = -attackInfo.value;
         unit.UpdateStatus(deltaStatus);
-
-        // if(PreviewKey == this)
-        //     BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
 
         if(attackInfo.pushDist > 0 && !unit.IsStationary)
         {
@@ -156,7 +154,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         yield return null;
     }
 
-    public void StopPreview()
+    public void StopDamagePreview()
     {
         foreach (var item in m_damagePreviewCache)
         {

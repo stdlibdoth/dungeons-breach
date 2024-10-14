@@ -45,8 +45,6 @@ public class BasicAttackModule : ActionModule
                 foreach (var hit in hits)
                 {
                     damageActions.Add(hit.Damage(attackInfo));
-                    //yield return StartCoroutine(hit.Damage(attackInfo).ExcuteAction());
-                    //yield return hit.Damage(attackInfo).ExcuteAction();
                 }
                 damageActions.Sort((a,b)=>new ActionComparer().Compare(a,b));
                 for (int i = 0; i < damageActions.Count; i++)
@@ -108,6 +106,10 @@ public class BasicAttackModule : ActionModule
             if (!confirmed.Contains(coord))
                 continue;
 
+            var target = attack.Copy();
+            target.relativeCoord = coord;
+            BattleUIController.ShowActionTarget(this, target);
+
             if (LevelManager.TryGetUnits(coord, out var hits))
             {
                 var attackInfo = attack;
@@ -124,11 +126,11 @@ public class BasicAttackModule : ActionModule
         yield return null;
     }
 
-    public override void StopPreview()
+    public override void StopDamagePreview()
     {
         foreach (var item in m_tempDamagePreview)
         {
-            item.StopPreview();
+            item.StopDamagePreview();
         }
         m_tempDamagePreview.Clear();
     }

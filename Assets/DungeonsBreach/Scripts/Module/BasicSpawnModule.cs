@@ -56,7 +56,7 @@ public class BasicSpawnModule : ActionModule
         throw new System.NotImplementedException();
     }
 
-    public override void StopPreview()
+    public override void StopDamagePreview()
     {
         throw new System.NotImplementedException();
     }

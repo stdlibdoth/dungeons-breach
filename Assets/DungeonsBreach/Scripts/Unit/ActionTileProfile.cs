@@ -39,13 +39,17 @@ public struct ActionTileInfo
         }
     }
 
-    //public AttackTileInfo Copy(AttackTileInfo info)
-    //{
-    //    return new AttackTileInfo
-    //    {
-    //        damageMoveType =new Type(),
-    //    }
-    //}
+    public ActionTileInfo Copy()
+    {
+        return new ActionTileInfo
+        {
+            pushDir = this.pushDir,
+            pushType = this.pushType,
+            value = this.value,
+            relativeCoord = this.relativeCoord,
+            pushDist = this.pushDist
+        };
+    }
 }
 
 [System.Serializable]

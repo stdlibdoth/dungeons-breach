@@ -106,7 +106,7 @@ public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleP
 
     public abstract IEnumerator StartPreview();
 
-    public abstract void StopPreview();
+    public abstract void StopDamagePreview();
 
 
     protected virtual IsoGridCoord[] ActionRangeInternal(IsoGridCoord center, IsoGridDirection dir)

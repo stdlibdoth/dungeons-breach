@@ -16,6 +16,6 @@ MonoBehaviour:
     name: TrajectilePreviewMonster
     sprite:
     - {fileID: 21300000, guid: 19717201a5d344b4f96ff8a9a06553fe, type: 3}
-    sortingOrder: 100
+    sortingOrder: 80
     sortingLayer: UI
     color: {r: 1, g: 1, b: 1, a: 1}

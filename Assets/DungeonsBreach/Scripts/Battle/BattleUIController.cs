@@ -23,8 +23,6 @@ public class BattleUIController : Singleton<BattleUIController>
     private TileHighlight m_pathHL;
     private TileHighlight m_actionRangeHL;
 
-
-
     public static ActionPreviewer ActionPreviewer
     {
         get { return GetSingleton().m_previewer; }
@@ -119,13 +117,12 @@ public class BattleUIController : Singleton<BattleUIController>
 
 
     #region action highlight
-    public static void ShowActionTarget(ActionModule module, IsoGridCoord[] coords)
+    public static void ShowActionTarget(ActionModule module, ActionTileInfo action_tile_info)
     {
-        for (int i = 0; i < coords.Length; i++)
-        {
-            var data = new ActionPreviewerData("Target",IsoGridDirection.SE,coords[i]);
-            ActionPreviewer.RegistorPreview(data,module.PreviewKey);
-        }
+        var data = new ActionPreviewerData("Target", IsoGridDirection.SE, action_tile_info.relativeCoord);
+        var hl = ActionPreviewer.RegistorPreview(data, module.PreviewKey);
+        int value = Mathf.Abs(action_tile_info.value);
+        hl.SetText(value.ToString());
     }
 
     #endregion

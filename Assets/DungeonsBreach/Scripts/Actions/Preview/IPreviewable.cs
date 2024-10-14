@@ -7,7 +7,7 @@ public interface IPreviewable<T>
     public PreviewKey PreviewKey{get;set;}
     public IPreviewable<T> GeneratePreview(T data);
     public IEnumerator StartPreview();
-    public void StopPreview();
+    public void StopDamagePreview();
 }
 
 

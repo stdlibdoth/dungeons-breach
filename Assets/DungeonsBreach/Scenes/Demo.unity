@@ -2654,7 +2654,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_spriteRenderer: {fileID: 1230422721}
-  previewkey: 0
+  m_TMP: {fileID: 0}
 --- !u!212 &1230422721
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10030,6 +10030,27 @@ MonoBehaviour:
       relativeCoord:
         x: -1
         y: 0
+    - pushDir: 0
+      pushDist: 1
+      pushType: 2
+      value: 1
+      relativeCoord:
+        x: 0
+        y: -1
+    - pushDir: 0
+      pushDist: 1
+      pushType: 2
+      value: 1
+      relativeCoord:
+        x: 1
+        y: 0
+    - pushDir: 0
+      pushDist: 1
+      pushType: 2
+      value: 1
+      relativeCoord:
+        x: 0
+        y: 1
   m_animationDataOverride: 0
   m_animationData:
     animator: {fileID: 0}
@@ -11189,7 +11210,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1754061964229263495}
-  - component: {fileID: 7610456261749311043}
+  - component: {fileID: 5068464287985154849}
   m_Layer: 0
   m_Name: Heal_Self
   m_TagString: Untagged
@@ -11197,6 +11218,41 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &5068464287985154849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5068464287985154848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f3c5236cce78f644bc6fa2c610c8bce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_id: Heal
+  m_unitParamBase:
+    maxHP: 0
+    hp: 0
+    defense: 0
+    moveRange: 0
+    moves: 0
+    stationary: 0
+  m_profile:
+    data:
+    - pushDir: 0
+      pushDist: 0
+      pushType: 2
+      value: 1
+      relativeCoord:
+        x: 0
+        y: 0
+  m_animationDataOverride: 0
+  m_animationData:
+    animator: {fileID: 0}
+    animationState: 
+  m_blockingMask:
+    value: 0
 --- !u!4 &5135215283143623679
 Transform:
   m_ObjectHideFlags: 0
@@ -12013,41 +12069,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &7610456261749311043
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5068464287985154848}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 196e955cc55180f4da9ad4877930d7d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_id: Heal
-  m_unitParamBase:
-    maxHP: 0
-    hp: 0
-    defense: 0
-    moveRange: 0
-    moves: 0
-    stationary: 0
-  m_profile:
-    data:
-    - pushDir: 0
-      pushDist: 0
-      pushType: 2
-      value: -1
-      relativeCoord:
-        x: 0
-        y: 0
-  m_animationDataOverride: 0
-  m_animationData:
-    animator: {fileID: 0}
-    animationState: 
-  m_blockingMask:
-    value: 0
 --- !u!1 &7624869980030725540
 GameObject:
   m_ObjectHideFlags: 0

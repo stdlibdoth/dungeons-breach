@@ -17,7 +17,7 @@ public class ActionPreviewer : MonoBehaviour
     }
 
 
-    public void RegistorPreview(ActionPreviewerData data,PreviewKey key)
+    public TileHighlighter RegistorPreview(ActionPreviewerData data,PreviewKey key)
     {
         if(!m_initialized)
         {
@@ -27,11 +27,11 @@ public class ActionPreviewer : MonoBehaviour
         {
             m_highlighters[key] = new List<TileHighlighter>();
         }
-        GeneratePreviewElement(data, key);
+        return GeneratePreviewElement(data, key);
     }
 
 
-    public void RegistorPreview(string highlighter_key, Vector3 position,PreviewKey key)
+    public TileHighlighter RegistorPreview(string highlighter_key, Vector3 position,PreviewKey key)
     {
         if(!m_initialized)
         {
@@ -41,7 +41,7 @@ public class ActionPreviewer : MonoBehaviour
         {
             m_highlighters[key] = new List<TileHighlighter>();
         }
-        GeneratePreviewElement(highlighter_key,position, key);
+        return GeneratePreviewElement(highlighter_key, position, key);
     }
 
 
@@ -59,21 +59,23 @@ public class ActionPreviewer : MonoBehaviour
         m_highlighters.Remove(key);
     }
 
-    private void GeneratePreviewElement(ActionPreviewerData data, PreviewKey key)
+    private TileHighlighter GeneratePreviewElement(ActionPreviewerData data, PreviewKey key)
     {
         //Debug.Log(data.highlighterKey);
         var hl = m_factory.GetHighlighter(data.highlighterKey,data.dir);
         hl.SetPreviewKey(key);
         hl.transform.position = data.coord.ToWorldPosition(GridManager.ActiveTileGrid);
         m_highlighters[key].Add(hl);
+        return hl;
     }
 
-    private void GeneratePreviewElement(string highlighter_key, Vector3 position, PreviewKey preview_key)
+    private TileHighlighter GeneratePreviewElement(string highlighter_key, Vector3 position, PreviewKey preview_key)
     {
         var hl = m_factory.GetHighlighter(highlighter_key,IsoGridDirection.SE);
         hl.SetPreviewKey(preview_key);
         hl.transform.position = position;
         m_highlighters[preview_key].Add(hl);
+        return hl;
     }
 
 }

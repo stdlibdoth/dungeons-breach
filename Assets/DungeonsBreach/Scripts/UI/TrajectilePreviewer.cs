@@ -24,7 +24,7 @@ public class TrajectilePreviewer : ProjectilePreviewer
         string highlighterKey = is_player?m_highlighterKeyPlayer:m_highlighterKeyMonster;
 
         int startIndex = m_indexOffset<m_numOfSamples?m_indexOffset:m_numOfSamples;
-        for (int i = startIndex; i < relativePos.Length; i++)
+        for (int i = startIndex; i < relativePos.Length-1; i++)
         {
             worldPos[i] = start + (Vector3)(Vector2)relativePos[i];
             BattleUIController.ActionPreviewer.RegistorPreview(highlighterKey,worldPos[i],preview_key);

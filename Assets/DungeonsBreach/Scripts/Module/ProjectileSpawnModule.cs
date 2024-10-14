@@ -133,11 +133,11 @@ public class ProjectileSpawnModule : BasicSpawnModule
         yield return null;
     }
 
-    public override void StopPreview()
+    public override void StopDamagePreview()
     {
         foreach (var item in m_tempDamagePreview)
         {
-            item.StopPreview();
+            item.StopDamagePreview();
         }
         m_tempDamagePreview.Clear();
     }
