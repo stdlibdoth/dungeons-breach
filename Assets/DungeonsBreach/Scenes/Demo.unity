@@ -10143,7 +10143,7 @@ MonoBehaviour:
   m_blockingMask:
     value: 47
   m_fallingMask:
-    value: 0
+    value: 56
   m_direction: 0
   m_locamotionsHolder: {fileID: 1767119519748804565}
   m_targetTransform: {fileID: 8375156182941666120}
@@ -11081,7 +11081,7 @@ MonoBehaviour:
   m_blockingMask:
     value: 47
   m_fallingMask:
-    value: 0
+    value: 56
   m_direction: 0
   m_locamotionsHolder: {fileID: 8572493594763886035}
   m_targetTransform: {fileID: 8053034412142358351}
@@ -11609,7 +11609,7 @@ MonoBehaviour:
   m_blockingMask:
     value: 47
   m_fallingMask:
-    value: 0
+    value: 56
   m_direction: 0
   m_locamotionsHolder: {fileID: 6967169196526172272}
   m_targetTransform: {fileID: 8715455510909563466}
@@ -12322,7 +12322,7 @@ MonoBehaviour:
   m_blockingMask:
     value: 47
   m_fallingMask:
-    value: 0
+    value: 56
   m_direction: 0
   m_locamotionsHolder: {fileID: 9075371060027394414}
   m_targetTransform: {fileID: 3926969527596209636}
@@ -12613,7 +12613,7 @@ MonoBehaviour:
   m_blockingMask:
     value: 47
   m_fallingMask:
-    value: 0
+    value: 56
   m_direction: 0
   m_locamotionsHolder: {fileID: 7033923397614547354}
   m_targetTransform: {fileID: 7044961511409643136}

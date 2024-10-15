@@ -201,7 +201,7 @@ public class PathFindingAgent : MonoBehaviour
         yield return StartCoroutine(locamotion.StartLocamotion(target, speed_override));
     }
 
-    //no path finding, no iso grid snapping
+    //no path finding
     public IEnumerator MoveStraight(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance = 0)
     {
         m_isMoving = true;
@@ -216,6 +216,8 @@ public class PathFindingAgent : MonoBehaviour
         grid.UpdatePathFindingMask(m_coord, tileMask | m_intrinsicMask);
         Direction = locamotion.Direction;
         m_isMoving = false;
+        yield return null;
+
     }
 
     //no path finding, no iso grid snapping

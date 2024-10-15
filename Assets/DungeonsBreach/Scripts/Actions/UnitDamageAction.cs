@@ -61,7 +61,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
             else if(GridManager.ActiveTileGrid.CheckRange(targetTile))
             {
 
-                var action = unit.Move(attackInfo.pushType, targetTile, false);
+                var action = unit.Move(attackInfo.pushType, targetTile, true,false);
                 yield return action.ExcuteAction();
             }
         }   

@@ -318,14 +318,13 @@ public class BattleManager : Singleton<BattleManager>
             if (!moduleActived && m_unitPathFound)
             {
                 BattleUIController.DisposeMoveHighlights();
-                var action = SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord);
+                var action = SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord,false);
                 StartCoroutine(action.ExcuteAction());
                 BattleUIController.StartPathTrailing(SelectedUnit);
                 BattleUIController.CursorController.ResetCursor();
             }
             else if (moduleActived && activedModule.IsAvailable)
             {
-                Debug.Log(activedModule.name);
                 ModuleActionHandler(activedModule, SelectedUnit, new IsoGridCoord[] { m_pointerGridCoord });
                 BattleUIController.CursorController.ResetCursor();
             }

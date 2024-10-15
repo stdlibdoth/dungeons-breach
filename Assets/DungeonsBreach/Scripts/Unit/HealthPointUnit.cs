@@ -5,8 +5,6 @@ using Unity.Mathematics;
 
 public class HealthPointUnit : ObstacleUnit
 {
-    private bool m_isDead;
-
     public override UnitDamageAction Damage(ActionTileInfo attack_info)
     {
         if (!m_isDead)

@@ -37,7 +37,9 @@ public class UnitBase : MonoBehaviour
 
     protected List<ActionModule> m_actionModules = new List<ActionModule>();
     protected Sequence m_damangePreviewDOTweeen;
+    protected bool m_isDead;
 
+    public bool IsDead {  get { return m_isDead; } }
 
     public PreviewKey PreviewKey{get;set;}
 
@@ -270,7 +272,7 @@ public class UnitBase : MonoBehaviour
         return action;
     }
 
-    public virtual MoveAction Move(LocamotionType locamotion, IsoGridCoord target, bool use_move_point = true)
+    public virtual MoveAction Move(LocamotionType locamotion, IsoGridCoord target,bool ignore_pathing, bool use_move_point = true)
     {
         var action = new MoveAction();
         var param = new MoveActionParam
@@ -278,6 +280,7 @@ public class UnitBase : MonoBehaviour
             locamotion = locamotion,
             agent = m_pathAgent,
             target = target,
+            ignorePathing = ignore_pathing,
         };
         if (use_move_point)
             m_pathAgent.OnReachingTarget.AddListener(() => m_unitStatus.moves = 0);
@@ -289,6 +292,10 @@ public class UnitBase : MonoBehaviour
 
     public virtual void Die()
     {
+        if (m_isDead)
+            return;
+
+        m_isDead = true;
         UnitDieAction dieAction = new UnitDieAction();
         dieAction.Build(new UnitDieActionParam{
             unit = this,

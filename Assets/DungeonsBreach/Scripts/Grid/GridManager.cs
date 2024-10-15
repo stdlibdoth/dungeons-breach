@@ -48,6 +48,7 @@ public class GridManager : Singleton<GridManager>
     private void PopulatePathGridMask()
     {
         var block = new PathFindingMask { value = PathFindingMask.landBlocking };
+        var falling = new PathFindingMask { value = PathFindingMask.landFalling };
         var land = new PathFindingMask { value = (byte)PathingMaskBit.None };
         var pathGrid = ActivePathGrid;
 
@@ -59,6 +60,10 @@ public class GridManager : Singleton<GridManager>
                 if (x == pathGrid.Dimension.x-1 || y == pathGrid.Dimension.y-1)
                 {
                     pathGrid.UpdatePathFindingMask(coord, block);
+                }
+                else if(y == 0)
+                {
+                    pathGrid.UpdatePathFindingMask(coord, falling);
                 }
                 else
                 {
