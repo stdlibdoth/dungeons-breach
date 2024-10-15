@@ -3,6 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
 
+
+public enum LocamotionType
+{
+    Default,
+    Instant,
+    Shift,
+    Trajectory
+}
+
+
 public interface ILocamotion
 {
     public IsoGridDirection Direction { get; set; }

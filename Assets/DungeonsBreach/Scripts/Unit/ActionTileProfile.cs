@@ -5,15 +5,6 @@ using System.ComponentModel;
 using System;
 
 
-public enum LocamotionType
-{
-    Default,
-    Instant,
-    Shift,
-    Trajectory
-}
-
-
 [System.Serializable]
 public struct ActionTileInfo
 {

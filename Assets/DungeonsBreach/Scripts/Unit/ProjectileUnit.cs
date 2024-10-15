@@ -37,7 +37,6 @@ public class ProjectileUnit : UnitBase
     public IEnumerator StartProjectile()
     {
         base.SpawnUnit();
-        Debug.Log("spawn pos" + m_pathAgent.Coordinate);
         int dist = m_unitStatus.moveRange;
         int blockDist = GridManager.ActivePathGrid.MaskLineCast(m_pathAgent.BlockingMask, m_pathAgent.Coordinate, m_pathAgent.Direction, dist, out var coord);
         yield return m_pathAgent.MoveStraight(m_locamotionType, coord);
@@ -59,7 +58,6 @@ public class ProjectileUnit : UnitBase
         dieAction.Build(new UnitDieActionParam{
             unit = this,
         });
-        Debug.Log("previewkey: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
         BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
         StartCoroutine(dieAction.ExcuteAction());
     }

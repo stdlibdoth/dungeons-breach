@@ -71,7 +71,6 @@ public class TrajectileUnit : UnitBase
     public override void Die()
     {
         UnitDieAction dieAction = new UnitDieAction();
-        Debug.Log("previewkey: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
         BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
         dieAction.Build(new UnitDieActionParam{
             unit = this,
