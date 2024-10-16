@@ -24,6 +24,7 @@ public class PathFindingAgent : MonoBehaviour
     private IsoGridCoord m_originCoord;
 
     private bool m_isMoving;
+    private bool m_isPreviewing;
 
     public IsoGridDirection Direction
     {
@@ -165,6 +166,7 @@ public class PathFindingAgent : MonoBehaviour
     {
         if (m_movePreviewer == null)
             return;
+        m_isPreviewing = true;
         var grid = GridManager.ActivePathGrid;
         grid.ResetMaskBits(m_coord,m_intrinsicMask);
         m_originCoord = m_coord;
@@ -175,13 +177,14 @@ public class PathFindingAgent : MonoBehaviour
 
     public void StopMovePreview()
     {
-        if (m_movePreviewer == null)
+        if (m_movePreviewer == null || !m_isPreviewing)
             return;
         var grid = GridManager.ActivePathGrid;
         grid.ResetMaskBits(m_coord, m_intrinsicMask);
         m_coord = m_originCoord;
         grid.SetMaskBits(m_coord, m_intrinsicMask);
         m_movePreviewer.StopPreview();
+        m_isPreviewing=false;
     }
 
     //animation only , not changing the mask
@@ -217,7 +220,6 @@ public class PathFindingAgent : MonoBehaviour
         Direction = locamotion.Direction;
         m_isMoving = false;
         yield return null;
-
     }
 
     //no path finding, no iso grid snapping

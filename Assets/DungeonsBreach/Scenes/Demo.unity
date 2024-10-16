@@ -11079,9 +11079,9 @@ MonoBehaviour:
   m_intrinsicMask:
     value: 4
   m_blockingMask:
-    value: 47
+    value: 7
   m_fallingMask:
-    value: 56
+    value: 0
   m_direction: 0
   m_locamotionsHolder: {fileID: 8572493594763886035}
   m_targetTransform: {fileID: 8053034412142358351}
@@ -11538,7 +11538,6 @@ MonoBehaviour:
   - Attack
   - Dead
   - Walk
-  - DamagePreview
   m_animator: {fileID: 5264110008690717387}
 --- !u!212 &5799932534553225677
 SpriteRenderer:

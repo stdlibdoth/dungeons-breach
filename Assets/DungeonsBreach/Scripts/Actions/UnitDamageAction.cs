@@ -20,11 +20,21 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         PreviewKey = new PreviewKey(this);
     }
 
+
+    public SelfDamageAction ToSelfDamageAction()
+    {
+        SelfDamageAction action = new SelfDamageAction();
+        action.PreviewKey = this.PreviewKey;
+        action.Build(m_damageActionParam);
+
+        return action;
+    }
+
+
     #region IAction
 
     public virtual IEnumerator ExcuteAction()
     {
-        Debug.Log("hit");
         if(m_damageActionParam == null)
             yield break;
 
@@ -204,7 +214,7 @@ public class SelfDamageAction:UnitDamageAction
         if(PreviewKey == this)
             BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
         var deltaStatus = UnitStatus.Empty;
-        deltaStatus.hp = -1;
+        deltaStatus.hp = -m_damageActionParam.attackInfo.value;
         m_damageActionParam.unit.UpdateStatus(deltaStatus);
         yield return null;
     }

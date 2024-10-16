@@ -21,7 +21,6 @@ public class MoveAction : IAction
         {
             var agent = m_param.agent;
             yield return agent.MoveStraight(m_param.locamotion, m_param.target);
-            yield return new WaitForSeconds(0.3f);
 
             var grid = GridManager.ActivePathGrid;
             var tileMask = grid.PathingMaskSingleTile(agent.Coordinate);
@@ -29,17 +28,19 @@ public class MoveAction : IAction
             //check falling
             if (agent.FallMask.CheckMaskOverlap(tileMask))
             {
+                yield return new WaitForSeconds(0.3f);
                 Vector3 target = agent.transform.position + Vector3.down * grid.CellSize * 0.5f;
                 yield return agent.AnimateAgent(LocamotionType.Shift, target);
 
                 LevelManager.TryGetUnits(agent.Coordinate, out List<UnitBase> units);
                 foreach (var unit in units)
                 {
-                    if(unit.Agent ==  agent)
+                    if(unit.Agent == agent)
                     {
-                        var delta = UnitStatus.Empty;
-                        delta.hp = int.MinValue;
-                        unit.UpdateStatus(delta);
+                        ActionTileInfo actionTileInfo = ActionTileInfo.Self;
+                        actionTileInfo.value = int.MaxValue;
+                        var action = unit.Damage(actionTileInfo).ToSelfDamageAction();
+                        yield return action.ExcuteAction();
                     }
                 }
             }

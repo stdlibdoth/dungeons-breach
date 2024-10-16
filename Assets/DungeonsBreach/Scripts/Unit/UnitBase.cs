@@ -299,6 +299,7 @@ public class UnitBase : MonoBehaviour
         UnitDieAction dieAction = new UnitDieAction();
         dieAction.Build(new UnitDieActionParam{
             unit = this,
+            delay = 0.3f,
         });
         ActionTurn.RegistorTempAction(dieAction);
     }

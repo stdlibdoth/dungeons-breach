@@ -49,6 +49,7 @@ public class BasicAttackModule : ActionModule
                 damageActions.Sort((a,b)=>new ActionComparer().Compare(a,b));
                 for (int i = 0; i < damageActions.Count; i++)
                 {
+                    Debug.Log(damageActions[i] + "   " + damageActions[i].Priority.value);
                     yield return damageActions[i].ExcuteAction();
                 }
 

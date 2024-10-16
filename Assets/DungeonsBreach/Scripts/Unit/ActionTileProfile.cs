@@ -30,6 +30,21 @@ public struct ActionTileInfo
         }
     }
 
+    public static ActionTileInfo Self
+    {
+        get
+        {
+            return new ActionTileInfo
+            {
+                pushDist = 0,
+                pushDir = IsoGridDirection.SE,
+                pushType = LocamotionType.Shift,
+                relativeCoord = IsoGridCoord.Zero,
+                value = 1
+            };
+        }
+    }
+
     public ActionTileInfo Copy()
     {
         return new ActionTileInfo
