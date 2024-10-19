@@ -84,9 +84,19 @@ public partial class ActionTurn
             if (m_actions[i] is ActionModule actionModule)
             {
                 var confirmedCoords = actionModule.ConfirmActionTargets();
-                if(confirmedCoords.Length>0)
+                List<UnitBase> units = new List<UnitBase>();
+                foreach (var coord in confirmedCoords)
                 {
-                    if (!actionModule.ActionParam.unit.CompareTag("PlayerUnit"))
+                    if(LevelManager.TryGetUnits(coord, out var hits))
+                    {
+                        units.AddRange(hits);
+                    }
+                    
+                }
+                foreach (var unit in units)
+                {
+                    Debug.Log(unit.name);
+                    if(BattleManager.SelectedUnit != unit)
                         continue;
 
                     BattleUIController.ActionPreviewer.ClearPreview(actionModule.PreviewKey);

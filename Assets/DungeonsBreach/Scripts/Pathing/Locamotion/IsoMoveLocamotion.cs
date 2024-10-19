@@ -29,8 +29,11 @@ public class IsoMoveLocamotion : LocamotionBase
 
     public override IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
     {
-        Direction = (end - start).CoordToDirection();
-        m_animator.SetFloat("DirBlend", (int)Direction);
+        if (start != end)
+        {
+            Direction = (end - start).CoordToDirection();
+            m_animator.SetFloat("DirBlend", (int)Direction);
+        }
         m_animator.SetTrigger(m_animateTrigger);
 
         var grid = GridManager.ActivePathGrid;

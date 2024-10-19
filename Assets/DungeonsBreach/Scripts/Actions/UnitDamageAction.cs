@@ -56,7 +56,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
             {
                 var temp = ActionTileInfo.Default;
                 temp.value = 1;
-                float stopDist = GridManager.ActivePathGrid.CellSize / 2;
+                float stopDist = GridManager.ActivePathGrid.CellSize / 1.5f;
                 Vector3 pos = unit.Agent.Coordinate.ToWorldPosition(GridManager.ActivePathGrid);
                 Debug.Log("block unit" + hits[0]);
                 yield return unit.StartCoroutine(unit.Agent.AnimateAgent(LocamotionType.Shift, targetTile, stopDist));
