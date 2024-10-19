@@ -7,6 +7,7 @@ public partial class ActionTurn
 {
     [SerializeField] protected ActionTurnType m_type;
     public ActionTurnType Type { get { return m_type; } }
+    public bool IsActive { get;private set; }
 
     protected List<IAction> m_actions;
 
@@ -15,9 +16,22 @@ public partial class ActionTurn
    
     private bool m_isExecuting = false;
 
+    protected ActionTurn(ActionTurnType type)
+    {
+        m_type = type;
+        m_actions = new List<IAction>();
+        IsActive = false;
+    }
+
+
     public void SubOnTurnStart(ActionTurnDelegate dele)
     {
         m_turnStartDeles.Add(dele);
+    }
+
+    public void UnsubOnTurnStart(ActionTurnDelegate dele)
+    {
+        m_turnStartDeles.Remove(dele);
     }
 
     public void SubOnTurnEnd(ActionTurnDelegate dele)
@@ -25,8 +39,14 @@ public partial class ActionTurn
         m_turnEndDeles.Add(dele);
     }
 
+    public void UnsubOnTurnEnd(ActionTurnDelegate dele)
+    {
+        m_turnEndDeles.Remove(dele);
+    }
+
     public void RegistorAction(IAction action)
     {
+        IsActive = true;
         m_actions.Add(action);
     }
 
@@ -73,10 +93,36 @@ public partial class ActionTurn
         }
     }
 
+
+    public virtual IEnumerator ExcuteStartTurnDeles()
+    {
+        m_isExecuting = true;
+        Debug.Log("-----------------" + m_type + " Turn Start----------------");
+        foreach (var item in m_turnStartDeles)
+        {
+            yield return item.Invoke(this);
+        }
+        EventManager.GetTheme<TurnTheme>("TurnTheme").GetTopic("ActionTurnStart").Invoke(m_type, this);
+    }
+
+    public virtual IEnumerator ExcuteEndTurnDeles()
+    {
+        foreach (var item in m_turnEndDeles)
+        {
+            yield return item.Invoke(this);
+        }
+        m_actions = new List<IAction>();
+        EventManager.GetTheme<TurnTheme>("TurnTheme").GetTopic("ActionTurnEnd").Invoke(m_type, this);
+        Debug.Log("-----------------" + m_type + " Turn End----------------");
+        m_isExecuting = false;
+    }
+
+
     protected virtual IEnumerator ExcuteActionTurn()
     {
         m_isExecuting = true;
-        Debug.Log(m_type + "  Turn Start-----------------------------");
+        Debug.Log("-----------------" + m_type + " Turn Start----------------");
+        EventManager.GetTheme<TurnTheme>("TurnTheme").GetTopic("ActionTurnStart").Invoke(m_type,this);
         foreach (var item in m_turnStartDeles)
         {
             yield return item.Invoke(this);
@@ -85,7 +131,7 @@ public partial class ActionTurn
         m_actions.Sort((a, b) => new ActionComparer().Compare(a, b));
         for (int i = 0; i < m_actions.Count; i++)
         {
-            Debug.Log(m_actions[i] + "  begin-----------------");
+            Debug.Log("-----------------" + m_actions[i] + "'s action begin---------------");
             yield return m_actions[i].ExcuteAction();
         }
 
@@ -93,18 +139,11 @@ public partial class ActionTurn
         {
             yield return item.Invoke(this);
         }
-        m_turnStartDeles = new List<ActionTurnDelegate>();
-        m_turnEndDeles = new List<ActionTurnDelegate>();
         m_actions = new List<IAction>();
+        EventManager.GetTheme<TurnTheme>("TurnTheme").GetTopic("ActionTurnEnd").Invoke(m_type,this);
+        Debug.Log("-----------------" + m_type + " Turn End----------------");
         m_isExecuting = false;
     }
-
-    protected ActionTurn(ActionTurnType type)
-    {
-        m_type = type;
-        m_actions = new List<IAction>();
-    }
-
 }
 
 
@@ -122,13 +161,30 @@ public delegate IEnumerator ActionTurnDelegate(ActionTurn actionTurn);
 
 public enum ActionTurnType : int
 {
-    EnemyMoveAndActionPreview,
+    EnemyMoveAndAction,
     EnemySpawnPreview,
-    Player,
-    Environment,
+    PlayerTurn,
+    EnvironmentAction,
     EndOfTurn1,
     EndOfTurn2,
     EndOfTurn3,
-    EnemyAction,
+    EnemyAttack,
     EnemySpawn,
+}
+
+
+public static class ActionTurnName
+{
+    readonly public static string[] names =
+    {
+        "Enemy Action",
+        "EnemySpawnPreview",
+        "Player's Turn",
+        "Environment",
+        "EndOfTurn1",
+        "EndOfTurn2",
+        "EndOfTurn3",
+        "Enemy Attack",
+        "Enemy Spawn",
+    };
 }

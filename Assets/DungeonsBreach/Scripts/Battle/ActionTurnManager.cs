@@ -21,8 +21,12 @@ public partial class ActionTurn
 
     public static IEnumerator StartActionTurns(ActionTurnType start_type,ActionTurnType end_type)
     {
-        var turns = SortTurns();
-        if(turns.Length == 0)
+        var turns = SortTurns(start_type, end_type);
+        for (int i = 0; i < turns.Length; i++)
+        {
+            Debug.Log(turns[i].Type);
+        }
+        if (turns.Length == 0)
             yield break;
 
         var min = turns[0].Type;
@@ -37,13 +41,18 @@ public partial class ActionTurn
 
         for (int i = startIndex; i <= endIndex; i++)
         {
-            yield return turns[i].ExcuteActionTurn();
+            if (turns[i].IsActive)
+            {
+                yield return turns[i].ExcuteActionTurn();
+                turns[i].IsActive = false;
+            }
         }
     }
 
-    private static ActionTurn[] SortTurns()
+    private static ActionTurn[] SortTurns(ActionTurnType start_type, ActionTurnType end_type)
     {
         List<ActionTurn> turns = new List<ActionTurn>(m_actionTurns.Values);
+        turns.RemoveAll((turn) => turn.Type < start_type || turn.Type > end_type);
         turns.Sort((a,b)=>new ActionTurnComparer().Compare(a,b));
         return turns.ToArray();
     }

@@ -20,6 +20,11 @@ public class BattleUIController : Singleton<BattleUIController>
     [SerializeField] private TileHighlighterFactory m_tileHighlighterFactory;
 
 
+    [Header("Themes")]
+    [SerializeField] private TurnTheme m_turnTheme;
+
+
+
     private TileHighlight m_pathHL;
     private TileHighlight m_actionRangeHL;
 
@@ -34,19 +39,22 @@ public class BattleUIController : Singleton<BattleUIController>
     }
 
 
+
     private void Start()
     {
-        m_endPlayerTurnBtn.onClick.AddListener(() => StartCoroutine(EndTurnActions()));
+        m_endPlayerTurnBtn.onClick.AddListener(() => StartCoroutine(OnEndTurnButtonClick()));
         m_undoMovementBtn.onClick.AddListener(UndoMovementBtnPressed);
         m_resetTurnBtn.onClick.AddListener(ResetBtnPressed);
+        m_turnTheme.GetTopic("ActionTurnStart").AddListener(OnActionTurnStart);
+        m_turnTheme.GetTopic("ActionTurnEnd").AddListener(OnActionTurnEnd);
     }
 
-    private IEnumerator EndTurnActions()
+    private IEnumerator OnEndTurnButtonClick()
     {
         m_endPlayerTurnBtn.interactable = false;
-        yield return BattleManager.EndPlayerTurn();
+        yield return BattleManager.StartNextTurn();
         m_endPlayerTurnBtn.interactable = true;
-        yield return BattleManager.StartTurn();
+        yield return BattleManager.ResetUnits();
     }
 
     #region Range Highlights
@@ -143,9 +151,69 @@ public class BattleUIController : Singleton<BattleUIController>
     #endregion
 
 
-    private void OnBattleStart()
+    #region Theme events
+    private void OnActionTurnStart(ActionTurnType turn_type, ActionTurn turn)
     {
-
+        switch (turn_type)
+        {
+            case ActionTurnType.EnemyMoveAndAction:
+                break;
+            case ActionTurnType.EnemySpawnPreview:
+                break;
+            case ActionTurnType.PlayerTurn:
+                m_endPlayerTurnBtn.interactable = true;
+                m_undoMovementBtn.interactable=true;
+                m_endPlayerTurnBtn.interactable = true;
+                break;
+            case ActionTurnType.EnvironmentAction:
+                break;
+            case ActionTurnType.EndOfTurn1:
+                break;
+            case ActionTurnType.EndOfTurn2:
+                break;
+            case ActionTurnType.EndOfTurn3:
+                break;
+            case ActionTurnType.EnemyAttack:
+                break;
+            case ActionTurnType.EnemySpawn:
+                break;
+            default:
+                break;
+        }
     }
+
+
+
+    private void OnActionTurnEnd(ActionTurnType turn_type, ActionTurn turn)
+    {
+        switch (turn_type)
+        {
+            case ActionTurnType.EnemyMoveAndAction:
+                break;
+            case ActionTurnType.EnemySpawnPreview:
+                break;
+            case ActionTurnType.PlayerTurn:
+                m_endPlayerTurnBtn.interactable = false;
+                m_undoMovementBtn.interactable = false;
+                m_endPlayerTurnBtn.interactable = false;
+                break;
+            case ActionTurnType.EnvironmentAction:
+                break;
+            case ActionTurnType.EndOfTurn1:
+                break;
+            case ActionTurnType.EndOfTurn2:
+                break;
+            case ActionTurnType.EndOfTurn3:
+                break;
+            case ActionTurnType.EnemyAttack:
+                break;
+            case ActionTurnType.EnemySpawn:
+                break;
+            default:
+                break;
+        }
+    }
+
+    #endregion
 
 }

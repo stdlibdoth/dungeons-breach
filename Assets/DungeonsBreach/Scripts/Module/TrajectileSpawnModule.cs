@@ -53,7 +53,6 @@ public class TrajectileSpawnModule : ActionModule
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
         PreviewKey = new PreviewKey(this);
-        //Debug.Log("generate key: " + PreviewKey.GetHashCode() + "  " + gameObject.name);
         m_actionParam = data;
         return this;
     }

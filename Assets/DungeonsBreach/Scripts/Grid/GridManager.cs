@@ -8,11 +8,10 @@ public class GridManager : Singleton<GridManager>
 {
     [SerializeField] private IsoGrid m_grid;
 
-
-    [SerializeField] private IsoTileBase m_tilePrefab;
     [SerializeField] private IsoTileBase m_blockPrefab;
-    [SerializeField] private IsoTileBase m_pathPrefab;
 
+
+    [SerializeField] private List<IsoGridCoord> m_traps;
 
     public static PathGrid ActivePathGrid { get; set; }
     public static TileGrid ActiveTileGrid { get; set; }
@@ -35,7 +34,8 @@ public class GridManager : Singleton<GridManager>
             for (int x = 0; x < pathGrid.Dimension.x; x++)
             {
                 IsoGridCoord coord = new IsoGridCoord(x, y);
-                if (pathGrid.PathingMaskSingleTile(coord).value != (byte)PathingMaskBit.None)
+                if (pathGrid.PathingMaskSingleTile(coord).value != (byte)PathingMaskBit.None &&
+                    pathGrid.PathingMaskSingleTile(coord).value != PathFindingMask.landFalling)
                 {
                     var tile = Instantiate(m_blockPrefab, coord.ToWorldPosition(pathGrid), Quaternion.identity);
                     tile.SetCoord(coord);
@@ -61,7 +61,7 @@ public class GridManager : Singleton<GridManager>
                 {
                     pathGrid.UpdatePathFindingMask(coord, block);
                 }
-                else if(y == 0)
+                else if(m_traps.Contains(coord))
                 {
                     pathGrid.UpdatePathFindingMask(coord, falling);
                 }

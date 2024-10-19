@@ -157,7 +157,6 @@ public class PathFindingAgent : MonoBehaviour
         }
         Direction = locamotion.Direction;
         m_isMoving = false;
-        Debug.Log(Coordinate);
     }
 
 

@@ -285,7 +285,7 @@ public class UnitBase : MonoBehaviour
         if (use_move_point)
             m_pathAgent.OnReachingTarget.AddListener(() => m_unitStatus.moves = 0);
         m_pathAgent.OnReachingTarget.AddListener(()=>{
-            ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).UpdateActionPreview();
+            ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
         });
         return action.Build(param) as MoveAction;
     }
