@@ -86,6 +86,9 @@ public partial class ActionTurn
                 var confirmedCoords = actionModule.ConfirmActionTargets();
                 if(confirmedCoords.Length>0)
                 {
+                    if (!actionModule.ActionParam.unit.CompareTag("PlayerUnit"))
+                        continue;
+
                     BattleUIController.ActionPreviewer.ClearPreview(actionModule.PreviewKey);
                     BattleManager.TriggerModuleActionPreview(actionModule);
                 }

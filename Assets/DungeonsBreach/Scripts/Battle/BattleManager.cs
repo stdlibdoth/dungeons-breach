@@ -171,6 +171,7 @@ public class BattleManager : Singleton<BattleManager>
             BattleUIController.DisposeMoveHighlights();
             StopActionPreview(module);
 
+
             SelectedUnit.SetDirection(SelectedUnit.Agent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
             var param = new ActionModuleParam(SelectedUnit, new IsoGridCoord[] { m_pointerGridCoord }, false);
             module.GeneratePreview(param);
@@ -180,7 +181,7 @@ public class BattleManager : Singleton<BattleManager>
             if (confirmed.Length > 0)
             {
                 BattleUIController.ActionPreviewer.InitPreview();
-                module.GeneratePreview(param);
+                //module.GeneratePreview(param);
                 BattleUIController.CursorController.SetCursor("TargetValid");
                 module.PreviewKey = PreviewKey.GlobalKey;
                 StartCoroutine(module.StartPreview());
@@ -203,7 +204,8 @@ public class BattleManager : Singleton<BattleManager>
         if (confirmed.Length > 0)
         {
             BattleUIController.ActionPreviewer.InitPreview();
-            action_module.PreviewKey = PreviewKey.GlobalKey;
+            //action_module.PreviewKey = PreviewKey.GlobalKey;
+            action_module.PreviewKey = new PreviewKey(action_module);
             StartCoroutine(action_module.StartPreview());
         }
     }
@@ -335,18 +337,6 @@ public class BattleManager : Singleton<BattleManager>
         }
     }
 
-    // private IsoGridCoord[] ConfirmActionRange(IsoGridCoord[] action_range, IsoGridCoord input)
-    // {
-    //     List<IsoGridCoord> range = new List<IsoGridCoord>();
-    //     foreach (var coord in action_range)
-    //     {
-    //         if (coord == input)
-    //             range.Add(coord);
-    //     }
-    //     return range.ToArray();
-    // }
-
-
     private void OnRightClick(InputAction.CallbackContext obj)
     {
         if (SelectedUnit != null)
@@ -356,14 +346,4 @@ public class BattleManager : Singleton<BattleManager>
     }
 
     #endregion
-
-
-    void OnGUI()
-    {
-        if (GUI.Button(new Rect(10, 70, 100, 30), "Update"))
-        {
-            var turn = ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack);
-            turn.UpdateActionPreview();
-        }
-    }
 }

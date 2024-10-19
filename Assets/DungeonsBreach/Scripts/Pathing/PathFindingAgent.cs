@@ -218,6 +218,8 @@ public class PathFindingAgent : MonoBehaviour
         grid.UpdatePathFindingMask(m_coord, tileMask | m_intrinsicMask);
         Direction = locamotion.Direction;
         m_isMoving = false;
+        m_onReachingTarget.Invoke();
+        m_onReachingTarget.RemoveAllListeners();
         yield return null;
     }
 
@@ -231,5 +233,8 @@ public class PathFindingAgent : MonoBehaviour
         m_originCoord = m_coord;
         Direction = locamotion.Direction;
         m_isMoving= false;
+        m_onReachingTarget.Invoke();
+        m_onReachingTarget.RemoveAllListeners();
+        yield return null;
     }
 }

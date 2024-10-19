@@ -22,6 +22,7 @@ public class UnitHealthBar : MonoBehaviour
     private float m_unitWidth;
     private int m_maxHP;
     private int m_hp;
+    private bool m_isAnimating;
     private List<GameObject> m_blockers = new List<GameObject>();
 
 
@@ -72,6 +73,9 @@ public class UnitHealthBar : MonoBehaviour
     /// <param name="loops"> -1 to set infinity</param>
     public void StartDamangeAnimation(int loops)
     {
+        if (m_isAnimating)
+            return;
+        m_isAnimating = true;
         m_frameSeq = DOTween.Sequence(this);
         m_healthSeq = DOTween.Sequence(this);
         m_frameSeq.Append(m_frameSprite.DOFade(0.1f,0.2f))
@@ -88,6 +92,7 @@ public class UnitHealthBar : MonoBehaviour
         m_frameSprite.color = Color.white;
         m_frameSeq.Kill();
         m_healthSeq.Kill();
+        m_isAnimating = false;
     }
 
     private void ClearBlockers()
