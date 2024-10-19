@@ -52,7 +52,7 @@ public class BattleManager : Singleton<BattleManager>
                 else if (value == null)
                 {
                     GetSingleton().m_selectedUnit.Agent.StopMovePreview();
-                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).UpdateActionPreview();
+                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
                     BattleUIController.CursorController.ResetCursor();
                     BattleUIController.DisposeActionHighlights();
                     BattleUIController.HidePathTrail();
@@ -81,14 +81,14 @@ public class BattleManager : Singleton<BattleManager>
         m_inputActions.UI.Click.performed += OnClick;
         m_inputActions.UI.RightClick.performed += OnRightClick;
         yield return new WaitForEndOfFrame();
-        yield return StartCoroutine(StartTurn());
+        yield return StartCoroutine(ResetUnits());
     }
 
     #endregion
 
 
     #region  public methods
-    public static IEnumerator StartTurn()
+    public static IEnumerator ResetUnits()
     {
         foreach (var unit in LevelManager.Units)
         {
@@ -100,10 +100,13 @@ public class BattleManager : Singleton<BattleManager>
     }
 
 
-    public static IEnumerator EndPlayerTurn()
+    public static IEnumerator StartNextTurn()
     {
         SelectedUnit = null;
-        yield return ActionTurn.StartActionTurns(ActionTurnType.Environment, ActionTurnType.EnemySpawn);
+        yield return ActionTurn.CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteEndTurnDeles();
+        yield return ActionTurn.StartActionTurns(ActionTurnType.EnvironmentAction, ActionTurnType.EnemySpawn);
+        yield return ActionTurn.StartActionTurns(ActionTurnType.EnemyMoveAndAction, ActionTurnType.EnemySpawnPreview);
+        yield return ActionTurn.CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteStartTurnDeles();
     }
 
 
@@ -129,6 +132,7 @@ public class BattleManager : Singleton<BattleManager>
         m_unitPathFound = false;
         bool moduleActived = SelectedUnit.ActivedModule(out var module);
         SelectedUnit.Agent.StopMovePreview();
+
         //move range preview
         if (SelectedUnit.MovesAvalaible > 0 && !moduleActived && !SelectedUnit.Agent.IsMoving)
         {
@@ -141,14 +145,14 @@ public class BattleManager : Singleton<BattleManager>
                 {
                     BattleUIController.ShowPathTrail(path);
                     SelectedUnit.Agent.StartMovePreview(coord);
-                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).UpdateActionPreview();
+                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
                     if(SelectedUnit.CompareTag("PlayerUnit"))
-                        ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).CheckPreview();
+                        ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).CheckPreview();
                     BattleUIController.CursorController.SetCursor("MoveAvailable");
                 }
                 else
                 {
-                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).UpdateActionPreview();
+                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
                     BattleUIController.CursorController.SetCursor("MoveUnavailable");
                     BattleUIController.HidePathTrail();
                 }
@@ -169,7 +173,7 @@ public class BattleManager : Singleton<BattleManager>
 
             SelectedUnit.SetDirection(SelectedUnit.Agent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
             var param = new ActionModuleParam(SelectedUnit, new IsoGridCoord[] { m_pointerGridCoord }, false);
-            module.Build(param);
+            module.GeneratePreview(param);
             m_actionRange = module.ActionRange();
             BattleUIController.HighlightActionRange(m_actionRange, "ActionRange");
             IsoGridCoord[] confirmed = module.ConfirmActionTargets();
@@ -245,7 +249,7 @@ public class BattleManager : Singleton<BattleManager>
         {
             if (confirmed.Length > 0)
             {
-                ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction).RegistorAction(action_module);
+                ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).RegistorAction(action_module);
                 StopActionPreview(action_module);
 
                 BattleUIController.ActionPreviewer.InitPreview();
@@ -358,7 +362,7 @@ public class BattleManager : Singleton<BattleManager>
     {
         if (GUI.Button(new Rect(10, 70, 100, 30), "Update"))
         {
-            var turn = ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAction);
+            var turn = ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack);
             turn.UpdateActionPreview();
         }
     }
