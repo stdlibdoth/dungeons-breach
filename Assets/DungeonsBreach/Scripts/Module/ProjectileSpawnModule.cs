@@ -28,7 +28,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
             var grid = GridManager.ActivePathGrid;
             if(grid.CheckRange(startCoord))
             {
-                int blockDist = GridManager.ActivePathGrid.MaskLineCast(pUnit.Agent.BlockingMask, startCoord, dir, dist, out var stopCoord);
+                int blockDist = GridManager.ActivePathGrid.MaskLineCast(pUnit.PathAgent.BlockingMask, startCoord, dir, dist, out var stopCoord);
                 for (int i = 0; i <= blockDist; i++)
                 {
                     range.Add(startCoord + i*IsoGridMetrics.GridDirectionToCoord[(int)dir]);
@@ -42,7 +42,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
 
     public override IsoGridCoord[] ConfirmActionTargets()
     {
-        ActionRangeInternal(m_actionParam.unit.Agent.Coordinate, m_actionParam.unit.Agent.Direction);
+        ActionRangeInternal(m_actionParam.unit.PathAgent.Coordinate, m_actionParam.unit.PathAgent.Direction);
         m_confirmedActionRange = m_actionTargets.ToArray();
         return m_actionTargets.ToArray();
     }
@@ -56,7 +56,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
         List<IsoGridCoord> spawnTile = new List<IsoGridCoord>();
         foreach (var tileInfo in m_profile.data)
         {
-            var c = tileInfo.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
+            var c = tileInfo.relativeCoord.OnRelativeTo(unit.PathAgent.Coordinate, unit.PathAgent.Direction);
             foreach (var confirmed in m_confirmedActionRange)
             {
                 if(confirmed.x == c.x || confirmed.y == c.y)
@@ -67,14 +67,14 @@ public class ProjectileSpawnModule : BasicSpawnModule
             yield break;
 
         PlayAnimation(unit);
-        Debug.Log(unit.Agent.Direction);
-        Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.Agent.Direction).localPosition;
+        Debug.Log(unit.PathAgent.Direction);
+        Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.PathAgent.Direction).localPosition;
         var grid = GridManager.ActivePathGrid;
         yield return new WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
         foreach (var coord in spawnTile)
         {
             var pos = (Vector3)coord.ToWorldPosition(grid) + relativePos;
-            var dir = unit.Agent.Coordinate.DirectionTo(coord, grid);
+            var dir = unit.PathAgent.Coordinate.DirectionTo(coord, grid);
             var spawn = Instantiate(m_spawnUnit, pos, Quaternion.identity);
             var pUnit = spawn as ProjectileUnit;
             pUnit.PreviewKey = PreviewKey;
@@ -96,8 +96,8 @@ public class ProjectileSpawnModule : BasicSpawnModule
     public override IEnumerator StartPreview()
     {
         var pUnit = m_spawnUnit as ProjectileUnit;
-        var center = m_actionParam.unit.Agent.Coordinate;
-        var dir = m_actionParam.unit.Agent.Direction;
+        var center = m_actionParam.unit.PathAgent.Coordinate;
+        var dir = m_actionParam.unit.PathAgent.Direction;
         var grid = GridManager.ActivePathGrid;
 
         foreach (var tileInfo in m_profile.data)
@@ -106,7 +106,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
             IsoGridCoord end = startCoord;
             if(grid.CheckRange(startCoord))
             {
-                GridManager.ActivePathGrid.MaskLineCast(pUnit.Agent.BlockingMask, startCoord, dir, pUnit.TravelRange, out end);
+                GridManager.ActivePathGrid.MaskLineCast(pUnit.PathAgent.BlockingMask, startCoord, dir, pUnit.TravelRange, out end);
                 Vector3 endPos = end.ToWorldPosition(grid);
                 Vector3 startPos = m_spawnAnchor.GetAnchor(dir).localPosition + (Vector3)startCoord.ToWorldPosition(grid);
                 bool isPlayer = m_actionParam.unit.CompareTag("PlayerUnit");
@@ -115,7 +115,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
                 {
                     IsoGridCoord coord = actionTileInfo.relativeCoord.OnRelativeTo(end, dir);
                     var info = actionTileInfo;
-                    info.pushDir = info.pushDir.RotateRelativeTo(m_actionParam.unit.Agent.Direction);
+                    info.pushDir = info.pushDir.RotateRelativeTo(m_actionParam.unit.PathAgent.Direction);
                     if(grid.CheckRange(coord))
                     {
                         LevelManager.TryGetUnits(end, out var hits);

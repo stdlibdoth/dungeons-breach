@@ -11,7 +11,21 @@ public class LevelManager : Singleton<LevelManager>
     [SerializeField] private List<UnitBase> m_enemyUnitPrefabs;
     [SerializeField] private List<UnitBase> m_playerUnitPrefabs;
 
+    [Header("themes")]
+    [SerializeField] private UnitTheme m_unitTheme;
+
+
     private List<UnitBase> m_units = new List<UnitBase>();
+
+
+    protected override void Awake()
+    {
+        base.Awake();
+        m_unitTheme.GetTopic("UnitSpawn").AddListener(OnUnitSpawn);
+        m_unitTheme.GetTopic("UnitDie").AddListener(OnUnitDie);
+
+    }
+
 
     public static UnitBase[] Units
     {
@@ -26,7 +40,7 @@ public class LevelManager : Singleton<LevelManager>
         units = new List<UnitBase>();
         foreach (var u in GetSingleton().m_units)
         {
-            if (u.Agent.Coordinate == coord)
+            if (u.PathAgent.Coordinate == coord)
             {
                 units.Add(u);
             }
@@ -35,11 +49,14 @@ public class LevelManager : Singleton<LevelManager>
     }
 
 
-    public static void AddUnit(UnitBase unit)
+    private void OnUnitSpawn(UnitBase unit)
     {
         GetSingleton().m_units.Add(unit);
     }
-
+    private void OnUnitDie(UnitBase unit)
+    {
+        GetSingleton().m_units.Remove(unit);
+    }
 
 
     public static void SpawnUnits()
@@ -68,8 +85,4 @@ public class LevelManager : Singleton<LevelManager>
     }
 
 
-    public static void RemoveUnit<T>(T unit) where T : UnitBase
-    {
-        GetSingleton().m_units.Remove(unit);
-    }
 }

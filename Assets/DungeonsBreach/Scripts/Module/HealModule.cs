@@ -26,7 +26,7 @@ public class HealModule : BasicAttackModule
         var confirmed = new List<IsoGridCoord>(m_confirmedActionRange);
         foreach (var attack in m_profile.data)
         {
-            IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
+            IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.PathAgent.Coordinate, unit.PathAgent.Direction);
             if (!confirmed.Contains(coord))
                 continue;
 

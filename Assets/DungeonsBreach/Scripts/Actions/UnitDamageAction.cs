@@ -51,16 +51,16 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
         if(attackInfo.pushDist > 0 && !unit.IsStationary)
         {
-            var targetTile = unit.Agent.Coordinate + attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)attackInfo.pushDir];
+            var targetTile = unit.PathAgent.Coordinate + attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)attackInfo.pushDir];
             if (LevelManager.TryGetUnits(targetTile, out var hits))
             {
                 var temp = ActionTileInfo.Default;
                 temp.value = 1;
                 float stopDist = GridManager.ActivePathGrid.CellSize / 1.5f;
-                Vector3 pos = unit.Agent.Coordinate.ToWorldPosition(GridManager.ActivePathGrid);
+                Vector3 pos = unit.PathAgent.Coordinate.ToWorldPosition(GridManager.ActivePathGrid);
                 Debug.Log("block unit" + hits[0]);
-                yield return unit.StartCoroutine(unit.Agent.AnimateAgent(LocamotionType.Shift, targetTile, stopDist));
-                yield return unit.StartCoroutine(unit.Agent.AnimateAgent(LocamotionType.Shift, pos, 3));
+                yield return unit.StartCoroutine(unit.PathAgent.AnimateAgent(LocamotionType.Shift, targetTile, stopDist));
+                yield return unit.StartCoroutine(unit.PathAgent.AnimateAgent(LocamotionType.Shift, pos, 3));
                 deltaStatus.hp = -1;
                 unit.UpdateStatus(deltaStatus);
                 foreach (var hit in hits)
@@ -123,12 +123,12 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         //Preview recursive damage actions
         if(attackInfo.pushDist > 0)
         {
-            var targetTile = unit.Agent.Coordinate + attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)attackInfo.pushDir];
+            var targetTile = unit.PathAgent.Coordinate + attackInfo.pushDist * IsoGridMetrics.GridDirectionToCoord[(int)attackInfo.pushDir];
 
             if(unit.IsStationary)
             {
                 var shiftPreviewData = new ActionPreviewerData("ShiftUnavailablePreview",
-                attackInfo.pushDir,unit.Agent.Coordinate);
+                attackInfo.pushDir,unit.PathAgent.Coordinate);
                 BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData,PreviewKey);
             }
             else if (LevelManager.TryGetUnits(targetTile, out var hits))
@@ -137,11 +137,11 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 m_previewData.unitHealthBar.SetPreview(0,-1);
                 //UIPreview
                 var hitPreviewData0 = new ActionPreviewerData("HitPreview",
-                attackInfo.pushDir.Opposite(),unit.Agent.Coordinate);
+                attackInfo.pushDir.Opposite(),unit.PathAgent.Coordinate);
                 BattleUIController.ActionPreviewer.RegistorPreview(hitPreviewData0,PreviewKey);
 
                 var shiftPreviewData = new ActionPreviewerData("ShiftUnavailablePreview",
-                attackInfo.pushDir,unit.Agent.Coordinate);
+                attackInfo.pushDir,unit.PathAgent.Coordinate);
                 BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData,PreviewKey);
                 foreach (var hit in hits)
                 {
@@ -155,10 +155,12 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
             else if(GridManager.ActiveTileGrid.CheckRange(targetTile))
             {
                 var shiftPreviewData = new ActionPreviewerData("ShiftAvailablePreview",
-                attackInfo.pushDir,unit.Agent.Coordinate);
+                attackInfo.pushDir,unit.PathAgent.Coordinate);
                 BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData,PreviewKey);
-                
+
                 //preview unit shift position
+
+                unit.PathAgent.StartMovePreview(targetTile);
             }
         }
         yield return null;
@@ -174,6 +176,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
             item.m_animationSeq.Kill();
         }
         m_damagePreviewCache.Clear();
+        m_damageActionParam.unit.PathAgent.StopMovePreview();
     }
 
     #endregion

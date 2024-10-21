@@ -35,7 +35,7 @@ public class MoveAction : IAction
                 LevelManager.TryGetUnits(agent.Coordinate, out List<UnitBase> units);
                 foreach (var unit in units)
                 {
-                    if(unit.Agent == agent)
+                    if(unit.PathAgent == agent)
                     {
                         ActionTileInfo actionTileInfo = ActionTileInfo.Self;
                         actionTileInfo.value = int.MaxValue;

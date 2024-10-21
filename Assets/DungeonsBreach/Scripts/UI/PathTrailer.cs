@@ -42,7 +42,7 @@ public class PathTrailer : MonoBehaviour
     {
         m_lineRenderer.enabled = true;
         m_waypoints.Add(unit.transform.position);
-        while (unit != null && unit.Agent.IsMoving && m_waypoints.Count>1)
+        while (unit != null && unit.PathAgent.IsMoving && m_waypoints.Count>1)
         {
             if (Vector3.Distance(m_waypoints[m_waypoints.Count - 1], m_waypoints[m_waypoints.Count - 2]) < m_distanceMargin)
             {

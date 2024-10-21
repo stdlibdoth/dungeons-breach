@@ -7249,6 +7249,7 @@ MonoBehaviour:
   m_enemyUnitPrefabs: []
   m_playerUnitPrefabs:
   - {fileID: 4434675703162667636, guid: bbc303a66a2cf5f42bf6c2b8b073c404, type: 3}
+  m_unitTheme: {fileID: 1029904354}
 --- !u!1 &775018550
 GameObject:
   m_ObjectHideFlags: 0

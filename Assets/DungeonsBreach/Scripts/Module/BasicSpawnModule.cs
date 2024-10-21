@@ -29,13 +29,13 @@ public class BasicSpawnModule : ActionModule
         var unit = m_actionParam.unit;
         Debug.Log(unit + " spawn " + m_spawnUnit.name);       
         PlayAnimation(unit);
-        Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.Agent.Direction).localPosition;
+        Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.PathAgent.Direction).localPosition;
         var grid = GridManager.ActivePathGrid;
         yield return new WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
         foreach (var coord in m_confirmedActionRange)
         {
             var pos = (Vector3)coord.ToWorldPosition(grid) + relativePos;
-            var dir = unit.Agent.Coordinate.DirectionTo(coord, grid);
+            var dir = unit.PathAgent.Coordinate.DirectionTo(coord, grid);
             var spawn = Instantiate(m_spawnUnit, pos, Quaternion.identity);
             spawn.SetDirection(dir);
         }
@@ -73,7 +73,7 @@ public class BasicSpawnModule : ActionModule
             if (unit.GenerateActionAnimationData("Attack", out var data))
             {
                 data?.PlayAnimation();
-                data?.animator?.SetFloat("DirBlend", (int)unit.Agent.Direction);
+                data?.animator?.SetFloat("DirBlend", (int)unit.PathAgent.Direction);
             }
         }
     }

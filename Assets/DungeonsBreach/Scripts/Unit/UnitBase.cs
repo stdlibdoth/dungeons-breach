@@ -48,7 +48,7 @@ public class UnitBase : MonoBehaviour
         get { return m_unitName; }
     }
     
-    public PathFindingAgent Agent
+    public PathFindingAgent PathAgent
     {
         get { return m_pathAgent; }
     }
@@ -85,7 +85,6 @@ public class UnitBase : MonoBehaviour
             m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
         RefreshActionModules();
         StartCoroutine(Spawn(m_pathAgent.Coordinate).ExcuteAction());
-        LevelManager.AddUnit(this);
 
         EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitSpawn").Invoke(this);
     }

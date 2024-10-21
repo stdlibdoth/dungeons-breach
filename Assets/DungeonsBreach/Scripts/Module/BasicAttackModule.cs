@@ -33,14 +33,14 @@ public class BasicAttackModule : ActionModule
 
         foreach (var attack in m_profile.data)
         {
-            IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
+            IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.PathAgent.Coordinate, unit.PathAgent.Direction);
             if (!confirmed.Contains(coord))
                 continue;
 
             if (LevelManager.TryGetUnits(coord, out var hits))
             {
                 var attackInfo = attack;
-                attackInfo.pushDir = attack.pushDir.RotateRelativeTo(unit.Agent.Direction);
+                attackInfo.pushDir = attack.pushDir.RotateRelativeTo(unit.PathAgent.Direction);
                 List<IAction> damageActions = new List<IAction>();
                 foreach (var hit in hits)
                 {
@@ -70,7 +70,7 @@ public class BasicAttackModule : ActionModule
             {
                 animationData = data;
                 data?.PlayAnimation();
-                data?.animator?.SetFloat("DirBlend", (int)unit.Agent.Direction);
+                data?.animator?.SetFloat("DirBlend", (int)unit.PathAgent.Direction);
             }
         }
         yield return new WaitForEndOfFrame();
@@ -103,7 +103,7 @@ public class BasicAttackModule : ActionModule
         var confirmed = new List<IsoGridCoord>(m_confirmedActionRange);
         foreach (var attack in m_profile.data)
         {
-            IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.Agent.Coordinate, unit.Agent.Direction);
+            IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.PathAgent.Coordinate, unit.PathAgent.Direction);
             if (!confirmed.Contains(coord))
                 continue;
 
@@ -114,7 +114,7 @@ public class BasicAttackModule : ActionModule
             if (LevelManager.TryGetUnits(coord, out var hits))
             {
                 var attackInfo = attack;
-                attackInfo.pushDir = attack.pushDir.RotateRelativeTo(unit.Agent.Direction);
+                attackInfo.pushDir = attack.pushDir.RotateRelativeTo(unit.PathAgent.Direction);
                 foreach (var hit in hits)
                 {
                    var action = hit.Damage(attackInfo);

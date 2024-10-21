@@ -33,12 +33,12 @@ public class TrajectileSpawnModule : ActionModule
         var unit = m_actionParam.unit;
         Debug.Log(unit + " trajectile " + m_spawnUnit.name);
         PlayAnimation(unit);
-        Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.Agent.Direction).localPosition;
+        Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.PathAgent.Direction).localPosition;
         var grid = GridManager.ActivePathGrid;
         yield return new WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
 
-        var pos = (Vector3)unit.Agent.Coordinate.ToWorldPosition(grid) + relativePos;
-        var dir = unit.Agent.Coordinate.DirectionTo(m_confirmedActionRange[0], grid);
+        var pos = (Vector3)unit.PathAgent.Coordinate.ToWorldPosition(grid) + relativePos;
+        var dir = unit.PathAgent.Coordinate.DirectionTo(m_confirmedActionRange[0], grid);
         var spawn = Instantiate(m_spawnUnit, pos, Quaternion.identity);
         spawn.PreviewKey = PreviewKey;
         spawn.SetTargets(m_confirmedActionRange);
@@ -60,8 +60,8 @@ public class TrajectileSpawnModule : ActionModule
     public override IEnumerator StartPreview()
     {
         var tUnit = m_spawnUnit;
-        var dir = m_actionParam.unit.Agent.Direction;
-        IsoGridCoord startCoord = m_actionParam.unit.Agent.Coordinate;
+        var dir = m_actionParam.unit.PathAgent.Direction;
+        IsoGridCoord startCoord = m_actionParam.unit.PathAgent.Coordinate;
         var grid = GridManager.ActivePathGrid;
 
         foreach (var confirmedCoord in m_confirmedActionRange)
@@ -75,7 +75,7 @@ public class TrajectileSpawnModule : ActionModule
             {
                 IsoGridCoord coord = actionTileInfo.relativeCoord.OnRelativeTo(end, dir);
                 var info = actionTileInfo;
-                info.pushDir = info.pushDir.RotateRelativeTo(m_actionParam.unit.Agent.Direction);
+                info.pushDir = info.pushDir.RotateRelativeTo(m_actionParam.unit.PathAgent.Direction);
 
 
                 var target = info.Copy();
@@ -120,7 +120,7 @@ public class TrajectileSpawnModule : ActionModule
             if (unit.GenerateActionAnimationData("Attack", out var data))
             {
                 data?.PlayAnimation();
-                data?.animator?.SetFloat("DirBlend", (int)unit.Agent.Direction);
+                data?.animator?.SetFloat("DirBlend", (int)unit.PathAgent.Direction);
             }
         }
     }

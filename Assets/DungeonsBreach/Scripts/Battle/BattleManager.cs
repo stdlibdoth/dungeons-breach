@@ -46,12 +46,12 @@ public class BattleManager : Singleton<BattleManager>
                 BattleUIController.DisposeMoveHighlights();
                 if (value != null && value.MovesAvalaible > 0)
                 {
-                    GetSingleton().m_moveRange = value.Agent.ReachableCoordinates(value.MovesAvalaible, GridManager.ActivePathGrid);
+                    GetSingleton().m_moveRange = value.PathAgent.ReachableCoordinates(value.MovesAvalaible, GridManager.ActivePathGrid);
                     BattleUIController.HighlightPathRange(GetSingleton().m_moveRange, "MoveRange");
                 }
                 else if (value == null)
                 {
-                    GetSingleton().m_selectedUnit.Agent.StopMovePreview();
+                    GetSingleton().m_selectedUnit.PathAgent.StopMovePreview();
                     ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
                     BattleUIController.CursorController.ResetCursor();
                     BattleUIController.DisposeActionHighlights();
@@ -131,20 +131,20 @@ public class BattleManager : Singleton<BattleManager>
 
         m_unitPathFound = false;
         bool moduleActived = SelectedUnit.ActivedModule(out var module);
-        SelectedUnit.Agent.StopMovePreview();
+        SelectedUnit.PathAgent.StopMovePreview();
 
         //move range preview
-        if (SelectedUnit.MovesAvalaible > 0 && !moduleActived && !SelectedUnit.Agent.IsMoving)
+        if (SelectedUnit.MovesAvalaible > 0 && !moduleActived && !SelectedUnit.PathAgent.IsMoving)
         {
             List<IsoGridCoord> range = new List<IsoGridCoord>(m_moveRange);
             if (range.Contains(coord))
             {
-                var agent = SelectedUnit.Agent;
+                var agent = SelectedUnit.PathAgent;
                 m_unitPathFound = IsoGridPathFinding.FindPathAstar(agent.Coordinate, coord, GridManager.ActivePathGrid, agent.BlockingMask, out var path);
                 if (m_unitPathFound)
                 {
                     BattleUIController.ShowPathTrail(path);
-                    SelectedUnit.Agent.StartMovePreview(coord);
+                    SelectedUnit.PathAgent.StartMovePreview(coord);
                     ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
                     if(SelectedUnit.CompareTag("PlayerUnit"))
                         ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).CheckPreview();
@@ -172,7 +172,7 @@ public class BattleManager : Singleton<BattleManager>
             StopActionPreview(module);
 
 
-            SelectedUnit.SetDirection(SelectedUnit.Agent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
+            SelectedUnit.SetDirection(SelectedUnit.PathAgent.Coordinate.DirectionTo(m_pointerGridCoord, GridManager.ActivePathGrid));
             var param = new ActionModuleParam(SelectedUnit, new IsoGridCoord[] { m_pointerGridCoord }, false);
             module.GeneratePreview(param);
             m_actionRange = module.ActionRange();
@@ -310,7 +310,7 @@ public class BattleManager : Singleton<BattleManager>
         if (!grid.CheckRange(m_pointerGridCoord))
             return;
 
-        SelectedUnit?.Agent.StopMovePreview();
+        SelectedUnit?.PathAgent.StopMovePreview();
         ActionModule activedModule = null;
         bool moduleActived = SelectedUnit == null ? false : SelectedUnit.ActivedModule(out activedModule);
         bool selectCondition = LevelManager.TryGetUnits(m_pointerGridCoord, out var units) && (!moduleActived);
