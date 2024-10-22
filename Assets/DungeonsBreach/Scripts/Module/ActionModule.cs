@@ -104,7 +104,7 @@ public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleP
 
     public abstract IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data);
 
-    public abstract IEnumerator StartPreview();
+    public abstract ActionTileInfo[] StartPreview();
 
     public abstract void StopDamagePreview();
 

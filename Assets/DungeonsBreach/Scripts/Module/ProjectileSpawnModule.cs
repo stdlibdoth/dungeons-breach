@@ -93,12 +93,14 @@ public class ProjectileSpawnModule : BasicSpawnModule
         return this;
     }
 
-    public override IEnumerator StartPreview()
+    public override ActionTileInfo[] StartPreview()
     {
         var pUnit = m_spawnUnit as ProjectileUnit;
         var center = m_actionParam.unit.PathAgent.Coordinate;
         var dir = m_actionParam.unit.PathAgent.Direction;
         var grid = GridManager.ActivePathGrid;
+
+        List<ActionTileInfo> previewInfo = new List<ActionTileInfo>();
 
         foreach (var tileInfo in m_profile.data)
         {
@@ -124,13 +126,13 @@ public class ProjectileSpawnModule : BasicSpawnModule
                             var action = hit.Damage(info);
                             action.PreviewKey = PreviewKey;
                             m_tempDamagePreview.Add(action);
-                            yield return action.StartPreview();
+                            previewInfo.AddRange(action.StartPreview());
                         }
                     }
                 }
             }
         }
-        yield return null;
+        return previewInfo.ToArray();
     }
 
     public override void StopDamagePreview()

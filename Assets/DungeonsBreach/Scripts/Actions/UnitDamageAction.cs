@@ -105,10 +105,10 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         return this;
     }
 
-    public IEnumerator StartPreview()
+    public ActionTileInfo[] StartPreview()
     {
-        if(m_previewData == null)
-            yield break;
+        if (m_previewData == null)
+            return new ActionTileInfo[] { };
 
         var unit = m_damageActionParam.unit;
         var attackInfo = m_damageActionParam.attackInfo;
@@ -120,6 +120,8 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         m_previewData.unitHealthBar.SetPreview(0,-attackInfo.value);
         m_damagePreviewCache.Add(this);
 
+
+        List<ActionTileInfo> actionTileInfo = new List<ActionTileInfo>();
         //Preview recursive damage actions
         if(attackInfo.pushDist > 0)
         {
@@ -149,7 +151,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                     var hitPreviewData1 = new ActionPreviewerData("HitPreview",
                     attackInfo.pushDir,targetTile);
                     BattleUIController.ActionPreviewer.RegistorPreview(hitPreviewData1,PreviewKey);
-                    yield return preview.StartPreview();
+                    actionTileInfo.AddRange(preview.StartPreview());
                 }
             }
             else if(GridManager.ActiveTileGrid.CheckRange(targetTile))
@@ -163,7 +165,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 unit.PathAgent.StartMovePreview(targetTile);
             }
         }
-        yield return null;
+        return actionTileInfo.ToArray();
     }
 
     public void StopDamagePreview()

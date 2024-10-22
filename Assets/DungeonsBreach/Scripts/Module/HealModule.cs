@@ -47,9 +47,9 @@ public class HealModule : BasicAttackModule
 
     #region IPreviewable
 
-    public override IEnumerator StartPreview()
+    public override ActionTileInfo[] StartPreview()
     {
-        yield return base.StartPreview();
+        var info = base.StartPreview();
 
         if(m_animationDataOverride)
         {
@@ -59,6 +59,7 @@ public class HealModule : BasicAttackModule
             };
             animData.PlayAnimation();
         }
+        return info;
     }
 
     #endregion

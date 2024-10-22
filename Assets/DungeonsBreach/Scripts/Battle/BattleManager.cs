@@ -184,7 +184,7 @@ public class BattleManager : Singleton<BattleManager>
                 //module.GeneratePreview(param);
                 BattleUIController.CursorController.SetCursor("TargetValid");
                 module.PreviewKey = PreviewKey.GlobalKey;
-                StartCoroutine(module.StartPreview());
+                module.StartPreview();
             }
             else
             {
@@ -206,7 +206,7 @@ public class BattleManager : Singleton<BattleManager>
             BattleUIController.ActionPreviewer.InitPreview();
             //action_module.PreviewKey = PreviewKey.GlobalKey;
             action_module.PreviewKey = new PreviewKey(action_module);
-            StartCoroutine(action_module.StartPreview());
+            action_module.StartPreview();
         }
     }
 
@@ -220,7 +220,7 @@ public class BattleManager : Singleton<BattleManager>
                 StopActionPreview(action_module);
                 BattleUIController.ActionPreviewer.InitPreview();
                 action_module.PreviewKey = new PreviewKey(action_module);
-                StartCoroutine(action_module.StartPreview());
+                action_module.StartPreview();
                 action_module.StopDamagePreview();
 
                 BattleUIController.DisposeActionHighlights();
@@ -256,7 +256,7 @@ public class BattleManager : Singleton<BattleManager>
 
                 BattleUIController.ActionPreviewer.InitPreview();
                 action_module.GeneratePreview(param);
-                StartCoroutine(action_module.StartPreview());
+                action_module.StartPreview();
                 action_module.StopDamagePreview();
 
                 BattleUIController.DisposeActionHighlights();

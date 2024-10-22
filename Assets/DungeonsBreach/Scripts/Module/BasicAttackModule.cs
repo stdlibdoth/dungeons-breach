@@ -97,10 +97,11 @@ public class BasicAttackModule : ActionModule
         return this;
     }
 
-    public override IEnumerator StartPreview()
+    public override ActionTileInfo[] StartPreview()
     {
         var unit = m_actionParam.unit;
         var confirmed = new List<IsoGridCoord>(m_confirmedActionRange);
+        List<ActionTileInfo> actionInfo = new List<ActionTileInfo>();
         foreach (var attack in m_profile.data)
         {
             IsoGridCoord coord = attack.relativeCoord.OnRelativeTo(unit.PathAgent.Coordinate, unit.PathAgent.Direction);
@@ -120,11 +121,11 @@ public class BasicAttackModule : ActionModule
                    var action = hit.Damage(attackInfo);
                    action.PreviewKey = PreviewKey;
                    m_tempDamagePreview.Add(action);
-                   yield return action.StartPreview();
+                    actionInfo.AddRange(action.StartPreview());
                 }
             }
         }
-        yield return null;
+        return actionInfo.ToArray();
     }
 
     public override void StopDamagePreview()

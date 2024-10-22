@@ -6,7 +6,7 @@ public interface IPreviewable<T>
 {
     public PreviewKey PreviewKey{get;set;}
     public IPreviewable<T> GeneratePreview(T data);
-    public IEnumerator StartPreview();
+    public ActionTileInfo[] StartPreview();
     public void StopDamagePreview();
 }
 

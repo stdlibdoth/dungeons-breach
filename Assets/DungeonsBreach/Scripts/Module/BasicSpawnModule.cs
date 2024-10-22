@@ -51,7 +51,7 @@ public class BasicSpawnModule : ActionModule
         throw new System.NotImplementedException();
     }
 
-    public override IEnumerator StartPreview()
+    public override ActionTileInfo[] StartPreview()
     {
         throw new System.NotImplementedException();
     }

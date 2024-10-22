@@ -57,12 +57,13 @@ public class TrajectileSpawnModule : ActionModule
         return this;
     }
 
-    public override IEnumerator StartPreview()
+    public override ActionTileInfo[] StartPreview()
     {
         var tUnit = m_spawnUnit;
         var dir = m_actionParam.unit.PathAgent.Direction;
         IsoGridCoord startCoord = m_actionParam.unit.PathAgent.Coordinate;
         var grid = GridManager.ActivePathGrid;
+        List<ActionTileInfo> previewInfos = new List<ActionTileInfo>();
 
         foreach (var confirmedCoord in m_confirmedActionRange)
         {
@@ -90,12 +91,12 @@ public class TrajectileSpawnModule : ActionModule
                         var action = hit.Damage(info);
                         action.PreviewKey = PreviewKey;
                         m_tempDamagePreview.Add(action);
-                        yield return action.StartPreview();
+                        previewInfos.AddRange(action.StartPreview());
                     }
                 }
             }
         }
-        yield return null;
+        return previewInfos.ToArray();
     }
 
     public override void StopDamagePreview()
