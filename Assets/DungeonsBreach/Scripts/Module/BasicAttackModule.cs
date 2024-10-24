@@ -128,11 +128,11 @@ public class BasicAttackModule : ActionModule
         return actionInfo.ToArray();
     }
 
-    public override void StopDamagePreview()
+    public override void StopPreview()
     {
         foreach (var item in m_tempDamagePreview)
         {
-            item.StopDamagePreview();
+            item.StopPreview();
         }
         m_tempDamagePreview.Clear();
     }

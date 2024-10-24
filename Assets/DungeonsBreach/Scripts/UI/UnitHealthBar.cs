@@ -131,7 +131,7 @@ public class UnitHealthBar : MonoBehaviour
             float healthWidth = m_width - 2* m_sidePadding;
             m_frameSprite.size = new Vector2(m_width,m_frameSprite.size.y);
             m_healthSprite.size = new Vector2(healthWidth,m_healthSprite.size.y);
-            m_unitWidth = healthWidth/maxHP;      
+            m_unitWidth = healthWidth/maxHP;
             transform.localPosition = new Vector3(-m_width/2,0,0);
             int blockerNum = maxHP-1;
             for (int i = 1; i <= blockerNum; i++)
@@ -168,7 +168,7 @@ public class UnitHealthBar : MonoBehaviour
             n +=data[i];
         }
         if(n<1)
-            n = 1;
+            n =0;
         return n;
     }
 

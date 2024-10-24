@@ -51,7 +51,10 @@ public class BattleManager : Singleton<BattleManager>
                 }
                 else if (value == null)
                 {
-                    GetSingleton().m_selectedUnit.PathAgent.StopMovePreview();
+                    //GetSingleton().m_selectedUnit.PathAgent.StopMovePreview();
+                    var previewKey = new PreviewKey(GetSingleton().m_selectedUnit.PathAgent);
+                    MoveAction.StopPreview(previewKey);
+
                     ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
                     BattleUIController.CursorController.ResetCursor();
                     BattleUIController.DisposeActionHighlights();
@@ -131,7 +134,10 @@ public class BattleManager : Singleton<BattleManager>
 
         m_unitPathFound = false;
         bool moduleActived = SelectedUnit.ActivedModule(out var module);
-        SelectedUnit.PathAgent.StopMovePreview();
+
+        var previewKey = new PreviewKey(SelectedUnit.PathAgent);
+        MoveAction.StopPreview(previewKey);
+        //SelectedUnit.PathAgent.StopMovePreview();
 
         //move range preview
         if (SelectedUnit.MovesAvalaible > 0 && !moduleActived && !SelectedUnit.PathAgent.IsMoving)
@@ -144,7 +150,12 @@ public class BattleManager : Singleton<BattleManager>
                 if (m_unitPathFound)
                 {
                     BattleUIController.ShowPathTrail(path);
-                    SelectedUnit.PathAgent.StartMovePreview(coord);
+
+
+                    //SelectedUnit.PathAgent.StartMovePreview(coord);
+
+                    var moveAction = SelectedUnit.Move(LocamotionType.Instant, coord, true, false);
+                    moveAction.StartPreview();
                     ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
                     if(SelectedUnit.CompareTag("PlayerUnit"))
                         ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).CheckPreview();
@@ -199,7 +210,7 @@ public class BattleManager : Singleton<BattleManager>
 
     private void TriggerActionPreview(ActionModule action_module)
     {
-        action_module.StopDamagePreview();
+        action_module.StopPreview();
         IsoGridCoord[] confirmed = action_module.ConfirmActionTargets();
         if (confirmed.Length > 0)
         {
@@ -221,7 +232,7 @@ public class BattleManager : Singleton<BattleManager>
                 BattleUIController.ActionPreviewer.InitPreview();
                 action_module.PreviewKey = new PreviewKey(action_module);
                 action_module.StartPreview();
-                action_module.StopDamagePreview();
+                action_module.StopPreview();
 
                 BattleUIController.DisposeActionHighlights();
             }
@@ -257,7 +268,7 @@ public class BattleManager : Singleton<BattleManager>
                 BattleUIController.ActionPreviewer.InitPreview();
                 action_module.GeneratePreview(param);
                 action_module.StartPreview();
-                action_module.StopDamagePreview();
+                action_module.StopPreview();
 
                 BattleUIController.DisposeActionHighlights();
             }
@@ -268,7 +279,7 @@ public class BattleManager : Singleton<BattleManager>
 
     private void StopActionPreview(ActionModule actionModule)
     {
-        actionModule.StopDamagePreview();
+        actionModule.StopPreview();
         BattleUIController.ActionPreviewer.ClearPreview(PreviewKey.GlobalKey);
         BattleUIController.CursorController.ResetCursor();
     }
@@ -310,7 +321,12 @@ public class BattleManager : Singleton<BattleManager>
         if (!grid.CheckRange(m_pointerGridCoord))
             return;
 
-        SelectedUnit?.PathAgent.StopMovePreview();
+        if (SelectedUnit != null)
+        {
+            var previewKey = new PreviewKey(SelectedUnit.PathAgent);
+            MoveAction.StopPreview(previewKey);
+        }
+        //SelectedUnit?.PathAgent.StopMovePreview();
         ActionModule activedModule = null;
         bool moduleActived = SelectedUnit == null ? false : SelectedUnit.ActivedModule(out activedModule);
         bool selectCondition = LevelManager.TryGetUnits(m_pointerGridCoord, out var units) && (!moduleActived);

@@ -99,11 +99,11 @@ public class TrajectileSpawnModule : ActionModule
         return previewInfos.ToArray();
     }
 
-    public override void StopDamagePreview()
+    public override void StopPreview()
     {
         foreach (var item in m_tempDamagePreview)
         {
-            item.StopDamagePreview();
+            item.StopPreview();
         }
         m_tempDamagePreview.Clear();
     }

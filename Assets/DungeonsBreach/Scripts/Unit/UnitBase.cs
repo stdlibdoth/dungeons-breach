@@ -286,7 +286,9 @@ public class UnitBase : MonoBehaviour
         m_pathAgent.OnReachingTarget.AddListener(()=>{
             ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
         });
-        return action.Build(param) as MoveAction;
+        action.Build(param);
+        action.GeneratePreview(param);
+        return action;
     }
 
     public virtual void Die()

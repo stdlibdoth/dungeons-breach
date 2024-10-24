@@ -26,7 +26,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         SelfDamageAction action = new SelfDamageAction();
         action.PreviewKey = this.PreviewKey;
         action.Build(m_damageActionParam);
-
+        action.GeneratePreview(m_previewData);
         return action;
     }
 
@@ -98,14 +98,14 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         }
     }
 
-    public IPreviewable<UnitDamagePreviewData> GeneratePreview(UnitDamagePreviewData data)
+    public virtual IPreviewable<UnitDamagePreviewData> GeneratePreview(UnitDamagePreviewData data)
     {
         PreviewKey = new PreviewKey(this);
         m_previewData = data;
         return this;
     }
 
-    public ActionTileInfo[] StartPreview()
+    public virtual ActionTileInfo[] StartPreview()
     {
         if (m_previewData == null)
             return new ActionTileInfo[] { };
@@ -160,25 +160,29 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 attackInfo.pushDir,unit.PathAgent.Coordinate);
                 BattleUIController.ActionPreviewer.RegistorPreview(shiftPreviewData,PreviewKey);
 
-                //preview unit shift position
 
-                unit.PathAgent.StartMovePreview(targetTile);
+                //preview unit shift position
+                var moveAction = unit.Move(attackInfo.pushType, targetTile, true, false);
+                moveAction.StartPreview();
+                //unit.PathAgent.StartMovePreview(targetTile);
             }
         }
         return actionTileInfo.ToArray();
     }
 
-    public void StopDamagePreview()
+    public void StopPreview()
     {
         foreach (var item in m_damagePreviewCache)
         {
-            //Debug.Log(item.m_damageActionParam.unit);
             item.m_previewData.unitHealthBar.ResetPreview();
             item.m_previewData.spriteRenderer.color = Color.white;
             item.m_animationSeq.Kill();
         }
         m_damagePreviewCache.Clear();
-        m_damageActionParam.unit.PathAgent.StopMovePreview();
+
+        //m_damageActionParam.unit.PathAgent.StopMovePreview();
+        var previewKey = new PreviewKey(m_damageActionParam.unit.PathAgent);
+        MoveAction.StopPreview(previewKey);
     }
 
     #endregion
