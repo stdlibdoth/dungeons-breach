@@ -88,7 +88,7 @@ public class TrajectileSpawnModule : ActionModule
                     LevelManager.TryGetUnits(end, out var hits);
                     foreach (var hit in hits)
                     {
-                        var action = hit.Damage(info);
+                        var action = hit.Damage(target);
                         action.PreviewKey = PreviewKey;
                         m_tempDamagePreview.Add(action);
                         previewInfos.AddRange(action.StartPreview());

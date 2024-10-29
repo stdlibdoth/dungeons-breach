@@ -81,10 +81,9 @@ public class MoveAction : IAction,IPreviewable<MoveActionParam>
         m_previews[PreviewKey] = this;
 
         var previewInfo = new List<ActionTileInfo>();
+        agent.StartMovePreview(m_param.target, true);
+
         //check falling
-
-        agent.StartMovePreview(m_param.target);
-
         if (agent.FallMask.CheckMaskOverlap(tileMask))
         {
             LevelManager.TryGetUnits(agent.Coordinate, out List<UnitBase> units);

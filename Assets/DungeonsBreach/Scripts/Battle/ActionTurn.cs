@@ -174,7 +174,7 @@ public delegate IEnumerator ActionTurnDelegate(ActionTurn actionTurn);
 
 public enum ActionTurnType : int
 {
-    EnemyMoveAndAction,
+    EnemyMove,
     EnemySpawnPreview,
     PlayerTurn,
     EnvironmentAction,

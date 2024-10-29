@@ -22,6 +22,7 @@ public class BattleUIController : Singleton<BattleUIController>
 
     [Header("Themes")]
     [SerializeField] private TurnTheme m_turnTheme;
+    [SerializeField] private UnitTheme m_unitTheme;
 
 
 
@@ -47,12 +48,13 @@ public class BattleUIController : Singleton<BattleUIController>
         m_resetTurnBtn.onClick.AddListener(ResetBtnPressed);
         m_turnTheme.GetTopic("ActionTurnStart").AddListener(OnActionTurnStart);
         m_turnTheme.GetTopic("ActionTurnEnd").AddListener(OnActionTurnEnd);
+        m_unitTheme.GetTopic("UnitDie").AddListener(OnUnitDie);
     }
 
     private IEnumerator OnEndTurnButtonClick()
     {
         m_endPlayerTurnBtn.interactable = false;
-        yield return BattleManager.StartNextTurn();
+        yield return ActionTurn.StartNextTurn();
         m_endPlayerTurnBtn.interactable = true;
         yield return BattleManager.ResetUnits();
     }
@@ -152,11 +154,22 @@ public class BattleUIController : Singleton<BattleUIController>
 
 
     #region Theme events
+
+
+    private void OnUnitDie(UnitBase unit)
+    {
+        var actionModules = unit.ActionModules();
+        foreach (var module in actionModules)
+        {
+            m_previewer.ClearPreview(new PreviewKey(module));
+        }
+    }
+
     private void OnActionTurnStart(ActionTurnType turn_type, ActionTurn turn)
     {
         switch (turn_type)
         {
-            case ActionTurnType.EnemyMoveAndAction:
+            case ActionTurnType.EnemyMove:
                 break;
             case ActionTurnType.EnemySpawnPreview:
                 break;
@@ -188,7 +201,7 @@ public class BattleUIController : Singleton<BattleUIController>
     {
         switch (turn_type)
         {
-            case ActionTurnType.EnemyMoveAndAction:
+            case ActionTurnType.EnemyMove:
                 break;
             case ActionTurnType.EnemySpawnPreview:
                 break;

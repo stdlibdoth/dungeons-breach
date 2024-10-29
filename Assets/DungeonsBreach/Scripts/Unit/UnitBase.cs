@@ -33,7 +33,7 @@ public class UnitBase : MonoBehaviour
 
     [Space]
     [Header("unit status")]
-    [SerializeField] protected UnitStatus m_unitStatus;
+    protected UnitStatus m_unitStatus;
 
     protected List<ActionModule> m_actionModules = new List<ActionModule>();
     protected Sequence m_damangePreviewDOTweeen;
@@ -244,7 +244,7 @@ public class UnitBase : MonoBehaviour
         var action = new UnitSpawnAction();
         var param = new CoroutineActionParam
         {
-            coroutineDelegate = UnitSpawnAnimation    
+            coroutineDelegate = UnitSpawnAnimation
         };
         action.Build(param);
         return action;

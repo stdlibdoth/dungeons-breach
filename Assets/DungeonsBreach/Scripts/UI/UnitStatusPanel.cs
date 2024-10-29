@@ -57,13 +57,24 @@ public class UnitStatusPanel : MonoBehaviour
             m_toggles.Add(module.ModuleName, toggle);
             var moduleUIData = m_moduleUIDataSO.GetData(module.ModuleName);
             toggle.Init(moduleUIData.icon);
-            toggle.Toggle.interactable = actionModule.IsAvailable;
-            toggle.Toggle.SetIsOnWithoutNotify(actionModule.Actived & actionModule.IsAvailable);
-            toggle.Toggle.onValueChanged.AddListener(OnAnyToggle);
-            m_prevToggleStatus.Add(actionModule.ModuleName, toggle.Toggle.isOn);
             m_modules.Add(actionModule.ModuleName, actionModule);
-            toggle.gameObject.SetActive(true);
-            actionModule.OnActionAvailable.AddListener(OnModuleAvailble);
+            if (unit.CompareTag("PlayerUnit"))
+            {
+                toggle.Toggle.enabled = true;
+                toggle.Toggle.interactable = actionModule.IsAvailable;
+                toggle.Toggle.SetIsOnWithoutNotify(actionModule.Actived & actionModule.IsAvailable);
+                toggle.Toggle.onValueChanged.AddListener(OnAnyToggle);
+                m_prevToggleStatus.Add(actionModule.ModuleName, toggle.Toggle.isOn);
+                toggle.gameObject.SetActive(true);
+                actionModule.OnActionAvailable.AddListener(OnModuleAvailble);
+            }
+            else
+            {
+                toggle.Toggle.interactable = true;
+                toggle.Toggle.SetIsOnWithoutNotify(true);
+                toggle.Toggle.enabled = false;
+                toggle.gameObject.SetActive(true);
+            }
         }
     }
 

@@ -121,7 +121,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         m_damagePreviewCache.Add(this);
 
 
-        List<ActionTileInfo> actionTileInfo = new List<ActionTileInfo>();
+        List<ActionTileInfo> actionTileInfo = new List<ActionTileInfo> { attackInfo };
         //Preview recursive damage actions
         if(attackInfo.pushDist > 0)
         {
@@ -163,7 +163,7 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
                 //preview unit shift position
                 var moveAction = unit.Move(attackInfo.pushType, targetTile, true, false);
-                moveAction.StartPreview();
+                actionTileInfo.AddRange(moveAction.StartPreview());
                 //unit.PathAgent.StartMovePreview(targetTile);
             }
         }

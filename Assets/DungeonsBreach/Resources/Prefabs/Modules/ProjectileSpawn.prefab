@@ -107,7 +107,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44134db6e3df04e4a9474d5c4bbc7ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_lineRenderer: {fileID: 3482722207818593819}
   m_enemyMat: {fileID: 2100000, guid: c369e12e870306643bde6cdb56766df8, type: 2}
   m_playerMat: {fileID: 2100000, guid: ee09edbd73bbe794b84f4c08acb89a9c, type: 2}
   m_interval: 0

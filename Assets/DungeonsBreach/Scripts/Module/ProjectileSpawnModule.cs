@@ -118,7 +118,10 @@ public class ProjectileSpawnModule : BasicSpawnModule
                     IsoGridCoord coord = actionTileInfo.relativeCoord.OnRelativeTo(end, dir);
                     var info = actionTileInfo;
                     info.pushDir = info.pushDir.RotateRelativeTo(m_actionParam.unit.PathAgent.Direction);
-                    if(grid.CheckRange(coord))
+                    info.relativeCoord = coord;
+                    BattleUIController.ShowActionTarget(this, info);
+
+                    if (grid.CheckRange(coord))
                     {
                         LevelManager.TryGetUnits(end, out var hits);
                         foreach (var hit in hits)

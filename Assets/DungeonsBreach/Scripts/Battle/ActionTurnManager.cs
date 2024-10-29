@@ -63,6 +63,17 @@ public partial class ActionTurn
         m_tempActions.Enqueue(action);
     }
 
+
+    public static IEnumerator StartNextTurn()
+    {
+        EventManager.GetTheme<BattleRoundTheme>("BattleRoundTheme").GetTopic("RoundStart").Invoke(0);
+        yield return CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteEndTurnDeles();
+        yield return StartActionTurns(ActionTurnType.EnvironmentAction, ActionTurnType.EnemySpawn);
+        yield return AICalculation();
+        yield return StartActionTurns(ActionTurnType.EnemyMove, ActionTurnType.EnemySpawnPreview);
+        yield return CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteStartTurnDeles();
+    }
+
     public static IEnumerator ExcuteTempActions()
     {
         while (m_tempActions.TryDequeue(out var action))
@@ -80,5 +91,20 @@ public partial class ActionTurn
                 return i;
         }
         return -1;
+    }
+
+
+    private static IEnumerator AICalculation()
+    {
+        foreach (var unit in LevelManager.Units)
+        {
+            UnitAIAgent aiAgent = unit.GetComponent<UnitAIAgent>();
+            if (aiAgent!= null)
+            {
+                var aiAction = aiAgent.Build(new AIAgentActionParam());
+                CreateOrGetActionTurn(ActionTurnType.EnemyMove).RegistorAction(aiAction);
+            }
+        }
+        yield return null;
     }
 }

@@ -68,19 +68,31 @@ public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleP
         get { return m_profile; }
     }
 
-    public IsoGridCoord[] ActionRange()
+    public IsoGridCoord[] ActionRange(IsoGridCoord center)
     {
-        return ActionRangeInternal(m_actionParam.unit.PathAgent.Coordinate, m_actionParam.unit.PathAgent.Direction);
+        List<IsoGridCoord> actionRange = new List<IsoGridCoord>();
+        for (int i = 0; i < IsoGridMetrics.directionCount; i++)
+        {
+            actionRange.AddRange(ActionRangeInternal(center, (IsoGridDirection)i));
+        }
+        return actionRange.ToArray();
     }
 
-    public virtual void ResetPreviewKey()
-    {
-        m_previewKey = m_lastKey;
-    }
+
+
+    #region Interfaces
+
+    public abstract IEnumerator ExcuteAction();
+    public abstract IAction Build<T>(T param) where T : IActionParam;
+    public abstract IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data);
+    public abstract ActionTileInfo[] StartPreview();
+    public abstract void StopPreview();
+    #endregion
+
 
     public virtual IsoGridCoord[] ConfirmActionTargets()
     {
-        var actionRange = ActionRangeInternal(m_actionParam.unit.PathAgent.Coordinate, m_actionParam.unit.PathAgent.Direction);
+        var actionRange = ActionRangeInternal(m_actionParam.unit.PathAgent.Coordinate,m_actionParam.unit.PathAgent.Direction);
         List<IsoGridCoord> confirmedTargets = new List<IsoGridCoord>();
         foreach (var inputCoord in m_actionParam.GetInputCoordinates(false))
         {
@@ -98,16 +110,6 @@ public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleP
     }
 
     public ActionPriority Priority { get; set; }
-
-    public abstract IEnumerator ExcuteAction();
-    public abstract IAction Build<T>(T param) where T : IActionParam;
-
-    public abstract IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data);
-
-    public abstract ActionTileInfo[] StartPreview();
-
-    public abstract void StopPreview();
-
 
     protected virtual IsoGridCoord[] ActionRangeInternal(IsoGridCoord center, IsoGridDirection dir)
     {
@@ -175,7 +177,6 @@ public class ActionModuleParam : IActionParam
         }
     }
 }
-
 
 
 [System.Serializable]

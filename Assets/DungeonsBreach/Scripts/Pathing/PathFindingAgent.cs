@@ -25,6 +25,7 @@ public class PathFindingAgent : MonoBehaviour
 
     private bool m_isMoving;
     private bool m_isPreviewing;
+    private bool m_showPreviewVisual;
 
     public IsoGridDirection Direction
     {
@@ -125,7 +126,6 @@ public class PathFindingAgent : MonoBehaviour
     {
         if(target == m_coord)
             yield break;
-        Debug.Log(Coordinate);
         TryGetLocamotion(locamotion_type,out var locamotion);
         var grid = GridManager.ActivePathGrid;
         var tileMask = grid.PathingMaskSingleTile(m_coord);
@@ -161,7 +161,7 @@ public class PathFindingAgent : MonoBehaviour
 
 
     //Set the preview of the Agent
-    public void StartMovePreview(IsoGridCoord target)
+    public void StartMovePreview(IsoGridCoord target,bool show_visual)
     {
         if (m_movePreviewer == null)
             return;
@@ -171,7 +171,11 @@ public class PathFindingAgent : MonoBehaviour
         m_originCoord = m_coord;
         m_coord = target;
         grid.SetMaskBits(target,m_intrinsicMask);
-        m_movePreviewer.StartPreview(target.ToWorldPosition(grid));
+        m_showPreviewVisual = show_visual;
+        if (show_visual)
+        {
+            m_movePreviewer.StartPreview(target.ToWorldPosition(grid));
+        }
     }
 
     public void StopMovePreview()
@@ -182,8 +186,10 @@ public class PathFindingAgent : MonoBehaviour
         grid.ResetMaskBits(m_coord, m_intrinsicMask);
         m_coord = m_originCoord;
         grid.SetMaskBits(m_coord, m_intrinsicMask);
-        m_movePreviewer.StopPreview();
+        if(m_showPreviewVisual)
+            m_movePreviewer.StopPreview();
         m_isPreviewing=false;
+        m_showPreviewVisual = false;
     }
 
     //animation only , not changing the mask

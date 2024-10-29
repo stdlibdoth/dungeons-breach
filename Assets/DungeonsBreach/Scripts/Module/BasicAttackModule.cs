@@ -52,7 +52,6 @@ public class BasicAttackModule : ActionModule
                     Debug.Log(damageActions[i] + "   " + damageActions[i].Priority.value);
                     yield return damageActions[i].ExcuteAction();
                 }
-
             }
         }
     }
@@ -82,14 +81,6 @@ public class BasicAttackModule : ActionModule
 
     #region IPreviewable
 
-    public override void ResetPreviewKey()
-    {
-        foreach (var item in m_tempDamagePreview)
-        {
-            item.ResetPreviewKey();
-        }
-    }
-
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
         m_previewKey = new PreviewKey(this);
@@ -114,14 +105,14 @@ public class BasicAttackModule : ActionModule
 
             if (LevelManager.TryGetUnits(coord, out var hits))
             {
-                var attackInfo = attack;
-                attackInfo.pushDir = attack.pushDir.RotateRelativeTo(unit.PathAgent.Direction);
+                var attackInfo = target;
+                attackInfo.pushDir = target.pushDir.RotateRelativeTo(unit.PathAgent.Direction);
                 foreach (var hit in hits)
                 {
                    var action = hit.Damage(attackInfo);
                    action.PreviewKey = PreviewKey;
                    m_tempDamagePreview.Add(action);
-                    actionInfo.AddRange(action.StartPreview());
+                   actionInfo.AddRange(action.StartPreview());
                 }
             }
         }
