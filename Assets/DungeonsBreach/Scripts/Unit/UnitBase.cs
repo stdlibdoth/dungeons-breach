@@ -85,8 +85,6 @@ public class UnitBase : MonoBehaviour
             m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
         RefreshActionModules();
         StartCoroutine(Spawn(m_pathAgent.Coordinate).ExcuteAction());
-
-        EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitSpawn").Invoke(this);
     }
 
     public virtual bool GenerateActionAnimationData(string animation_state, out AnimationStateData data)
@@ -242,9 +240,11 @@ public class UnitBase : MonoBehaviour
     public virtual UnitSpawnAction Spawn(IsoGridCoord coord)
     {
         var action = new UnitSpawnAction();
-        var param = new CoroutineActionParam
+        var param = new SpawnActionParam
         {
-            coroutineDelegate = UnitSpawnAnimation
+            onSpawn = UnitSpawnAnimation,
+            unit = this,
+            enableNotification = true,
         };
         action.Build(param);
         return action;
@@ -310,12 +310,12 @@ public class UnitBase : MonoBehaviour
 
     #region helpers
 
-    private void ClampHP()
+    protected void ClampHP()
     {
         m_unitStatus.hp = math.clamp(m_unitStatus.hp,int.MinValue,m_unitStatus.maxHP);
     }
 
-    private void RefreshHealthBar(bool init)
+    protected void RefreshHealthBar(bool init)
     {
         if(m_healthBar == null)
             return;
@@ -327,7 +327,7 @@ public class UnitBase : MonoBehaviour
     }
 
 
-    private IEnumerator UnitSpawnAnimation()
+    protected IEnumerator UnitSpawnAnimation()
     {
         if(m_spriteRenderer!= null)
         {
@@ -341,7 +341,7 @@ public class UnitBase : MonoBehaviour
             m_animator.enabled = true;
     }
 
-    private IEnumerator UnitDamangeAnimation()
+    protected IEnumerator UnitDamangeAnimation()
     {
         var sequence = DOTween.Sequence();
         sequence.Append(m_spriteRenderer.DOColor(Color.red,0.1f))

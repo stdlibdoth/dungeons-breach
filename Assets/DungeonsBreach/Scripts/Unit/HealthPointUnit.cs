@@ -17,6 +17,9 @@ public class HealthPointUnit : ObstacleUnit
 
     public override void UpdateStatus(UnitStatus delta_status)
     {
+        if (m_isDead)
+            return;
+
         base.UpdateStatus(delta_status);
         if (delta_status.hp < 0)
             GameManager.UpdatePlayerStatus(new PlayerStatus{

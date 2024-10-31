@@ -27,7 +27,7 @@ public class BasicSpawnModule : ActionModule
             yield break;
 
         var unit = m_actionParam.unit;
-        Debug.Log(unit + " spawn " + m_spawnUnit.name);       
+        Debug.Log(unit + " spawn " + m_spawnUnit.name);
         PlayAnimation(unit);
         Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.PathAgent.Direction).localPosition;
         var grid = GridManager.ActivePathGrid;
@@ -77,6 +77,4 @@ public class BasicSpawnModule : ActionModule
             }
         }
     }
-
-
 }

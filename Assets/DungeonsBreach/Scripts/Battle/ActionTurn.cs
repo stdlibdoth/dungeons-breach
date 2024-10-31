@@ -7,7 +7,13 @@ public partial class ActionTurn
 {
     [SerializeField] protected ActionTurnType m_type;
     public ActionTurnType Type { get { return m_type; } }
-    public bool IsActive { get;private set; }
+    public bool IsActive
+    {
+        get
+        {
+            return m_actions.Count > 0;
+        }
+    }
 
     protected List<IAction> m_actions;
 
@@ -20,7 +26,6 @@ public partial class ActionTurn
     {
         m_type = type;
         m_actions = new List<IAction>();
-        IsActive = false;
     }
 
 
@@ -46,7 +51,6 @@ public partial class ActionTurn
 
     public void RegistorAction(IAction action)
     {
-        IsActive = true;
         m_actions.Add(action);
     }
 
@@ -95,7 +99,6 @@ public partial class ActionTurn
                 }
                 foreach (var unit in units)
                 {
-                    Debug.Log(unit.name);
                     if(BattleManager.SelectedUnit != unit)
                         continue;
 
@@ -141,18 +144,20 @@ public partial class ActionTurn
             yield return item.Invoke(this);
         }
 
-        m_actions.Sort((a, b) => new ActionComparer().Compare(a, b));
-        for (int i = 0; i < m_actions.Count; i++)
+        var actions = new List<IAction>(m_actions);
+        actions.Sort((a, b) => new ActionComparer().Compare(a, b));
+        for (int i = 0; i < actions.Count; i++)
         {
-            Debug.Log("-----------------" + m_actions[i] + "'s action begin---------------");
-            yield return m_actions[i].ExcuteAction();
+            Debug.Log("-----------------" + actions[i] + "'s action begin---------------");
+            yield return actions[i].ExcuteAction();
+            m_actions.Remove(actions[i]);
         }
 
         foreach (var item in m_turnEndDeles)
         {
             yield return item.Invoke(this);
         }
-        m_actions = new List<IAction>();
+
         EventManager.GetTheme<TurnTheme>("TurnTheme").GetTopic("ActionTurnEnd").Invoke(m_type,this);
         Debug.Log("-----------------" + m_type + " Turn End----------------");
         m_isExecuting = false;

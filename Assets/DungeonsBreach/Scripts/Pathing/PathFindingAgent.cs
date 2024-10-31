@@ -165,17 +165,21 @@ public class PathFindingAgent : MonoBehaviour
     {
         if (m_movePreviewer == null)
             return;
-        m_isPreviewing = true;
         var grid = GridManager.ActivePathGrid;
-        grid.ResetMaskBits(m_coord,m_intrinsicMask);
-        m_originCoord = m_coord;
+        if (!m_isPreviewing)
+        {
+            m_originCoord = m_coord;
+        }
+        grid.ResetMaskBits(m_coord, m_intrinsicMask);
+        grid.SetMaskBits(target, m_intrinsicMask);
         m_coord = target;
-        grid.SetMaskBits(target,m_intrinsicMask);
         m_showPreviewVisual = show_visual;
         if (show_visual)
         {
+            //Debug.Log("start preview " + transform.parent.name + "   " + target);
             m_movePreviewer.StartPreview(target.ToWorldPosition(grid));
         }
+        m_isPreviewing = true;
     }
 
     public void StopMovePreview()

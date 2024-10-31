@@ -134,7 +134,6 @@ public class BattleManager : Singleton<BattleManager>
 
         var previewKey = new PreviewKey(SelectedUnit.PathAgent);
         MoveAction.StopPreview(previewKey);
-        //SelectedUnit.PathAgent.StopMovePreview();
 
         //move range preview
         if (SelectedUnit.MovesAvalaible > 0 && !moduleActived && !SelectedUnit.PathAgent.IsMoving)
@@ -148,14 +147,10 @@ public class BattleManager : Singleton<BattleManager>
                 {
                     BattleUIController.ShowPathTrail(path);
 
-
-                    //SelectedUnit.PathAgent.StartMovePreview(coord);
-
                     var moveAction = SelectedUnit.Move(LocamotionType.Instant, coord, true, false);
                     moveAction.StartPreview();
                     ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
-                    if(SelectedUnit.CompareTag("PlayerUnit"))
-                        ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).CheckPreview();
+                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).CheckPreview();
                     BattleUIController.CursorController.SetCursor("MoveAvailable");
                 }
                 else
@@ -207,12 +202,11 @@ public class BattleManager : Singleton<BattleManager>
 
     private void TriggerActionPreview(ActionModule action_module)
     {
-        action_module.StopPreview();
         IsoGridCoord[] confirmed = action_module.ConfirmActionTargets();
         if (confirmed.Length > 0)
         {
+            action_module.StopPreview();
             BattleUIController.ActionPreviewer.InitPreview();
-            //action_module.PreviewKey = PreviewKey.GlobalKey;
             action_module.PreviewKey = new PreviewKey(action_module);
             action_module.StartPreview();
         }
@@ -230,7 +224,6 @@ public class BattleManager : Singleton<BattleManager>
                 action_module.PreviewKey = new PreviewKey(action_module);
                 action_module.StartPreview();
                 action_module.StopPreview();
-
                 BattleUIController.DisposeActionHighlights();
             }
         }
@@ -255,21 +248,6 @@ public class BattleManager : Singleton<BattleManager>
                 BattleUIController.DisposeActionHighlights();
             }
         }
-        //else if (action_unit.CompareTag("MonsterUnit"))
-        //{
-        //    if (confirmed.Length > 0)
-        //    {
-        //        ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).RegistorAction(action_module);
-        //        StopActionPreview(action_module);
-
-        //        BattleUIController.ActionPreviewer.InitPreview();
-        //        action_module.GeneratePreview(param);
-        //        action_module.StartPreview();
-        //        action_module.StopPreview();
-
-        //        BattleUIController.DisposeActionHighlights();
-        //    }
-        //}
     }
 
 

@@ -44,7 +44,6 @@ public partial class ActionTurn
             if (turns[i].IsActive)
             {
                 yield return turns[i].ExcuteActionTurn();
-                turns[i].IsActive = false;
             }
         }
     }
@@ -69,6 +68,7 @@ public partial class ActionTurn
         EventManager.GetTheme<BattleRoundTheme>("BattleRoundTheme").GetTopic("RoundStart").Invoke(0);
         yield return CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteEndTurnDeles();
         yield return StartActionTurns(ActionTurnType.EnvironmentAction, ActionTurnType.EnemySpawn);
+        yield return new WaitForSeconds(1f);
         yield return AICalculation();
         yield return StartActionTurns(ActionTurnType.EnemyMove, ActionTurnType.EnemySpawnPreview);
         yield return CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteStartTurnDeles();

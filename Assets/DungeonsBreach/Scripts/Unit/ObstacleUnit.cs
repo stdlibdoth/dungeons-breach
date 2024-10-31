@@ -19,7 +19,15 @@ public class ObstacleUnit : UnitBase
     public override UnitSpawnAction Spawn(IsoGridCoord coord)
     {
         m_damageIndexResolution = (m_damageSprites.Count -1)/(float)m_unitStatus.maxHP;
-        return new UnitSpawnAction();
+        var spawnAction = new UnitSpawnAction();
+        SpawnActionParam param = new SpawnActionParam()
+        {
+            onSpawn = null,
+            enableNotification = true,
+            unit = this,
+        };
+        spawnAction.Build(param);
+        return spawnAction;
     }
 
 }

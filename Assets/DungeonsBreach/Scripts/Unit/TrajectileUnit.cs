@@ -25,13 +25,25 @@ public class TrajectileUnit : UnitBase
 
     }
 
-
     public virtual void SetTargets(IsoGridCoord[] targets)
     {
         m_targets = new IsoGridCoord[targets.Length];
         targets.CopyTo(m_targets, 0);
     }
 
+
+    public override UnitSpawnAction Spawn(IsoGridCoord coord)
+    {
+        var action = new UnitSpawnAction();
+        var param = new SpawnActionParam
+        {
+            onSpawn = null,
+            unit = this,
+            enableNotification = true,
+        };
+        action.Build(param);
+        return action;
+    }
 
     public override UnitDamageAction Damage(ActionTileInfo attack_info)
     {

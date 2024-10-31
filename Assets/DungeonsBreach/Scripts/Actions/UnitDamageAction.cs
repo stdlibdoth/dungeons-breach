@@ -180,7 +180,6 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
         }
         m_damagePreviewCache.Clear();
 
-        //m_damageActionParam.unit.PathAgent.StopMovePreview();
         var previewKey = new PreviewKey(m_damageActionParam.unit.PathAgent);
         MoveAction.StopPreview(previewKey);
     }

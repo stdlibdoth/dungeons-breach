@@ -163,7 +163,7 @@ public class UnitAIAgent : MonoBehaviour,IAction
         var targets = action_module.ConfirmActionTargets();
         action_module.PreviewKey = PreviewKey.GlobalKey;
         var actionTileInfo = action_module.StartPreview();
-        Debug.Log(targets[0] + "   " + actionTileInfo.Length);
+        //Debug.Log(targets[0] + "   " + actionTileInfo.Length);
         action_module.StopPreview();
         BattleUIController.ActionPreviewer.ClearPreview(PreviewKey.GlobalKey);
         var actionData = new ActionData

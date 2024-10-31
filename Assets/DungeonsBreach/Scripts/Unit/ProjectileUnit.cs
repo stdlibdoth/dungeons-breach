@@ -34,6 +34,20 @@ public class ProjectileUnit : UnitBase
     }
 
 
+    public override UnitSpawnAction Spawn(IsoGridCoord coord)
+    {
+        var action = new UnitSpawnAction();
+        var param = new SpawnActionParam
+        {
+            onSpawn = null,
+            unit = this,
+            enableNotification = true,
+        };
+        action.Build(param);
+        return action;
+    }
+
+
     public IEnumerator StartProjectile()
     {
         base.SpawnUnit();

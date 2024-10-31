@@ -70,32 +70,4 @@ public class LevelManager : Singleton<LevelManager>
     {
         GetSingleton().m_units.Remove(unit);
     }
-
-
-    //public static void SpawnUnits()
-    //{
-    //    var seed = (uint)DateTime.Now.Ticks;
-    //    var singleton = GetSingleton();
-    //    Debug.Log(seed);
-    //    var range = singleton.m_enemyUnitPrefabs.Count;
-    //    if(range>0)
-    //    {
-    //        for (int i = 0; i < 3; i++)
-    //        {
-    //            Random rand = new Random(seed);
-    //            var index = rand.NextInt(range);
-    //            var enemy = Instantiate(singleton.m_enemyUnitPrefabs[index]);
-    //            GetSingleton().m_units.Add(enemy);
-    //        }
-    //    }
-
-    //    foreach (var prefab in singleton.m_playerUnitPrefabs)
-    //    {
-    //        var unit = Instantiate(prefab);
-    //        unit.gameObject.transform.position = Vector3.zero;
-    //        GetSingleton().m_units.Add(unit);
-    //    }
-    //}
-
-
 }
