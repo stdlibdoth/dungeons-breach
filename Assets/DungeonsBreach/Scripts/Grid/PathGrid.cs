@@ -70,7 +70,7 @@ public class PathGrid : IsoGrid
                 return i;
             }
         }
-        return int.MaxValue;
+        return GridManager.ActiveTileGrid.Dimension.x;
     }
 }
 

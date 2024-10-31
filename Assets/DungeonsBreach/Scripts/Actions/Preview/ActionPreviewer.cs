@@ -49,7 +49,9 @@ public class ActionPreviewer : MonoBehaviour
     {
         if(!m_initialized)
             return;
-        if(!m_highlighters.ContainsKey(key))
+        if (PreviewKey.IsNull(key))
+            key = PreviewKey.GlobalKey;
+        if (!m_highlighters.ContainsKey(key))
             return;
         
         foreach (var item in m_highlighters[key])

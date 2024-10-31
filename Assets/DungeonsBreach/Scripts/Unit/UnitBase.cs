@@ -114,7 +114,6 @@ public class UnitBase : MonoBehaviour
 
     private void OnModuleExecute(ActionModule action_module)
     {
-        Debug.Log(action_module);
         if(m_actionModules.Contains(action_module))
         {
             m_startCoord = m_pathAgent.Coordinate;

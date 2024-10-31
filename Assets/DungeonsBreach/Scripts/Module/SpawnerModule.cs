@@ -31,7 +31,7 @@ public class SpawnerModule : ActionModule
                 yield return unit.Damage(info).ExcuteAction();
                 yield return new WaitForSeconds(0.3f);
             }
-            ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemySpawn).RegistorAdhocAction(this);
+            ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemySpawn).RegistorAction(this);
         }
         else
         {
@@ -46,7 +46,7 @@ public class SpawnerModule : ActionModule
 
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)
     {
-        m_previewKey = new PreviewKey(this);
+        PreviewKey = new PreviewKey(this);
         m_actionParam = data;
         return this;
     }

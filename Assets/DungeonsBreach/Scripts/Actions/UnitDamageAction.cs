@@ -164,7 +164,6 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 //preview unit shift position
                 var moveAction = unit.Move(attackInfo.pushType, targetTile, true, false);
                 actionTileInfo.AddRange(moveAction.StartPreview());
-                //unit.PathAgent.StartMovePreview(targetTile);
             }
         }
         return actionTileInfo.ToArray();
@@ -179,9 +178,11 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
             item.m_animationSeq.Kill();
         }
         m_damagePreviewCache.Clear();
-
-        var previewKey = new PreviewKey(m_damageActionParam.unit.PathAgent);
-        MoveAction.StopPreview(previewKey);
+        if (m_damageActionParam.attackInfo.pushDist > 0)
+        {
+            var previewKey = new PreviewKey(m_damageActionParam.unit.PathAgent);
+            MoveAction.StopPreview(previewKey);
+        }
     }
 
     #endregion
