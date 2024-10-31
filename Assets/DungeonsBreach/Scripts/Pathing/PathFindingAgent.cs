@@ -23,6 +23,7 @@ public class PathFindingAgent : MonoBehaviour
     private IsoGridCoord m_coord;
     private IsoGridCoord m_originCoord;
 
+
     private bool m_isMoving;
     private bool m_isPreviewing;
     private bool m_showPreviewVisual;
@@ -70,13 +71,6 @@ public class PathFindingAgent : MonoBehaviour
         get { return m_coord; }
     }
 
-    public PathFindingAgent(PathFindingMask intrinsic, PathFindingMask blocking)
-    {
-        m_intrinsicMask = intrinsic;
-        m_blockingMask = blocking;
-    }
-
-
 
     private void Awake()
     {
@@ -119,8 +113,6 @@ public class PathFindingAgent : MonoBehaviour
         PathFindingMask mask = m_blockingMask | m_fallingMask;
         return IsoGridPathFinding.FindRange(m_coord, range, grid, mask);
     }
-
-
 
     public IEnumerator MoveAgent(LocamotionType locamotion_type, IsoGridCoord target)
     {

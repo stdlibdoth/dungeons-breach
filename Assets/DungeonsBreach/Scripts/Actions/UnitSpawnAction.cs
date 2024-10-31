@@ -15,13 +15,14 @@ public class UnitSpawnAction : IAction
 
     public virtual IEnumerator ExcuteAction()
     {
-        if(m_param.onSpawn!= null)
-            yield return m_param.onSpawn.Invoke();
-
         if (m_param.enableNotification)
         {
             EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitSpawn").Invoke(m_param.unit);
         }
+
+        if(m_param.onSpawn!= null)
+            yield return m_param.onSpawn.Invoke();
+
         yield return null;
     }
 

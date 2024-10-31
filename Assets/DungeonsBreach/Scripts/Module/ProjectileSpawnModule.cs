@@ -81,6 +81,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
             spawn.SetDirection(dir);
             yield return pUnit.StartProjectile();
         }
+        EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme").GetTopic("OnModuleExecute").Invoke(this);
     }
 
 

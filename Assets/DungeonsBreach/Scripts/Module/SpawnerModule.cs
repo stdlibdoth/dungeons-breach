@@ -31,7 +31,7 @@ public class SpawnerModule : ActionModule
                 yield return unit.Damage(info).ExcuteAction();
                 yield return new WaitForSeconds(0.3f);
             }
-            ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemySpawn).RegistorAction(this);
+            ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemySpawn).RegistorAdhocAction(this);
         }
         else
         {

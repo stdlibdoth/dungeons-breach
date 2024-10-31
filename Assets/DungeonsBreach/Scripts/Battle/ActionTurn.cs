@@ -16,6 +16,7 @@ public partial class ActionTurn
     }
 
     protected List<IAction> m_actions;
+    protected List<IAction> m_adhocActions;
 
     private List<ActionTurnDelegate> m_turnStartDeles = new List<ActionTurnDelegate>();
     private List<ActionTurnDelegate> m_turnEndDeles = new List<ActionTurnDelegate>();
@@ -26,6 +27,7 @@ public partial class ActionTurn
     {
         m_type = type;
         m_actions = new List<IAction>();
+        m_adhocActions = new List<IAction>();
     }
 
 
@@ -52,6 +54,11 @@ public partial class ActionTurn
     public void RegistorAction(IAction action)
     {
         m_actions.Add(action);
+    }
+
+    public void RegistorAdhocAction(IAction action)
+    {
+        m_adhocActions.Add(action);
     }
 
     public void CancelAction(IAction action)
@@ -144,15 +151,16 @@ public partial class ActionTurn
             yield return item.Invoke(this);
         }
 
-        var actions = new List<IAction>(m_actions);
-        actions.Sort((a, b) => new ActionComparer().Compare(a, b));
-        for (int i = 0; i < actions.Count; i++)
+        m_actions.Sort((a, b) => new ActionComparer().Compare(a, b));
+        for (int i = 0; i < m_actions.Count; i++)
         {
-            Debug.Log("-----------------" + actions[i] + "'s action begin---------------");
-            yield return actions[i].ExcuteAction();
-            m_actions.Remove(actions[i]);
+            Debug.Log("-----------------" + m_actions[i] + "'s action begin---------------");
+            yield return m_actions[i].ExcuteAction();
         }
 
+        m_actions = new List<IAction>();
+        m_actions.AddRange(m_adhocActions);
+        m_adhocActions = new List<IAction>();
         foreach (var item in m_turnEndDeles)
         {
             yield return item.Invoke(this);

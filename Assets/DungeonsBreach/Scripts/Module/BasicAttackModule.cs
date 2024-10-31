@@ -54,6 +54,7 @@ public class BasicAttackModule : ActionModule
                 }
             }
         }
+        EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme").GetTopic("OnModuleExecute").Invoke(this);
     }
 
     private IEnumerator PlayAnimation(UnitBase unit)

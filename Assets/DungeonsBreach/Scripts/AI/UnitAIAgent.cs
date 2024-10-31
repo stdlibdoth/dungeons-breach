@@ -75,9 +75,13 @@ public class UnitAIAgent : MonoBehaviour,IAction
                 {
                     var unit = units[info.relativeCoord];
                     if (unit.CompareTag("PlayerUnit"))
+                        score += (info.value * 2);
+                    else if (unit.CompareTag("HealthUnit"))
+                        score += (info.value * 4);
+                    else if (unit.CompareTag("ObstacleUnit"))
                         score += info.value;
                     else if (unit.CompareTag("MonsterUnit"))
-                        score -= info.value;
+                        score -= info.value * 2;
                 }
             }
             if(score > maxScore)

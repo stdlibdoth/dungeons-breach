@@ -44,6 +44,7 @@ public class TrajectileSpawnModule : ActionModule
         spawn.SetTargets(m_confirmedActionRange);
         spawn.SetDirection(dir);
         yield return spawn.StartTrajectile();
+        EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme").GetTopic("OnModuleExecute").Invoke(this);
     }
 
 

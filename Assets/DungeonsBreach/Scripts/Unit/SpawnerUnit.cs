@@ -16,6 +16,7 @@ public class SpawnerUnit : UnitBase
         m_unitStatus.moves = m_unitStatus.moveRange;
         var action = Spawn(m_pathAgent.Coordinate);
         StartCoroutine(action.ExcuteAction());
+        ResetActions();
     }
 
     public override UnitSpawnAction Spawn(IsoGridCoord coord)

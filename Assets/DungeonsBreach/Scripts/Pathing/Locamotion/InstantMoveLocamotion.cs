@@ -12,7 +12,6 @@ public class InstantMoveLocamotion : LocamotionBase
         if (Transform == null)
             yield break;
 
-        Direction = (end - start).CoordToDirection();
         m_animator.SetTrigger("Idle");
         m_animator.SetFloat("DirBlend", (int)Direction);
         var grid = GridManager.ActivePathGrid;

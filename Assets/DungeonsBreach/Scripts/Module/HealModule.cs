@@ -40,6 +40,7 @@ public class HealModule : BasicAttackModule
                 }
             }
         }
+        EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme").GetTopic("OnModuleExecute").Invoke(this);
         yield return null;
     }
     #endregion

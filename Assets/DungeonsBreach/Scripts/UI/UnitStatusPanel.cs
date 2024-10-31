@@ -58,9 +58,9 @@ public class UnitStatusPanel : MonoBehaviour
             var moduleUIData = m_moduleUIDataSO.GetData(module.ModuleName);
             toggle.Init(moduleUIData.icon);
             m_modules.Add(actionModule.ModuleName, actionModule);
+            toggle.Toggle.enabled = true;
             if (unit.CompareTag("PlayerUnit"))
             {
-                toggle.Toggle.enabled = true;
                 toggle.Toggle.interactable = actionModule.IsAvailable;
                 toggle.Toggle.SetIsOnWithoutNotify(actionModule.Actived & actionModule.IsAvailable);
                 toggle.Toggle.onValueChanged.AddListener(OnAnyToggle);

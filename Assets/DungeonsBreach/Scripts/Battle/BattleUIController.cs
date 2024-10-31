@@ -44,7 +44,7 @@ public class BattleUIController : Singleton<BattleUIController>
     private void Start()
     {
         m_endPlayerTurnBtn.onClick.AddListener(() => StartCoroutine(OnEndTurnButtonClick()));
-        m_undoMovementBtn.onClick.AddListener(UndoMovementBtnPressed);
+        m_undoMovementBtn.onClick.AddListener(UndoMovesBtnPressed);
         m_resetTurnBtn.onClick.AddListener(ResetBtnPressed);
         m_turnTheme.GetTopic("ActionTurnStart").AddListener(OnActionTurnStart);
         m_turnTheme.GetTopic("ActionTurnEnd").AddListener(OnActionTurnEnd);
@@ -140,9 +140,17 @@ public class BattleUIController : Singleton<BattleUIController>
 
 
     #region Turn Control
-    private void UndoMovementBtnPressed()
+    private void UndoMovesBtnPressed()
     {
-
+        BattleManager.Deselect();
+        var units = LevelManager.Units;
+        foreach (var unit in units)
+        {
+            if(unit.CompareTag("PlayerUnit"))
+            {
+                unit.UndoMoves();
+            }
+        }
     }
 
 

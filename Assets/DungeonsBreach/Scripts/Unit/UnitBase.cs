@@ -37,6 +37,7 @@ public class UnitBase : MonoBehaviour
 
     protected List<ActionModule> m_actionModules = new List<ActionModule>();
     protected Sequence m_damangePreviewDOTweeen;
+    protected IsoGridCoord m_startCoord;
     protected bool m_isDead;
 
     public bool IsDead {  get { return m_isDead; } }
@@ -70,6 +71,9 @@ public class UnitBase : MonoBehaviour
 
     protected virtual void Start()
     {
+        EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme")
+            .GetTopic("OnModuleExecute")
+            .AddListener(OnModuleExecute);
         SpawnUnit();
     }
 
@@ -77,6 +81,7 @@ public class UnitBase : MonoBehaviour
     {
         //m_animator.enabled = false;
         m_pathAgent.Init();
+        m_startCoord = m_pathAgent.Coordinate;
         m_unitStatus = PreviewAppliedModuleStatus();
         m_unitStatus.hp = m_unitStatus.maxHP;
         m_unitStatus.moves = m_unitStatus.moveRange;
@@ -85,6 +90,7 @@ public class UnitBase : MonoBehaviour
             m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
         RefreshActionModules();
         StartCoroutine(Spawn(m_pathAgent.Coordinate).ExcuteAction());
+        ResetActions();
     }
 
     public virtual bool GenerateActionAnimationData(string animation_state, out AnimationStateData data)
@@ -105,6 +111,15 @@ public class UnitBase : MonoBehaviour
 
 
     #region Modules
+
+    private void OnModuleExecute(ActionModule action_module)
+    {
+        Debug.Log(action_module);
+        if(m_actionModules.Contains(action_module))
+        {
+            m_startCoord = m_pathAgent.Coordinate;
+        }
+    }
 
     protected virtual void RefreshActionModules()
     {
@@ -203,9 +218,20 @@ public class UnitBase : MonoBehaviour
         return initial;
     }
 
+    public void UndoMoves()
+    {
+        if (m_startCoord != m_pathAgent.Coordinate)
+        {
+            m_unitStatus.moves = m_unitStatus.moveRange;
+            StartCoroutine(m_pathAgent.MoveStraight(LocamotionType.Instant, m_startCoord));
+        }
+    }
+
+
     public void ResetActions()
     {
         m_unitStatus.moves = m_unitStatus.moveRange;
+        m_startCoord = m_pathAgent.Coordinate;
         foreach (var item in m_actionModules)
         {
             item.IsAvailable = true;
@@ -282,7 +308,12 @@ public class UnitBase : MonoBehaviour
             ignorePathing = ignore_pathing,
         };
         if (use_move_point)
-            m_pathAgent.OnReachingTarget.AddListener(() => m_unitStatus.moves = 0);
+        {
+            m_pathAgent.OnReachingTarget.AddListener(() =>
+            {
+                m_unitStatus.moves = 0;
+            });
+        }
         m_pathAgent.OnReachingTarget.AddListener(()=>{
             ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
         });
@@ -297,6 +328,9 @@ public class UnitBase : MonoBehaviour
             return;
 
         m_isDead = true;
+        EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme")
+        .GetTopic("OnModuleExecute")
+        .RemoveListener(OnModuleExecute);
         UnitDieAction dieAction = new UnitDieAction();
         dieAction.Build(new UnitDieActionParam{
             unit = this,

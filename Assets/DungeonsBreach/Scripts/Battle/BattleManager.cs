@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using System;
-using Unity.VisualScripting;
 
 
 public class BattleManager : Singleton<BattleManager>
 {
     [SerializeField] private BattleRoundTheme m_roundTheme;
+    [SerializeField] private ActionModuleTheme m_actionModuleTheme;
 
     private DefaultInputActions m_inputActions;
     private IsoGridCoord m_pointerGridCoord;
@@ -49,7 +49,6 @@ public class BattleManager : Singleton<BattleManager>
                 }
                 else if (value == null)
                 {
-                    //GetSingleton().m_selectedUnit.PathAgent.StopMovePreview();
                     var previewKey = new PreviewKey(GetSingleton().m_selectedUnit.PathAgent);
                     MoveAction.StopPreview(previewKey);
 
@@ -90,6 +89,12 @@ public class BattleManager : Singleton<BattleManager>
 
 
     #region  public methods
+
+    public static void Deselect()
+    {
+        SelectedUnit = null;
+    }
+
     public static IEnumerator ResetUnits()
     {
         foreach (var unit in LevelManager.Units)
@@ -151,6 +156,8 @@ public class BattleManager : Singleton<BattleManager>
                     moveAction.StartPreview();
                     ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
                     ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).CheckPreview();
+ //                   ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemySpawn).UpdateActionPreview();
+                    //ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemySpawn).CheckPreview();
                     BattleUIController.CursorController.SetCursor("MoveAvailable");
                 }
                 else
@@ -232,7 +239,6 @@ public class BattleManager : Singleton<BattleManager>
 
     private void ModuleActionHandler(ActionModule action_module, UnitBase action_unit, IsoGridCoord[] input_coords)
     {
-        Debug.Log("Module Action: " + action_module.ModuleName);
         var param = new ActionModuleParam(action_unit, input_coords, false);
         action_module.Build(param);
         var confirmed = action_module.ConfirmActionTargets();

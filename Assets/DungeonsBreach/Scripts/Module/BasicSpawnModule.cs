@@ -39,6 +39,7 @@ public class BasicSpawnModule : ActionModule
             var spawn = Instantiate(m_spawnUnit, pos, Quaternion.identity);
             spawn.SetDirection(dir);
         }
+        EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme").GetTopic("OnModuleExecute").Invoke(this);
         yield return null;
     }
     #endregion
