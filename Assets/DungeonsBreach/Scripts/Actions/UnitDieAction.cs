@@ -19,13 +19,23 @@ public class UnitDieAction : IAction
         var unit = m_param.unit;
         var tileMask = GridManager.ActivePathGrid.PathingMaskSingleTile(unit.PathAgent.Coordinate);
         GridManager.ActivePathGrid.UpdatePathFindingMask(unit.PathAgent.Coordinate, tileMask ^ unit.PathAgent.IntrinsicMask);
-        //gameObject.SetActive(false);
         //m_animator.SetTrigger("Die");
         EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitDie").Invoke(unit);
         yield return new WaitForSeconds(m_param.delay);
+        RemoveModuleAction();
         //GameObject.Destroy(unit.gameObject);
         unit.gameObject.SetActive(false);
         yield return null;
+    }
+
+
+    private void RemoveModuleAction()
+    {
+        var modules = m_param.unit.ActionModules();
+        foreach (var module in modules)
+        {
+            ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).CancelAction(module);
+        }
     }
 }
 
