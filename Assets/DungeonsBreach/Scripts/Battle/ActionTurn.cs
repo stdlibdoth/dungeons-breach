@@ -154,7 +154,6 @@ public partial class ActionTurn
             m_actions.Remove(actions[i]);
         }
 
-        m_actions = new List<IAction>();
         foreach (var item in m_turnEndDeles)
         {
             yield return item.Invoke(this);

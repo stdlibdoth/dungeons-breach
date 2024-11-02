@@ -35,7 +35,7 @@ public class HealModule : BasicAttackModule
                 foreach (var hit in hits)
                 {
                     UnitStatus delta = UnitStatus.Empty;
-                    delta.hp = attack.value;
+                    delta.hp = -attack.value;
                     hit.UpdateStatus(delta);
                 }
             }

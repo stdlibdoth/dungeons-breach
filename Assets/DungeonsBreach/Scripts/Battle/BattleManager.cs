@@ -139,7 +139,6 @@ public class BattleManager : Singleton<BattleManager>
 
         var previewKey = new PreviewKey(SelectedUnit.PathAgent);
         MoveAction.StopPreview(previewKey);
-
         //move range preview
         if (SelectedUnit.MovesAvalaible > 0 && !moduleActived && !SelectedUnit.PathAgent.IsMoving)
         {
@@ -156,7 +155,6 @@ public class BattleManager : Singleton<BattleManager>
                     moveAction.StartPreview();
                     ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).UpdateActionPreview();
                     ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemyAttack).CheckPreview();
-                    ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemySpawn).CheckPreview();
                     BattleUIController.CursorController.SetCursor("MoveAvailable");
                 }
                 else

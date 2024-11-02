@@ -213,7 +213,7 @@ MonoBehaviour:
     - pushDir: 0
       pushDist: 0
       pushType: 2
-      value: 1
+      value: -1
       relativeCoord:
         x: 0
         y: 0
@@ -7005,6 +7005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_roundTheme: {fileID: 374745679}
+  m_actionModuleTheme: {fileID: 0}
 --- !u!1 &692614065
 GameObject:
   m_ObjectHideFlags: 0
@@ -11809,6 +11810,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 605565270645940484, guid: 630872da8a737cb48afc201b482e85ea, type: 3}
+      propertyPath: m_profile.data.Array.data[0].value
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 5267835391147452323, guid: 630872da8a737cb48afc201b482e85ea, type: 3}
       propertyPath: m_Name
       value: SwordMan_unit
