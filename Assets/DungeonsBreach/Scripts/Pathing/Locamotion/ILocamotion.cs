@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
+using Cysharp.Threading.Tasks;
 
 
 public enum LocamotionType
@@ -19,7 +20,7 @@ public interface ILocamotion
     public Transform Transform {  get; set; }
     public LocamotionType Type { get; set; }
 
-    public IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0);
+    public UniTask StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0);
 
-    public IEnumerator StartLocamotion(float3 end, float speed_override = 0);
+    public UniTask StartLocamotion(float3 end, float speed_override = 0);
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.InputSystem;
+using Cysharp.Threading.Tasks;
 
 public class TurnInfoPanel : MonoBehaviour
 {
@@ -32,12 +32,12 @@ public class TurnInfoPanel : MonoBehaviour
         }
     }
 
-    private IEnumerator ShowTitle(ActionTurn turn)
+    private async UniTask ShowTitle(ActionTurn turn)
     {
         m_text.text = ActionTurnName.names[(int)turn.Type];
         m_titleGO.gameObject.SetActive(true);
         
-        yield return new WaitForSeconds(m_titleFadeDelay);
+        await UniTask.WaitForSeconds(m_titleFadeDelay);
         
         m_titleGO.gameObject.SetActive(false);
     }

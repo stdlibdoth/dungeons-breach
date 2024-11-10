@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 
 public class BattleUIController : Singleton<BattleUIController>
 {
@@ -43,7 +44,7 @@ public class BattleUIController : Singleton<BattleUIController>
 
     private void Start()
     {
-        m_endPlayerTurnBtn.onClick.AddListener(() => StartCoroutine(OnEndTurnButtonClick()));
+        m_endPlayerTurnBtn.onClick.AddListener(async () => await OnEndTurnButtonClick());
         m_undoMovementBtn.onClick.AddListener(UndoMovesBtnPressed);
         m_resetTurnBtn.onClick.AddListener(ResetBtnPressed);
         m_turnTheme.GetTopic("ActionTurnStart").AddListener(OnActionTurnStart);
@@ -51,12 +52,12 @@ public class BattleUIController : Singleton<BattleUIController>
         m_unitTheme.GetTopic("UnitDie").AddListener(OnUnitDie);
     }
 
-    private IEnumerator OnEndTurnButtonClick()
+    private async UniTask OnEndTurnButtonClick()
     {
         m_endPlayerTurnBtn.interactable = false;
-        yield return ActionTurn.StartNextTurn();
+        await ActionTurn.StartNextTurn();
         m_endPlayerTurnBtn.interactable = true;
-        yield return BattleManager.ResetUnits();
+        await BattleManager.ResetUnits();
     }
 
     #region Range Highlights

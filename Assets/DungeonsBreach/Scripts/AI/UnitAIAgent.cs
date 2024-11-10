@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
+using Cysharp.Threading.Tasks;
 
 public class UnitAIAgent : MonoBehaviour,IAction
 {
@@ -61,7 +62,7 @@ public class UnitAIAgent : MonoBehaviour,IAction
     }
 
 
-    public IEnumerator ExcuteAction()
+    public async UniTask ExcuteAction()
     {
         var units = LevelManager.UnitCoordinates;
         int maxScore = int.MinValue;
@@ -117,23 +118,23 @@ public class UnitAIAgent : MonoBehaviour,IAction
                 }
             }
             var moveAction = m_unit.Move(LocamotionType.Default, dest, false, true);
-            yield return moveAction.ExcuteAction();
+            await moveAction.ExcuteAction();
         }
 
         //if max score is positive, unit will move to the location and action will be registored.
         else
         {
-            yield return UnitAction(selected);
+            await UnitAction(selected);
         }
     }
 
-    private IEnumerator UnitAction(ActionData action_data)
+    private async UniTask UnitAction(ActionData action_data)
     {
         var moveAction = m_unit.Move(LocamotionType.Default, action_data.unitCoord, false, true);
-        yield return moveAction.ExcuteAction();
+        await moveAction.ExcuteAction();
         m_unit.SetDirection(action_data.unitDirection);
         RegistorAction(action_data.actionModule, new IsoGridCoord[] { action_data.actionTarget });
-        yield return null;
+        await UniTask.Yield();
     }
 
 

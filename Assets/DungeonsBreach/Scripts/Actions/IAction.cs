@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using Cysharp.Threading.Tasks;
 
 [System.Serializable]
 public struct ActionPriority
@@ -64,7 +64,7 @@ public interface IAction
 {
     public ActionPriority Priority {  get; set; }
     public IAction Build<T>(T param) where T : IActionParam;
-    public IEnumerator ExcuteAction();
+    public UniTask ExcuteAction();
 }
 
 public interface IActionParam

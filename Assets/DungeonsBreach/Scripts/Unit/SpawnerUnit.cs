@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class SpawnerUnit : UnitBase
 {
@@ -8,14 +9,14 @@ public class SpawnerUnit : UnitBase
     [Header("Spawner Module")]
     [SerializeField] private SpawnerModule m_spawnerMoudle;
 
-    protected override void SpawnUnit()
+    protected override async void SpawnUnit()
     {
         m_pathAgent.Init();
         m_unitStatus = PreviewAppliedModuleStatus();
         m_unitStatus.hp = m_unitStatus.maxHP;
         m_unitStatus.moves = m_unitStatus.moveRange;
         var action = Spawn(m_pathAgent.Coordinate);
-        StartCoroutine(action.ExcuteAction());
+        await action.ExcuteAction();
         ResetActions();
     }
 
@@ -32,9 +33,9 @@ public class SpawnerUnit : UnitBase
         return action;
     }
 
-    private IEnumerator OnSpawn()
+    private async UniTask OnSpawn()
     {
-        yield return UnitSpawnAnimation();
+        await UnitSpawnAnimation();
         ActionModuleParam param = new ActionModuleParam(this, new IsoGridCoord[] { IsoGridCoord.Zero }, true);
         m_spawnerMoudle.Build(param);
         ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemySpawn).RegistorAction(m_spawnerMoudle);

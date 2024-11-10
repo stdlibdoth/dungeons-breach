@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using System;
+using Cysharp.Threading.Tasks;
 
 
 public class BattleManager : Singleton<BattleManager>
@@ -75,15 +76,22 @@ public class BattleManager : Singleton<BattleManager>
         m_roundTheme.GetTopic("RoundStart").AddListener(OnRoundStart);
     }
 
-    private IEnumerator Start()
+    private async void Start()
+    {
+        await AsyncStart();
+    }
+
+
+    private async UniTask AsyncStart()
     {
         m_inputActions.UI.Enable();
         m_inputActions.UI.Point.performed += OnPointerPoint;
         m_inputActions.UI.Click.performed += OnClick;
         m_inputActions.UI.RightClick.performed += OnRightClick;
-        yield return new WaitForEndOfFrame();
-        yield return StartCoroutine(ResetUnits());
+        await UniTask.WaitForEndOfFrame(this);
+        await ResetUnits();
     }
+
 
     #endregion
 
@@ -95,7 +103,7 @@ public class BattleManager : Singleton<BattleManager>
         SelectedUnit = null;
     }
 
-    public static IEnumerator ResetUnits()
+    public static async UniTask ResetUnits()
     {
         foreach (var unit in LevelManager.Units)
         {
@@ -103,7 +111,7 @@ public class BattleManager : Singleton<BattleManager>
             unit.UpdateStatus(status);
             unit.ResetActions();
         }
-        yield return null;
+        await UniTask.Yield();
     }
 
 
@@ -246,7 +254,7 @@ public class BattleManager : Singleton<BattleManager>
                 action_module.Actived = false;
                 action_module.IsAvailable = false;
                 action_module.GeneratePreview(param);
-                StartCoroutine(action_module.ExcuteAction());
+                action_module.ExcuteAction();
                 StopActionPreview(action_module);
                 BattleUIController.DisposeActionHighlights();
             }
@@ -320,7 +328,7 @@ public class BattleManager : Singleton<BattleManager>
             {
                 BattleUIController.DisposeMoveHighlights();
                 var action = SelectedUnit.Move(LocamotionType.Default, m_pointerGridCoord,false);
-                StartCoroutine(action.ExcuteAction());
+                _ = action.ExcuteAction();
                 BattleUIController.StartPathTrailing(SelectedUnit);
                 BattleUIController.CursorController.ResetCursor();
             }

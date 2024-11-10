@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 
 [System.Serializable]
@@ -77,7 +78,7 @@ public class UnitBase : MonoBehaviour
         SpawnUnit();
     }
 
-    protected virtual void SpawnUnit()
+    protected virtual async void SpawnUnit()
     {
         //m_animator.enabled = false;
         m_pathAgent.Init();
@@ -89,7 +90,7 @@ public class UnitBase : MonoBehaviour
         if(m_animator!= null)
             m_animator.SetFloat("DirBlend", (int)m_pathAgent.Direction);
         RefreshActionModules();
-        StartCoroutine(Spawn(m_pathAgent.Coordinate).ExcuteAction());
+        await Spawn(m_pathAgent.Coordinate).ExcuteAction();
         ResetActions();
     }
 
@@ -217,12 +218,12 @@ public class UnitBase : MonoBehaviour
         return initial;
     }
 
-    public void UndoMoves()
+    public async void UndoMoves()
     {
         if (m_startCoord != m_pathAgent.Coordinate)
         {
             m_unitStatus.moves = m_unitStatus.moveRange;
-            StartCoroutine(m_pathAgent.MoveStraight(LocamotionType.Instant, m_startCoord));
+            await m_pathAgent.MoveStraight(LocamotionType.Instant, m_startCoord);
         }
     }
 
@@ -360,7 +361,7 @@ public class UnitBase : MonoBehaviour
     }
 
 
-    protected IEnumerator UnitSpawnAnimation()
+    protected async UniTask UnitSpawnAnimation()
     {
         if(m_spriteRenderer!= null)
         {
@@ -369,17 +370,17 @@ public class UnitBase : MonoBehaviour
             m_spriteRenderer.color = color;
             m_spriteRenderer.DOFade(1,1-0.1f);
         }
-        yield return new WaitForSeconds(1);
+        await UniTask.WaitForSeconds(1f);
         if(m_animator !=null)
             m_animator.enabled = true;
     }
 
-    protected IEnumerator UnitDamangeAnimation()
+    protected async UniTask UnitDamangeAnimation()
     {
         var sequence = DOTween.Sequence();
         sequence.Append(m_spriteRenderer.DOColor(Color.red,0.1f))
         .Append(m_spriteRenderer.DOColor(Color.white,0.1f));
-        yield return null;
+        await UniTask.Yield();
     }
 
     #endregion

@@ -2,26 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class InstantMoveLocamotion : LocamotionBase
 {
     [SerializeField] private Animator m_animator;
 
-    public override IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
+    public override async UniTask StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
     {
         if (Transform == null)
-            yield break;
+            return;
 
         m_animator.SetTrigger("Idle");
         m_animator.SetFloat("DirBlend", (int)Direction);
         var grid = GridManager.ActivePathGrid;
         Transform.position = end.ToWorldPosition(grid);
-        yield return null;
+        await UniTask.Yield();
     }
 
-    public override IEnumerator StartLocamotion(float3 end,float speed_override)
+    public override async UniTask StartLocamotion(float3 end,float speed_override)
     {
         Transform.position = end;
-        yield return null;
+        await UniTask.Yield();
     }
 }

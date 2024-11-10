@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.Events;
+using Cysharp.Threading.Tasks;
 
 [System.Serializable]
 
@@ -114,10 +115,10 @@ public class PathFindingAgent : MonoBehaviour
         return IsoGridPathFinding.FindRange(m_coord, range, grid, mask);
     }
 
-    public IEnumerator MoveAgent(LocamotionType locamotion_type, IsoGridCoord target)
+    public async UniTask MoveAgent(LocamotionType locamotion_type, IsoGridCoord target)
     {
         if(target == m_coord)
-            yield break;
+            return;
         TryGetLocamotion(locamotion_type,out var locamotion);
         var grid = GridManager.ActivePathGrid;
         var tileMask = grid.PathingMaskSingleTile(m_coord);
@@ -138,7 +139,7 @@ public class PathFindingAgent : MonoBehaviour
             for (int i = 0; i < waypoints.Count; i++)
             {
                 var moveTarget = waypoints[i];
-                yield return locamotion.StartLocamotion(m_coord, moveTarget);
+                await locamotion.StartLocamotion(m_coord, moveTarget);
                 m_coord = moveTarget;
                 m_originCoord = m_coord;
             }
@@ -189,31 +190,31 @@ public class PathFindingAgent : MonoBehaviour
     }
 
     //animation only , not changing the mask
-    public IEnumerator AnimateAgent(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance)
+    public async UniTask AnimateAgent(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance)
     {
         if (target == m_coord)
-            yield break;
+            return;
 
         TryGetLocamotion(locamotion_type, out var locamotion);
-        yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target, stop_distance));
+        await locamotion.StartLocamotion(m_coord, target, stop_distance);
     }
 
     //animation only , not changing the mask
-    public IEnumerator AnimateAgent(LocamotionType locamotion_type, Vector3 target, float speed_override = 0)
+    public async UniTask AnimateAgent(LocamotionType locamotion_type, Vector3 target, float speed_override = 0)
     {
         TryGetLocamotion(locamotion_type, out var locamotion);
-        yield return StartCoroutine(locamotion.StartLocamotion(target, speed_override));
+        await locamotion.StartLocamotion(target, speed_override);
     }
 
     //no path finding
-    public IEnumerator MoveStraight(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance = 0)
+    public async UniTask MoveStraight(LocamotionType locamotion_type, IsoGridCoord target, float stop_distance = 0)
     {
         m_isMoving = true;
         var grid = GridManager.ActivePathGrid;
         var tileMask = grid.PathingMaskSingleTile(m_coord);
         grid.UpdatePathFindingMask(m_coord, tileMask ^ m_intrinsicMask);
         TryGetLocamotion(locamotion_type, out var locamotion);
-        yield return StartCoroutine(locamotion.StartLocamotion(m_coord, target, stop_distance));
+        await locamotion.StartLocamotion(m_coord, target, stop_distance);
         m_coord = target;
         m_originCoord = m_coord;
         tileMask = grid.PathingMaskSingleTile(m_coord);
@@ -222,21 +223,21 @@ public class PathFindingAgent : MonoBehaviour
         m_isMoving = false;
         m_onReachingTarget.Invoke();
         m_onReachingTarget.RemoveAllListeners();
-        yield return null;
+        await UniTask.Yield();
     }
 
     //no path finding, no iso grid snapping
-    public IEnumerator MoveStraight(LocamotionType locamotion_type, Vector3 target,float stop_distance = 0)
+    public async UniTask MoveStraight(LocamotionType locamotion_type, Vector3 target,float stop_distance = 0)
     {
         m_isMoving = true;
         TryGetLocamotion(locamotion_type, out var locamotion);
-        yield return StartCoroutine(locamotion.StartLocamotion(target, stop_distance));
+        await locamotion.StartLocamotion(target, stop_distance);
         m_coord = target.ToIsoCoordinate(GridManager.ActivePathGrid);
         m_originCoord = m_coord;
         Direction = locamotion.Direction;
         m_isMoving= false;
         m_onReachingTarget.Invoke();
         m_onReachingTarget.RemoveAllListeners();
-        yield return null;
+        await UniTask.Yield();
     }
 }

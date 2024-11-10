@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class SpawnerModule : ActionModule
 {
@@ -18,7 +19,7 @@ public class SpawnerModule : ActionModule
         return this;
     }
 
-    public override IEnumerator ExcuteAction()
+    public override async UniTask ExcuteAction()
     {
         var coord = m_actionParam.unit.PathAgent.Coordinate;
 
@@ -28,8 +29,8 @@ public class SpawnerModule : ActionModule
             ActionTileInfo info = ActionTileInfo.Self;
             foreach (var unit in units)
             {
-                yield return unit.Damage(info).ExcuteAction();
-                yield return new WaitForSeconds(0.3f);
+                await unit.Damage(info).ExcuteAction();
+                await UniTask.WaitForSeconds(0.3f);
             }
             ActionTurn.CreateOrGetActionTurn(ActionTurnType.EnemySpawn).RegistorAction(this);
         }
@@ -39,9 +40,9 @@ public class SpawnerModule : ActionModule
             Vector3 position = IsoGridMetrics.ToWorldPosition(coord, GridManager.ActivePathGrid);
             Instantiate(m_spawnUnit[index], position, Quaternion.identity);
             m_actionParam.unit.Die();
-            yield return ActionTurn.ExcuteTempActions();
+            await ActionTurn.ExcuteTempActions();
         }
-        yield return null;
+        await UniTask.Yield();
     }
 
     public override IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data)

@@ -8541,6 +8541,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SpawnerUnit (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 7971757170699100193, guid: ef7922114bda173468fab9878cc18c04, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8917967693879339398, guid: ef7922114bda173468fab9878cc18c04, type: 3}
       propertyPath: m_animator
       value: 
@@ -8767,6 +8771,10 @@ PrefabInstance:
     - target: {fileID: 7971757170699100193, guid: ef7922114bda173468fab9878cc18c04, type: 3}
       propertyPath: m_Name
       value: SpawnerUnit (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7971757170699100193, guid: ef7922114bda173468fab9878cc18c04, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8917967693879339398, guid: ef7922114bda173468fab9878cc18c04, type: 3}
       propertyPath: m_animator
@@ -10517,7 +10525,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1731515872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11443,6 +11451,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SpawnerUnit (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7971757170699100193, guid: ef7922114bda173468fab9878cc18c04, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8917967693879339398, guid: ef7922114bda173468fab9878cc18c04, type: 3}
       propertyPath: m_animator
       value: 
@@ -11862,6 +11874,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SwordMan_unit
       objectReference: {fileID: 0}
+    - target: {fileID: 5267835391147452323, guid: 630872da8a737cb48afc201b482e85ea, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6593437238568872413, guid: 630872da8a737cb48afc201b482e85ea, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.226
@@ -12031,6 +12047,10 @@ PrefabInstance:
     - target: {fileID: 7971757170699100193, guid: ef7922114bda173468fab9878cc18c04, type: 3}
       propertyPath: m_Name
       value: SpawnerUnit
+      objectReference: {fileID: 0}
+    - target: {fileID: 7971757170699100193, guid: ef7922114bda173468fab9878cc18c04, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8917967693879339398, guid: ef7922114bda173468fab9878cc18c04, type: 3}
       propertyPath: m_animator

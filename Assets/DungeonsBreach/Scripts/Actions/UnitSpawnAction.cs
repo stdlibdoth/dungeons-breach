@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+
 
 public class UnitSpawnAction : IAction
 {
@@ -13,7 +15,7 @@ public class UnitSpawnAction : IAction
         return this;
     }
 
-    public virtual IEnumerator ExcuteAction()
+    public virtual async UniTask ExcuteAction()
     {
         if (m_param.enableNotification)
         {
@@ -21,9 +23,9 @@ public class UnitSpawnAction : IAction
         }
 
         if(m_param.onSpawn!= null)
-            yield return m_param.onSpawn.Invoke();
+            await m_param.onSpawn.Invoke();
 
-        yield return null;
+        await UniTask.Yield();
     }
 
 }
@@ -36,4 +38,4 @@ public class SpawnActionParam:IActionParam
 }
 
 
-public delegate IEnumerator CoroutineDelegate();
+public delegate UniTask CoroutineDelegate();

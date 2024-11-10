@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
+using Cysharp.Threading.Tasks;
 
 public class ShiftMoveLocamotion : LocamotionBase
 {
@@ -10,10 +11,10 @@ public class ShiftMoveLocamotion : LocamotionBase
     private float m_distance;
     private float m_stopDistanceTemp;
 
-    private IEnumerator LocamotionMoveCoroutine(float3 end, float stopping_dist = 0)
+    private async UniTask LocamotionMoveCoroutine(float3 end, float stopping_dist = 0)
     {
         if(Transform == null)
-            yield break;
+            return;
         m_distance = math.distance(Transform.position, end);
         m_stopDistanceTemp = stopping_dist == 0 ? m_stopDistance : stopping_dist;
         var dir = ((Vector3)end - Transform.position).normalized;
@@ -22,33 +23,33 @@ public class ShiftMoveLocamotion : LocamotionBase
         {
             Transform.position += dir * m_speed * Time.deltaTime;
             m_distance = math.distance(Transform.position, end);
-            yield return null;
+            await UniTask.Yield();
         }
-        yield return null;
+        await UniTask.Yield();
     }
 
-    public override IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
+    public override async UniTask StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
     {
         var grid = GridManager.ActivePathGrid;
         var endPos = end.ToWorldPosition(grid);
-        StartCoroutine(LocamotionMoveCoroutine(endPos,stopping_dist));
-        yield return new WaitUntil(()=>{
+        await LocamotionMoveCoroutine(endPos,stopping_dist);
+        await UniTask.WaitUntil(()=>{
             return m_distance<m_stopDistanceTemp;
         });
     }
 
-    public override IEnumerator StartLocamotion(float3 end, float speed_override)
+    public override async UniTask StartLocamotion(float3 end, float speed_override)
     {
-        StartCoroutine(LocamotionMoveCoroutineSpeed(end,speed_override));
-        yield return new WaitUntil(()=>{
+        await LocamotionMoveCoroutineSpeed(end, speed_override);
+        await UniTask.WaitUntil(()=>{
             return m_distance<m_stopDistance;
         });
     }
 
-    private IEnumerator LocamotionMoveCoroutineSpeed(float3 end, float speed_override)
+    private async UniTask LocamotionMoveCoroutineSpeed(float3 end, float speed_override)
     {
         if (Transform == null)
-            yield break;
+            return;
         m_distance = math.distance(Transform.position, end);
         var dir = ((Vector3)end - Transform.position).normalized;
         var speed = speed_override == 0 ? m_speed : speed_override;
@@ -56,9 +57,9 @@ public class ShiftMoveLocamotion : LocamotionBase
         {
             Transform.position += dir * speed * Time.deltaTime;
             m_distance = math.distance(Transform.position, end);
-            yield return null;
+            await UniTask.Yield();
         }
-        yield return null;
+        await UniTask.Yield();
     }
 
 }

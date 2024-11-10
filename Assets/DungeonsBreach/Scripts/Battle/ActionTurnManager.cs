@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public partial class ActionTurn
 {
@@ -19,20 +20,16 @@ public partial class ActionTurn
         m_actionTurns = new Dictionary<ActionTurnType, ActionTurn>();
     }
 
-    public static IEnumerator StartActionTurns(ActionTurnType start_type,ActionTurnType end_type)
+    public static async UniTask StartActionTurns(ActionTurnType start_type,ActionTurnType end_type)
     {
         var turns = SortTurns(start_type, end_type);
-        for (int i = 0; i < turns.Length; i++)
-        {
-            Debug.Log(turns[i].Type);
-        }
         if (turns.Length == 0)
-            yield break;
+            return;
 
         var min = turns[0].Type;
         var max = turns[turns.Length -1].Type;
-        if(start_type>max || end_type<min)
-            yield break;
+        if (start_type > max || end_type < min)
+            return;
 
         var startType = start_type < min?min :start_type;
         var endType = end_type < max?end_type :max;
@@ -43,7 +40,7 @@ public partial class ActionTurn
         {
             if (turns[i].IsActive)
             {
-                yield return turns[i].ExcuteActionTurn();
+                await turns[i].ExcuteActionTurn();
             }
         }
     }
@@ -63,22 +60,22 @@ public partial class ActionTurn
     }
 
 
-    public static IEnumerator StartNextTurn()
+    public static async UniTask StartNextTurn()
     {
         EventManager.GetTheme<BattleRoundTheme>("BattleRoundTheme").GetTopic("RoundStart").Invoke(0);
-        yield return CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteEndTurnDeles();
-        yield return StartActionTurns(ActionTurnType.EnvironmentAction, ActionTurnType.EnemySpawn);
-        yield return new WaitForSeconds(1f);
-        yield return AICalculation();
-        yield return StartActionTurns(ActionTurnType.EnemyMove, ActionTurnType.EnemySpawnPreview);
-        yield return CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteStartTurnDeles();
+        await CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteEndTurnDeles();
+        await StartActionTurns(ActionTurnType.EnvironmentAction, ActionTurnType.EnemySpawn);
+        await UniTask.WaitForSeconds(1f);
+        await AICalculation();
+        await StartActionTurns(ActionTurnType.EnemyMove, ActionTurnType.EnemySpawnPreview);
+        await CreateOrGetActionTurn(ActionTurnType.PlayerTurn).ExcuteStartTurnDeles();
     }
 
-    public static IEnumerator ExcuteTempActions()
+    public static async UniTask ExcuteTempActions()
     {
         while (m_tempActions.TryDequeue(out var action))
         {
-            yield return action.ExcuteAction();
+            await action.ExcuteAction();
         }
     }
 
@@ -94,7 +91,7 @@ public partial class ActionTurn
     }
 
 
-    private static IEnumerator AICalculation()
+    private static async UniTask AICalculation()
     {
         foreach (var unit in LevelManager.Units)
         {
@@ -105,6 +102,6 @@ public partial class ActionTurn
                 CreateOrGetActionTurn(ActionTurnType.EnemyMove).RegistorAction(aiAction);
             }
         }
-        yield return null;
+        await UniTask.Yield();
     }
 }

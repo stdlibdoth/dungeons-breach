@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class ProjectileSpawnModule : BasicSpawnModule
 {
@@ -47,7 +48,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
         return m_actionTargets.ToArray();
     }
 
-    public override IEnumerator ExcuteAction()
+    public override async UniTask ExcuteAction()
     {
         var unit = m_actionParam.unit;
 
@@ -64,13 +65,12 @@ public class ProjectileSpawnModule : BasicSpawnModule
             }
         }
         if(spawnTile.Count==0)
-            yield break;
+            return;
 
         PlayAnimation(unit);
-        Debug.Log(unit.PathAgent.Direction);
         Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.PathAgent.Direction).localPosition;
         var grid = GridManager.ActivePathGrid;
-        yield return new WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
+        await UniTask.WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
         foreach (var coord in spawnTile)
         {
             var pos = (Vector3)coord.ToWorldPosition(grid) + relativePos;
@@ -79,7 +79,7 @@ public class ProjectileSpawnModule : BasicSpawnModule
             var pUnit = spawn as ProjectileUnit;
             pUnit.PreviewKey = PreviewKey;
             spawn.SetDirection(dir);
-            yield return pUnit.StartProjectile();
+            await pUnit.StartProjectile();
         }
         EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme").GetTopic("OnModuleExecute").Invoke(this);
     }

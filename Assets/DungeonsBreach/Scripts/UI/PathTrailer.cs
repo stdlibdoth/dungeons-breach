@@ -1,6 +1,7 @@
-using System.Collections;
+using System.Threading;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class PathTrailer : MonoBehaviour
 {
@@ -8,10 +9,11 @@ public class PathTrailer : MonoBehaviour
     [SerializeField] private float m_distanceMargin = 0.05f;
 
 
+
     private List<Vector3> m_waypoints = new List<Vector3>();
 
 
-    private Coroutine m_animationCoroutine;
+    private CancellationTokenSource m_cts;
 
     public void Init(List<IsoGridCoord> waypoints)
     {
@@ -31,14 +33,12 @@ public class PathTrailer : MonoBehaviour
     }
 
 
-    public void StartTrailing(UnitBase unit)
+    public async void StartTrailing(UnitBase unit)
     {
-        if(m_animationCoroutine!= null)
-            StopCoroutine(m_animationCoroutine);
-        m_animationCoroutine = StartCoroutine(AnimateTrail(unit));
+        await AnimateTrail(unit);
     }
 
-    private IEnumerator AnimateTrail(UnitBase unit)
+    private async UniTask AnimateTrail(UnitBase unit)
     {
         m_lineRenderer.enabled = true;
         m_waypoints.Add(unit.transform.position);
@@ -50,7 +50,7 @@ public class PathTrailer : MonoBehaviour
             }
             m_waypoints[m_waypoints.Count - 1] = unit.transform.position;
             UpdateRenderer();
-            yield return null;
+            await UniTask.Yield();
         }
         m_lineRenderer.enabled = false;
     }
@@ -59,6 +59,12 @@ public class PathTrailer : MonoBehaviour
     {
         m_lineRenderer.positionCount = m_waypoints.Count;
         m_lineRenderer.SetPositions(m_waypoints.ToArray());
+    }
+
+    private void OnDestroy()
+    {
+        m_cts?.Cancel();
+        m_cts?.Dispose();
     }
 
 }

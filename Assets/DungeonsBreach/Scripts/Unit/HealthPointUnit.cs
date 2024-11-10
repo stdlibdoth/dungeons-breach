@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Unity.Mathematics;
+using Cysharp.Threading.Tasks;
 
 public class HealthPointUnit : ObstacleUnit
 {
@@ -60,10 +58,10 @@ public class KeepBlockingDieAction : IAction
         return this;
     }
 
-    public IEnumerator ExcuteAction()
+    public async UniTask ExcuteAction()
     {
         var unit = m_param.unit;
         EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitDie").Invoke(unit);
-        yield return null;
+        await UniTask.Yield();
     }
 }

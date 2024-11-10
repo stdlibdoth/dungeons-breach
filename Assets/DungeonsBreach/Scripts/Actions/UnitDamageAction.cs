@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 {
@@ -33,13 +34,13 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
 
     #region IAction
 
-    public virtual IEnumerator ExcuteAction()
+    public virtual async UniTask ExcuteAction()
     {
         if(m_damageActionParam == null)
-            yield break;
+            return;
 
-        if(m_damageActionParam.animationAction!= null)
-            GameManager.DispachCoroutine(m_damageActionParam.animationAction.Invoke());
+        if (m_damageActionParam.animationAction != null)
+            _ = m_damageActionParam.animationAction.Invoke();
 
 
         var unit = m_damageActionParam.unit;
@@ -58,24 +59,23 @@ public class UnitDamageAction : IAction ,IPreviewable<UnitDamagePreviewData>
                 temp.value = 1;
                 float stopDist = GridManager.ActivePathGrid.CellSize / 1.5f;
                 Vector3 pos = unit.PathAgent.Coordinate.ToWorldPosition(GridManager.ActivePathGrid);
-                Debug.Log("block unit" + hits[0]);
-                yield return unit.StartCoroutine(unit.PathAgent.AnimateAgent(LocamotionType.Shift, targetTile, stopDist));
-                yield return unit.StartCoroutine(unit.PathAgent.AnimateAgent(LocamotionType.Shift, pos, 3));
+                await unit.PathAgent.AnimateAgent(LocamotionType.Shift, targetTile, stopDist);
+                await unit.PathAgent.AnimateAgent(LocamotionType.Shift, pos, 3);
                 deltaStatus.hp = -1;
                 unit.UpdateStatus(deltaStatus);
                 foreach (var hit in hits)
                 {
-                    yield return hit.Damage(temp).ExcuteAction();
+                    await hit.Damage(temp).ExcuteAction();
                 }
             }
             else if(GridManager.ActiveTileGrid.CheckRange(targetTile))
             {
 
                 var action = unit.Move(attackInfo.pushType, targetTile, true,false);
-                yield return action.ExcuteAction();
+                await action.ExcuteAction();
             }
         }   
-        yield return ActionTurn.ExcuteTempActions();
+        await ActionTurn.ExcuteTempActions();
     }
 
     public virtual IAction Build<T>(T p) where T : IActionParam
@@ -215,16 +215,16 @@ public class SelfDamageAction:UnitDamageAction
         return this;
     }
 
-    public override IEnumerator ExcuteAction()
+    public override async UniTask ExcuteAction()
     {
         if(m_damageActionParam.animationAction!= null)
-            yield return m_damageActionParam.animationAction.Invoke();
+            await m_damageActionParam.animationAction.Invoke();
 
         if(PreviewKey == this)
             BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
         var deltaStatus = UnitStatus.Empty;
         deltaStatus.hp = -m_damageActionParam.attackInfo.value;
         m_damageActionParam.unit.UpdateStatus(deltaStatus);
-        yield return null;
+        await UniTask.Yield();
     }
 }

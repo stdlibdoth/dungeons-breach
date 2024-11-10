@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class ProjectileUnit : UnitBase
 {
@@ -48,12 +49,12 @@ public class ProjectileUnit : UnitBase
     }
 
 
-    public IEnumerator StartProjectile()
+    public async UniTask StartProjectile()
     {
         base.SpawnUnit();
         int dist = m_unitStatus.moveRange;
         int blockDist = GridManager.ActivePathGrid.MaskLineCast(m_pathAgent.BlockingMask, m_pathAgent.Coordinate, m_pathAgent.Direction, dist, out var coord);
-        yield return m_pathAgent.MoveStraight(m_locamotionType, coord);
+        await m_pathAgent.MoveStraight(m_locamotionType, coord);
 
         foreach (var module in m_actionModules)
         {
@@ -62,17 +63,17 @@ public class ProjectileUnit : UnitBase
             module.Build(param);
             module.ConfirmActionTargets();
             m_unitStatus.moves = 0;
-            yield return module.ExcuteAction();
+            await module.ExcuteAction();
         }
     }
     
-    public override void Die()
+    public override async void Die()
     {
         UnitDieAction dieAction = new UnitDieAction();
         dieAction.Build(new UnitDieActionParam{
             unit = this,
         });
         BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
-        StartCoroutine(dieAction.ExcuteAction());
+        await dieAction.ExcuteAction();
     }
 }

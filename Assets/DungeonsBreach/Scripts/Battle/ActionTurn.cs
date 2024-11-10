@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 [System.Serializable]
 public partial class ActionTurn
@@ -111,22 +112,22 @@ public partial class ActionTurn
     }
 
 
-    public virtual IEnumerator ExcuteStartTurnDeles()
+    public virtual async UniTask ExcuteStartTurnDeles()
     {
         m_isExecuting = true;
         Debug.Log("-----------------" + m_type + " Turn Start----------------");
         foreach (var item in m_turnStartDeles)
         {
-            yield return item.Invoke(this);
+            await item.Invoke(this);
         }
         EventManager.GetTheme<TurnTheme>("TurnTheme").GetTopic("ActionTurnStart").Invoke(m_type, this);
     }
 
-    public virtual IEnumerator ExcuteEndTurnDeles()
+    public virtual async UniTask ExcuteEndTurnDeles()
     {
         foreach (var item in m_turnEndDeles)
         {
-            yield return item.Invoke(this);
+            await item.Invoke(this);
         }
         m_actions = new List<IAction>();
         EventManager.GetTheme<TurnTheme>("TurnTheme").GetTopic("ActionTurnEnd").Invoke(m_type, this);
@@ -135,14 +136,14 @@ public partial class ActionTurn
     }
 
 
-    protected virtual IEnumerator ExcuteActionTurn()
+    protected virtual async UniTask ExcuteActionTurn()
     {
         m_isExecuting = true;
         Debug.Log("-----------------" + m_type + " Turn Start----------------");
         EventManager.GetTheme<TurnTheme>("TurnTheme").GetTopic("ActionTurnStart").Invoke(m_type,this);
         foreach (var item in m_turnStartDeles)
         {
-            yield return item.Invoke(this);
+            await item.Invoke(this);
         }
 
         var actions = new List<IAction>(m_actions);
@@ -150,13 +151,13 @@ public partial class ActionTurn
         for (int i = 0; i < actions.Count; i++)
         {
             Debug.Log("-----------------" + actions[i] + "'s action begin---------------");
-            yield return actions[i].ExcuteAction();
+            await actions[i].ExcuteAction();
             m_actions.Remove(actions[i]);
         }
 
         foreach (var item in m_turnEndDeles)
         {
-            yield return item.Invoke(this);
+            await item.Invoke(this);
         }
 
         EventManager.GetTheme<TurnTheme>("TurnTheme").GetTopic("ActionTurnEnd").Invoke(m_type,this);
@@ -175,7 +176,7 @@ public class ActionTurnComparer : Comparer<ActionTurn>
 }
 
 
-public delegate IEnumerator ActionTurnDelegate(ActionTurn actionTurn);
+public delegate UniTask ActionTurnDelegate(ActionTurn actionTurn);
 
 
 public enum ActionTurnType : int

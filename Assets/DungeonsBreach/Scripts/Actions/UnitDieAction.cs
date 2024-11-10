@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class UnitDieAction : IAction
@@ -14,18 +14,18 @@ public class UnitDieAction : IAction
         return this;
     }
 
-    public IEnumerator ExcuteAction()
+    public async UniTask ExcuteAction()
     {
+        RemoveModuleAction();
         var unit = m_param.unit;
         var tileMask = GridManager.ActivePathGrid.PathingMaskSingleTile(unit.PathAgent.Coordinate);
         GridManager.ActivePathGrid.UpdatePathFindingMask(unit.PathAgent.Coordinate, tileMask ^ unit.PathAgent.IntrinsicMask);
-        //m_animator.SetTrigger("Die");
+        
         EventManager.GetTheme<UnitTheme>("UnitTheme").GetTopic("UnitDie").Invoke(unit);
-        yield return new WaitForSeconds(m_param.delay);
-        RemoveModuleAction();
+        await UniTask.WaitForSeconds(m_param.delay);
         //GameObject.Destroy(unit.gameObject);
         unit.gameObject.SetActive(false);
-        yield return null;
+        await UniTask.Yield();
     }
 
 

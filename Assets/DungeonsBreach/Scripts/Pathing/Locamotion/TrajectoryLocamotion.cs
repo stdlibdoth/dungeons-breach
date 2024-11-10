@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// Prajectile formular for 2d coordinate system
@@ -33,28 +33,29 @@ public class TrajectoryLocamotion : LocamotionBase
         return new Trajectory2D(new float2(x0, y0), m_gravity, tMax);        
     }
 
-    private IEnumerator MoveShadow(float t, Vector3 start, Vector3 end, float stop_distance)
+    private async UniTask MoveShadow(float t, Vector3 end, float stop_distance)
     {
         if (m_shadow == null)
-            yield break;
+            return;
         Transform shadow = Instantiate(m_shadow, m_shadow.position,Quaternion.identity);
         shadow.gameObject.SetActive(true);
+        Vector3 startPos = shadow.position;
 
-        var dist = math.distance(start, end);
-        var dir = (end - start).normalized;
+        var dist = math.distance(startPos, end);
+        var dir = (end - startPos).normalized;
         var stopDist = stop_distance == 0 ? m_stopDistance : stop_distance;
         var speed = dist / t;
-        while (dist > stopDist)
+        await UniTask.WaitWhile(() =>
         {
             shadow.position += dir * speed * Time.deltaTime;
             dist = math.distance(shadow.position, end);
-            yield return null;
-        }
+            return dist - stopDist>0;
+        }, cancelImmediately: true);
         Destroy(shadow.gameObject);
     }
 
 
-    public override IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
+    public override async UniTask StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
     {
         var endWorldPos = end.ToWorldPosition(GridManager.ActivePathGrid);
         var startWorldPos = start.ToWorldPosition(GridManager.ActivePathGrid);
@@ -64,11 +65,11 @@ public class TrajectoryLocamotion : LocamotionBase
 
 
         m_animator.SetTrigger(m_animateTrigger);
-        yield return new WaitUntil(() => m_animator.GetCurrentAnimatorStateInfo(0).IsName(m_animateTrigger));
+        await UniTask.WaitUntil(() => m_animator.GetCurrentAnimatorStateInfo(0).IsName(m_animateTrigger));
 
 
         float tMax = m_animationLength * m_animationCycle;
-        StartCoroutine(MoveShadow(tMax, startWorldPos, endWorldPos, 0.05f));
+        _ = MoveShadow(tMax, endWorldPos, 0.1f);
         Trajectory2D trajectory = new Trajectory2D(new float2(x0, y0), m_gravity, tMax);
         float t = 0;
         while (t < tMax)
@@ -76,12 +77,12 @@ public class TrajectoryLocamotion : LocamotionBase
             t += Time.deltaTime;
             float2 pos = trajectory.OutputPointWithTime(t);
             Transform.position = new Vector3(pos.x, pos.y) + (Vector3)startWorldPos;
-            yield return null;
+            await UniTask.Yield();
         }
-        yield return null;
+        await UniTask.Yield();
     }
 
-    public override IEnumerator StartLocamotion(float3 end, float stopping_dist = 0)
+    public override async UniTask StartLocamotion(float3 end, float stopping_dist = 0)
     {
         var startWorldPos = Transform.position;
 
@@ -90,7 +91,7 @@ public class TrajectoryLocamotion : LocamotionBase
 
 
         m_animator.SetTrigger(m_animateTrigger);
-        yield return new WaitForEndOfFrame();
+        await UniTask.WaitForEndOfFrame(this);
         var stopDist = stopping_dist == 0 ? m_stopDistance : stopping_dist;
 
 
@@ -104,8 +105,8 @@ public class TrajectoryLocamotion : LocamotionBase
             t += Time.fixedDeltaTime;
             float2 pos = trajectory.OutputPointWithTime(t);
             Transform.position = new Vector3(pos.x, pos.y) + startWorldPos;
-            yield return null;
+            await UniTask.Yield();
         }
-        yield return null;
+        await UniTask.Yield();
     }
 }

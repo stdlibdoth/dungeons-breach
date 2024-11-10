@@ -51,6 +51,7 @@ MonoBehaviour:
     defense: 0
     moveRange: 0
     moves: 0
+    stationary: 0
   m_profile:
     data:
     - pushDir: 0
@@ -204,9 +205,10 @@ MonoBehaviour:
     value: 0
   m_fallingMask:
     value: 0
+  m_direction: 0
   m_locamotionsHolder: {fileID: 4185880647813514687}
   m_targetTransform: {fileID: 6612862855358882819}
-  m_direction: 0
+  m_movePreviewer: {fileID: 0}
 --- !u!1 &4986738429978339210
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,7 +274,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5309402309386363004
 Transform:
   m_ObjectHideFlags: 0
@@ -283,8 +285,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.82, y: 0.82, z: 0.82}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 0.62, y: 0.8, z: 0.82}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1169018286805909494}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -568,18 +570,13 @@ MonoBehaviour:
     defense: 0
     moveRange: 8
     moves: 8
+    stationary: 0
   m_animator: {fileID: 9190507919200616842}
   m_pathAgent: {fileID: 3996779505363619239}
   m_modulesHolder: {fileID: 2973567055798943112}
   m_animatorStates: {fileID: 1493146824693658976}
   m_healthBar: {fileID: 0}
   m_spriteRenderer: {fileID: 1443900181578040287}
-  m_unitStatus:
-    maxHP: 0
-    hp: 0
-    defense: 0
-    moveRange: 0
-    moves: 0
   m_locamotionType: 3
   m_actionModule: {fileID: 706438961320700361}
   m_trajectileLocamotion: {fileID: 4046453614762223744}

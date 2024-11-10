@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class HealModule : BasicAttackModule
 {
-
     #region IAction
     public override IAction Build<T>(T param)
     {
@@ -15,11 +15,9 @@ public class HealModule : BasicAttackModule
         return this;
     }
 
-    public override IEnumerator ExcuteAction()
+    public override async UniTask ExcuteAction()
     {
         var unit = m_actionParam.unit;
-
-        Debug.Log(unit + "  heal");
 
         if (m_animationDataOverride)
             m_animationData.PlayAnimation();
@@ -41,7 +39,7 @@ public class HealModule : BasicAttackModule
             }
         }
         EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme").GetTopic("OnModuleExecute").Invoke(this);
-        yield return null;
+        await UniTask.Yield();
     }
     #endregion
 

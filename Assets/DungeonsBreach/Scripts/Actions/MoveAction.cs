@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using Cysharp.Threading.Tasks;
 public class MoveAction : IAction,IPreviewable<MoveActionParam>
 {
     private static Dictionary<PreviewKey, MoveAction> m_previews = new Dictionary<PreviewKey, MoveAction>();
@@ -32,12 +32,12 @@ public class MoveAction : IAction,IPreviewable<MoveActionParam>
         return this;
     }
 
-    public IEnumerator ExcuteAction()
+    public async UniTask ExcuteAction()
     {
         if (m_param.ignorePathing)
         {
             var agent = m_param.agent;
-            yield return agent.MoveStraight(m_param.locamotion, m_param.target);
+            await agent.MoveStraight(m_param.locamotion, m_param.target);
 
             var grid = GridManager.ActivePathGrid;
             var tileMask = grid.PathingMaskSingleTile(agent.Coordinate);
@@ -45,9 +45,9 @@ public class MoveAction : IAction,IPreviewable<MoveActionParam>
             //check falling
             if (agent.FallMask.CheckMaskOverlap(tileMask))
             {
-                yield return new WaitForSeconds(0.3f);
+                await UniTask.WaitForSeconds(0.3f);
                 Vector3 target = agent.transform.position + Vector3.down * grid.CellSize * 0.5f;
-                yield return agent.AnimateAgent(LocamotionType.Shift, target);
+                await agent.AnimateAgent(LocamotionType.Shift, target);
 
                 LevelManager.TryGetUnits(agent.Coordinate, out List<UnitBase> units);
                 foreach (var unit in units)
@@ -57,13 +57,13 @@ public class MoveAction : IAction,IPreviewable<MoveActionParam>
                         ActionTileInfo actionTileInfo = ActionTileInfo.Self;
                         actionTileInfo.value = int.MaxValue;
                         var action = unit.Damage(actionTileInfo).ToSelfDamageAction();
-                        yield return action.ExcuteAction();
+                        await action.ExcuteAction();
                     }
                 }
             }
         }
         else
-            yield return m_param.agent.MoveAgent(m_param.locamotion, m_param.target);
+            await m_param.agent.MoveAgent(m_param.locamotion, m_param.target);
     }
 
     public IPreviewable<MoveActionParam> GeneratePreview(MoveActionParam data)

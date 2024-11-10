@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class TrajectileUnit : UnitBase
 {
@@ -56,19 +57,19 @@ public class TrajectileUnit : UnitBase
         return action.Build(param) as UnitDamageAction;
     }
 
-    public IEnumerator StartTrajectile()
+    public async UniTask StartTrajectile()
     {
         base.SpawnUnit();
         foreach (var t in m_targets)
         {
-            yield return MoveAndAction(t);
+            await MoveAndAction(t);
         }
     }
 
 
-    private IEnumerator MoveAndAction(IsoGridCoord coord)
+    private async UniTask MoveAndAction(IsoGridCoord coord)
     {
-        yield return m_pathAgent.MoveStraight(m_locamotionType, coord);
+       await m_pathAgent.MoveStraight(m_locamotionType, coord);
         foreach (var module in m_actionModules)
         {
             var param = new ActionModuleParam(this,new IsoGridCoord[] { coord },false);
@@ -76,17 +77,17 @@ public class TrajectileUnit : UnitBase
             module.Build(param);
             module.ConfirmActionTargets();
             m_unitStatus.moves = 0;
-            yield return module.ExcuteAction();
+            await module.ExcuteAction();
         }
     }
 
-    public override void Die()
+    public override async void Die()
     {
         UnitDieAction dieAction = new UnitDieAction();
         BattleUIController.ActionPreviewer.ClearPreview(PreviewKey);
         dieAction.Build(new UnitDieActionParam{
             unit = this,
         });
-        StartCoroutine(dieAction.ExcuteAction());
+        await dieAction.ExcuteAction();
     }
 }

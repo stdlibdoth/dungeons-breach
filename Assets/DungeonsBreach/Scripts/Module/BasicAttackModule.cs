@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class BasicAttackModule : ActionModule
 {
@@ -21,11 +22,11 @@ public class BasicAttackModule : ActionModule
         return this;
     }
 
-    public override IEnumerator ExcuteAction()
+    public override async UniTask ExcuteAction()
     {
         var unit = m_actionParam.unit;
         Debug.Log(unit +"  " + ModuleName + "  action");
-        yield return PlayAnimation(unit);
+        await PlayAnimation(unit);
         var confirmed = new List<IsoGridCoord>(m_confirmedActionRange);
 
         if(m_previewKey == this)
@@ -50,14 +51,14 @@ public class BasicAttackModule : ActionModule
                 for (int i = 0; i < damageActions.Count; i++)
                 {
                     Debug.Log(damageActions[i] + "   " + damageActions[i].Priority.value);
-                    yield return damageActions[i].ExcuteAction();
+                    await damageActions[i].ExcuteAction();
                 }
             }
         }
         EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme").GetTopic("OnModuleExecute").Invoke(this);
     }
 
-    private IEnumerator PlayAnimation(UnitBase unit)
+    private async UniTask PlayAnimation(UnitBase unit)
     {
         var animationData = m_animationData;
         if (m_animationDataOverride)
@@ -73,10 +74,9 @@ public class BasicAttackModule : ActionModule
                 data?.animator?.SetFloat("DirBlend", (int)unit.PathAgent.Direction);
             }
         }
-        yield return new WaitForEndOfFrame();
+        await UniTask.WaitForEndOfFrame(this);
         if (animationData.animator != null)
-            yield return new WaitUntil(() => !animationData.animator.GetCurrentAnimatorStateInfo(0).IsName(animationData.animationState));
-    }
+            await UniTask.WaitUntil(() => !animationData.animator.GetCurrentAnimatorStateInfo(0).IsName(animationData.animationState));    }
 
     #endregion
 

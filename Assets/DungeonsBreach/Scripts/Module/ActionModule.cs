@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Cysharp.Threading.Tasks;
 
 public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleParam>
 {
@@ -82,7 +83,7 @@ public abstract class ActionModule : Module, IAction, IPreviewable<ActionModuleP
 
     #region Interfaces
 
-    public abstract IEnumerator ExcuteAction();
+    public abstract UniTask ExcuteAction();
     public abstract IAction Build<T>(T param) where T : IActionParam;
     public abstract IPreviewable<ActionModuleParam> GeneratePreview(ActionModuleParam data);
     public abstract ActionTileInfo[] StartPreview();

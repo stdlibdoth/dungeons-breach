@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
-
+using Cysharp.Threading.Tasks;
 
 public class IsoMoveLocamotion : LocamotionBase
 {
@@ -10,10 +10,10 @@ public class IsoMoveLocamotion : LocamotionBase
     [SerializeField] private float m_speed;
     [SerializeField] private string m_animateTrigger;
 
-    private IEnumerator LocaMotionMoveCoroutine(float3 end, float stopping_dist)
+    private async UniTask LocaMotionMoveCoroutine(float3 end, float stopping_dist)
     {
         if(Transform == null)
-            yield break;
+            return;
         var dist = math.distance(Transform.position, end);
         var dir = ((Vector3)end - Transform.position).normalized;
         var stopDist = stopping_dist == 0 ? m_stopDistance : stopping_dist;
@@ -21,13 +21,13 @@ public class IsoMoveLocamotion : LocamotionBase
         {
             Transform.position += dir * m_speed * Time.deltaTime;
             dist = math.distance(Transform.position, end);
-            yield return null;
+            await UniTask.Yield();
         }
 
         m_animator.SetTrigger("Idle");
     }
 
-    public override IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
+    public override async UniTask StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0)
     {
         if (start != end)
         {
@@ -38,13 +38,13 @@ public class IsoMoveLocamotion : LocamotionBase
 
         var grid = GridManager.ActivePathGrid;
         var endPos = end.ToWorldPosition(grid);
-        yield return StartCoroutine(LocaMotionMoveCoroutine(endPos, stopping_dist));
+        await LocaMotionMoveCoroutine(endPos, stopping_dist);
     }
 
-    public override IEnumerator StartLocamotion(float3 end, float speed_override)
+    public override async UniTask StartLocamotion(float3 end, float speed_override)
     {
         if (Transform == null)
-            yield break;
+            return;
         var dist = math.distance(Transform.position, end);
         var dir = ((Vector3)end - Transform.position).normalized;
         var speed = speed_override == 0? m_speed : speed_override;
@@ -52,7 +52,7 @@ public class IsoMoveLocamotion : LocamotionBase
         {
             Transform.position += dir * speed * Time.deltaTime;
             dist = math.distance(Transform.position, end);
-            yield return null;
+            await UniTask.Yield();
         }
         m_animator.SetTrigger("Idle");
     }

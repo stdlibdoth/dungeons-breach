@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public abstract class LocamotionBase : MonoBehaviour, ILocamotion
 {
@@ -15,7 +16,7 @@ public abstract class LocamotionBase : MonoBehaviour, ILocamotion
         set { m_type = value; }
     }
 
-    public abstract IEnumerator StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0);
+    public abstract UniTask StartLocamotion(IsoGridCoord start, IsoGridCoord end, float stopping_dist = 0);
 
-    public abstract IEnumerator StartLocamotion(float3 end, float speed_override = 0);
+    public abstract UniTask StartLocamotion(float3 end, float speed_override = 0);
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class BasicSpawnModule : ActionModule
 {
@@ -21,17 +22,17 @@ public class BasicSpawnModule : ActionModule
         return this;
     }
 
-    public override IEnumerator ExcuteAction()
+    public override async UniTask ExcuteAction()
     {
         if(m_confirmedActionRange.Length<=0)
-            yield break;
+            return;
 
         var unit = m_actionParam.unit;
         Debug.Log(unit + " spawn " + m_spawnUnit.name);
         PlayAnimation(unit);
         Vector3 relativePos = m_spawnAnchor.GetAnchor(unit.PathAgent.Direction).localPosition;
         var grid = GridManager.ActivePathGrid;
-        yield return new WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
+        await UniTask.WaitForSeconds(Time.fixedDeltaTime * m_spawnFrameDelay);
         foreach (var coord in m_confirmedActionRange)
         {
             var pos = (Vector3)coord.ToWorldPosition(grid) + relativePos;
@@ -40,7 +41,7 @@ public class BasicSpawnModule : ActionModule
             spawn.SetDirection(dir);
         }
         EventManager.GetTheme<ActionModuleTheme>("ActionModuleTheme").GetTopic("OnModuleExecute").Invoke(this);
-        yield return null;
+        await UniTask.Yield();
     }
     #endregion
 
