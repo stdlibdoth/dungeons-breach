@@ -107,7 +107,6 @@ public class BattleUIController : Singleton<BattleUIController>
 
     #endregion
 
-
     #region  Path trailer
     public static void ShowPathTrail(List<IsoGridCoord> path)
     {
@@ -125,7 +124,6 @@ public class BattleUIController : Singleton<BattleUIController>
     }
     #endregion
 
-
     #region action highlight
     public static void ShowActionTarget(ActionModule module, ActionTileInfo action_tile_info)
     {
@@ -136,8 +134,6 @@ public class BattleUIController : Singleton<BattleUIController>
     }
 
     #endregion
-
-
 
     #region Turn Control
     private void UndoMovesBtnPressed()
@@ -159,7 +155,6 @@ public class BattleUIController : Singleton<BattleUIController>
 
     }
     #endregion
-
 
     #region Theme events
 

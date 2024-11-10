@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Mathematics;
 using Random = Unity.Mathematics.Random;
 
 public class UnitAIAgent : MonoBehaviour,IAction
@@ -27,6 +26,7 @@ public class UnitAIAgent : MonoBehaviour,IAction
         get { return m_priority; }
         set { m_priority = value; }
     }
+
 
     private void Start()
     {
