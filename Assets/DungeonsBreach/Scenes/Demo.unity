@@ -8172,6 +8172,10 @@ PrefabInstance:
       value: Barrel_unit (6)
       objectReference: {fileID: 0}
     - target: {fileID: 8286514719151091475, guid: 3df74e6807162ea46ad068965516387d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8286514719151091475, guid: 3df74e6807162ea46ad068965516387d, type: 3}
       propertyPath: m_TagString
       value: ObstacleUnit
       objectReference: {fileID: 0}
@@ -10011,7 +10015,7 @@ Transform:
   m_GameObject: {fileID: 1552509774}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.43, y: 1.82, z: 0}
+  m_LocalPosition: {x: 1.28, y: 0.91, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
